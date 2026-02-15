@@ -1,0 +1,1 @@
+dir for .l2j geodata files
