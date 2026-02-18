@@ -167,10 +167,10 @@ public final class GeoDriverBytesMmap implements IGeoDriver {
                 return NoHolesMultilayerBlockBytes.getSize(blockDataOffset, data);
             }
             case INDEXED_MULTILAYER_BLOCK -> {
-                return MultilayerIndexedBlockBytes.getSize(blockDataOffset, data);
+                return IndexedMultilayerBlockBytes.getSize(blockDataOffset, data);
             }
-            case INDEXED_MULTILAYER_32_BLOCK -> {
-                return MultilayerIndexed32BlockBytes.getSize(blockDataOffset, data);
+            case INDEXED_32_MULTILAYER_BLOCK -> {
+                return Indexed32MultilayerBlockBytes.getSize(blockDataOffset, data);
             }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }
@@ -240,10 +240,10 @@ public final class GeoDriverBytesMmap implements IGeoDriver {
                 return NoHolesMultilayerBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
             }
             case INDEXED_MULTILAYER_BLOCK -> {
-                return MultilayerIndexedBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
+                return IndexedMultilayerBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
             }
-            case INDEXED_MULTILAYER_32_BLOCK -> {
-                return MultilayerIndexed32BlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
+            case INDEXED_32_MULTILAYER_BLOCK -> {
+                return Indexed32MultilayerBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
             }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }
@@ -291,10 +291,10 @@ public final class GeoDriverBytesMmap implements IGeoDriver {
                 return NoHolesMultilayerBlockBytes.getNearestZ(geoX, geoY, worldZ, blockDataOffset, data);
             }
             case INDEXED_MULTILAYER_BLOCK -> {
-                return MultilayerIndexedBlockBytes.getNearestZ(geoX, geoY, worldZ, blockDataOffset, data);
+                return IndexedMultilayerBlockBytes.getNearestZ(geoX, geoY, worldZ, blockDataOffset, data);
             }
-            case INDEXED_MULTILAYER_32_BLOCK -> {
-                return MultilayerIndexed32BlockBytes.getNearestZ(geoX, geoY, worldZ, blockDataOffset, data);
+            case INDEXED_32_MULTILAYER_BLOCK -> {
+                return Indexed32MultilayerBlockBytes.getNearestZ(geoX, geoY, worldZ, blockDataOffset, data);
             }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }
@@ -341,10 +341,10 @@ public final class GeoDriverBytesMmap implements IGeoDriver {
                 return NoHolesMultilayerBlockBytes.getNextLowerZ(geoX, geoY, worldZ, blockDataOffset, data);
             }
             case INDEXED_MULTILAYER_BLOCK -> {
-                return MultilayerIndexedBlockBytes.getNextLowerZ(geoX, geoY, worldZ, blockDataOffset, data);
+                return IndexedMultilayerBlockBytes.getNextLowerZ(geoX, geoY, worldZ, blockDataOffset, data);
             }
-            case INDEXED_MULTILAYER_32_BLOCK -> {
-                return MultilayerIndexed32BlockBytes.getNextLowerZ(geoX, geoY, worldZ, blockDataOffset, data);
+            case INDEXED_32_MULTILAYER_BLOCK -> {
+                return Indexed32MultilayerBlockBytes.getNextLowerZ(geoX, geoY, worldZ, blockDataOffset, data);
             }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }
@@ -391,10 +391,10 @@ public final class GeoDriverBytesMmap implements IGeoDriver {
                 return NoHolesMultilayerBlockBytes.getNextHigherZ(geoX, geoY, worldZ, blockDataOffset, data);
             }
             case INDEXED_MULTILAYER_BLOCK -> {
-                return MultilayerIndexedBlockBytes.getNextHigherZ(geoX, geoY, worldZ, blockDataOffset, data);
+                return IndexedMultilayerBlockBytes.getNextHigherZ(geoX, geoY, worldZ, blockDataOffset, data);
             }
-            case INDEXED_MULTILAYER_32_BLOCK -> {
-                return MultilayerIndexed32BlockBytes.getNextHigherZ(geoX, geoY, worldZ, blockDataOffset, data);
+            case INDEXED_32_MULTILAYER_BLOCK -> {
+                return Indexed32MultilayerBlockBytes.getNextHigherZ(geoX, geoY, worldZ, blockDataOffset, data);
             }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }

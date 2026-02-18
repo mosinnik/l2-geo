@@ -37,7 +37,7 @@ public class GeoConfig {
     private boolean baseHeightOneNsweComplexBlockEnabled;
     private boolean noHolesMultilayerBlockEnabled;
     private boolean indexedMultilayerBlockEnabled;
-    private boolean indexedMultilayer32BlockEnabled;
+    private boolean indexed32MultilayerBlockEnabled;
 
 
     public static GeoConfig maxPerfBytes() {
@@ -45,7 +45,7 @@ public class GeoConfig {
         geoConfig.setOneHeightComplexBlockEnabled(true);
         geoConfig.setNoHolesMultilayerBlockEnabled(true);
         geoConfig.setIndexedMultilayerBlockEnabled(true);
-        geoConfig.setIndexedMultilayer32BlockEnabled(true);
+        geoConfig.setIndexed32MultilayerBlockEnabled(true);
         return geoConfig;
     }
 

@@ -173,13 +173,13 @@ public class GeoDriverTest {
         System.out.println("--- allNoHolesMultilayerBlocks");
         System.out.println(allNoHolesMultilayerBlocksLayout.toFootprint());
 
-        GraphLayout allMultilayerIndexedBlocksLayout = GraphLayout.parseInstance(BlockManager.allMultilayerIndexedBlocks);
-        System.out.println("--- allMultilayerIndexedBlocks");
-        System.out.println(allMultilayerIndexedBlocksLayout.toFootprint());
+        GraphLayout allIndexedMultilayerBlocksLayout = GraphLayout.parseInstance(BlockManager.allIndexedMultilayerBlocks);
+        System.out.println("--- allIndexedMultilayerBlocks");
+        System.out.println(allIndexedMultilayerBlocksLayout.toFootprint());
 
-        GraphLayout allMultilayerIndexed32BlocksLayout = GraphLayout.parseInstance(BlockManager.allMultilayerIndexed32Blocks);
-        System.out.println("--- allMultilayerIndexed32Blocks");
-        System.out.println(allMultilayerIndexed32BlocksLayout.toFootprint());
+        GraphLayout allIndexed32MultilayerBlocksLayout = GraphLayout.parseInstance(BlockManager.allIndexed32MultilayerBlocks);
+        System.out.println("--- allIndexed32MultilayerBlocks");
+        System.out.println(allIndexed32MultilayerBlocksLayout.toFootprint());
     }
 
 

@@ -44,8 +44,8 @@ import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.*;
 
 @Threads(1)
 @Fork(1)
-@Warmup(iterations = 5, time = 5)
-@Measurement(iterations = 5, time = 30)
+@Warmup(iterations = 5, time = 2)
+@Measurement(iterations = 5, time = 2)
 @Timeout(time = 10)
 public class GeoDriverBenchParams {
     private static final int checkPointCount = 10000;
@@ -113,17 +113,17 @@ public class GeoDriverBenchParams {
         List<Point> checkPoints = new ArrayList<>();
 
         @Param({
-                "FLAT_BLOCK",
-                "COMPLEX_BLOCK",
-//            "MULTILAYER_BLOCK",
-                "ONE_HEIGHT_COMPLEX_BLOCK",
-                "BASE_HEIGHT_COMPLEX_BLOCK",
-                "BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK",
-                "FEW_HEIGHTS_COMPLEX_BLOCK",
-//            "FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK",
+//                "FLAT_BLOCK",
+//                "COMPLEX_BLOCK",
+////            "MULTILAYER_BLOCK",
+//                "ONE_HEIGHT_COMPLEX_BLOCK",
+//                "BASE_HEIGHT_COMPLEX_BLOCK",
+//                "BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK",
+//                "FEW_HEIGHTS_COMPLEX_BLOCK",
+////            "FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK",
                 "NO_HOLES_MULTILAYER_BLOCK",
-//            "INDEXED_MULTILAYER_BLOCK",
-                "INDEXED_MULTILAYER_32_BLOCK",
+////            "INDEXED_MULTILAYER_BLOCK",
+//                "INDEXED_32_MULTILAYER_BLOCK",
         })
         GeoDriverBytesConstants.E blockType;
         boolean loadFromFile = true;
@@ -145,7 +145,7 @@ public class GeoDriverBenchParams {
             geoConfig.setFewHeightsOneNsweComplexBlockEnabled(true);
             geoConfig.setNoHolesMultilayerBlockEnabled(true);
             geoConfig.setIndexedMultilayerBlockEnabled(true);
-            geoConfig.setIndexedMultilayer32BlockEnabled(true);
+            geoConfig.setIndexed32MultilayerBlockEnabled(true);
 
             driver = new GeoDriver(geoConfig);
             File resource = new File(GeoDriverBenchParams.class.getClassLoader().getResource(tstRegion).getFile());
@@ -244,14 +244,14 @@ public class GeoDriverBenchParams {
 //        }
 //    }
 
-    @Benchmark
-    public void getNearestZ_old(Blackhole blackhole, MyState state) {
-        GeoDriver driver = state.driverOld;
-        for (Point checkPoint : state.checkPoints) {
-            blackhole.consume(driver.getNearestZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
-        }
-    }
-
+//    @Benchmark
+//    public void getNearestZ_old(Blackhole blackhole, MyState state) {
+//        GeoDriver driver = state.driverOld;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.getNearestZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
+//        }
+//    }
+//
     @Benchmark
     public void getNextLowerZ_old(Blackhole blackhole, MyState state) {
         GeoDriver driver = state.driverOld;
@@ -259,14 +259,14 @@ public class GeoDriverBenchParams {
             blackhole.consume(driver.getNextLowerZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
         }
     }
-
-    @Benchmark
-    public void getNextHigherZ_old(Blackhole blackhole, MyState state) {
-        GeoDriver driver = state.driverOld;
-        for (Point checkPoint : state.checkPoints) {
-            blackhole.consume(driver.getNextHigherZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
-        }
-    }
+//
+//    @Benchmark
+//    public void getNextHigherZ_old(Blackhole blackhole, MyState state) {
+//        GeoDriver driver = state.driverOld;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.getNextHigherZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
+//        }
+//    }
 
 //
 //    @Benchmark
@@ -287,13 +287,13 @@ public class GeoDriverBenchParams {
 //        }
 //    }
 
-    @Benchmark
-    public void getNearestZ(Blackhole blackhole, MyState state) {
-        GeoDriver driver = state.driver;
-        for (Point checkPoint : state.checkPoints) {
-            blackhole.consume(driver.getNearestZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
-        }
-    }
+//    @Benchmark
+//    public void getNearestZ(Blackhole blackhole, MyState state) {
+//        GeoDriver driver = state.driver;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.getNearestZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
+//        }
+//    }
 
     @Benchmark
     public void getNextLowerZ(Blackhole blackhole, MyState state) {
@@ -303,13 +303,13 @@ public class GeoDriverBenchParams {
         }
     }
 
-    @Benchmark
-    public void getNextHigherZ(Blackhole blackhole, MyState state) {
-        GeoDriver driver = state.driver;
-        for (Point checkPoint : state.checkPoints) {
-            blackhole.consume(driver.getNextHigherZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
-        }
-    }
+//    @Benchmark
+//    public void getNextHigherZ(Blackhole blackhole, MyState state) {
+//        GeoDriver driver = state.driver;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.getNextHigherZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
+//        }
+//    }
 
 //
 //    @Benchmark
@@ -330,29 +330,29 @@ public class GeoDriverBenchParams {
 //        }
 //    }
 
-    @Benchmark
-    public void getNearestZBytes(Blackhole blackhole, MyState state) {
-        GeoDriverBytes driver = state.driverBytes;
-        for (Point checkPoint : state.checkPoints) {
-            blackhole.consume(driver.getNearestZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
-        }
-    }
-
-    @Benchmark
-    public void getNextLowerZBytes(Blackhole blackhole, MyState state) {
-        GeoDriverBytes driver = state.driverBytes;
-        for (Point checkPoint : state.checkPoints) {
-            blackhole.consume(driver.getNextLowerZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
-        }
-    }
-
-    @Benchmark
-    public void getNextHigherZBytes(Blackhole blackhole, MyState state) {
-        GeoDriverBytes driver = state.driverBytes;
-        for (Point checkPoint : state.checkPoints) {
-            blackhole.consume(driver.getNextHigherZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
-        }
-    }
+//    @Benchmark
+//    public void getNearestZBytes(Blackhole blackhole, MyState state) {
+//        GeoDriverBytes driver = state.driverBytes;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.getNearestZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
+//        }
+//    }
+//
+//    @Benchmark
+//    public void getNextLowerZBytes(Blackhole blackhole, MyState state) {
+//        GeoDriverBytes driver = state.driverBytes;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.getNextLowerZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
+//        }
+//    }
+//
+//    @Benchmark
+//    public void getNextHigherZBytes(Blackhole blackhole, MyState state) {
+//        GeoDriverBytes driver = state.driverBytes;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.getNextHigherZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
+//        }
+//    }
 //
 //    @Benchmark
 //    public void checkNearestNSWEBytes(Blackhole blackhole, MyState state) {
@@ -372,29 +372,29 @@ public class GeoDriverBenchParams {
 //        }
 //    }
 
-    @Benchmark
-    public void getNearestZBytesMmap(Blackhole blackhole, MyState state) {
-        GeoDriverBytesMmap driver = state.driverBytesMmap;
-        for (Point checkPoint : state.checkPoints) {
-            blackhole.consume(driver.getNearestZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
-        }
-    }
-
-    @Benchmark
-    public void getNextLowerZBytesMmap(Blackhole blackhole, MyState state) {
-        GeoDriverBytesMmap driver = state.driverBytesMmap;
-        for (Point checkPoint : state.checkPoints) {
-            blackhole.consume(driver.getNextLowerZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
-        }
-    }
-
-    @Benchmark
-    public void getNextHigherZBytesMmap(Blackhole blackhole, MyState state) {
-        GeoDriverBytesMmap driver = state.driverBytesMmap;
-        for (Point checkPoint : state.checkPoints) {
-            blackhole.consume(driver.getNextHigherZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
-        }
-    }
+//    @Benchmark
+//    public void getNearestZBytesMmap(Blackhole blackhole, MyState state) {
+//        GeoDriverBytesMmap driver = state.driverBytesMmap;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.getNearestZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
+//        }
+//    }
+//
+//    @Benchmark
+//    public void getNextLowerZBytesMmap(Blackhole blackhole, MyState state) {
+//        GeoDriverBytesMmap driver = state.driverBytesMmap;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.getNextLowerZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
+//        }
+//    }
+//
+//    @Benchmark
+//    public void getNextHigherZBytesMmap(Blackhole blackhole, MyState state) {
+//        GeoDriverBytesMmap driver = state.driverBytesMmap;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.getNextHigherZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
+//        }
+//    }
 //
 //    @Benchmark
 //    public void checkNearestNSWEBytesMmap(Blackhole blackhole, MyState state) {

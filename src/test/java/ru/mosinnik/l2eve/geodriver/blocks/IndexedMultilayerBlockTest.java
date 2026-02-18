@@ -37,7 +37,7 @@ import java.util.List;
 
 import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.TST_BLOCK_RESOURCE_BIGGEST;
 
-public class MultilayerIndexedBlockTest {
+public class IndexedMultilayerBlockTest {
 
     @Test
     public void compare() throws IOException {
@@ -57,7 +57,7 @@ public class MultilayerIndexedBlockTest {
 
         for (BlockStat blockStat : blockStats) {
             MultilayerBlock block1 = (MultilayerBlock) blockStat.block;
-            IBlock block2 = new MultilayerIndexedBlock(block1.data);
+            IBlock block2 = new IndexedMultilayerBlock(block1.data);
             Cmp.compareBlocks(block1, block2);
         }
     }

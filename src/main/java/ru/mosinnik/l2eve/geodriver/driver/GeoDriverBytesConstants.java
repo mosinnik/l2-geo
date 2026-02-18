@@ -38,7 +38,7 @@ public interface GeoDriverBytesConstants {
     byte FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK = 8;
     byte NO_HOLES_MULTILAYER_BLOCK = 9;
     byte INDEXED_MULTILAYER_BLOCK = 10;
-    byte INDEXED_MULTILAYER_32_BLOCK = 11;
+    byte INDEXED_32_MULTILAYER_BLOCK = 11;
 
     String DATA_FILE_NAME = "data.bin";
     String REGION_FIRST_BLOCK_INDEXES_FILE_NAME = "regionFirstBlockIndexes.bin";
@@ -58,7 +58,7 @@ public interface GeoDriverBytesConstants {
             case FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK -> "FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK";
             case NO_HOLES_MULTILAYER_BLOCK -> "NO_HOLES_MULTILAYER_BLOCK";
             case INDEXED_MULTILAYER_BLOCK -> "INDEXED_MULTILAYER_BLOCK";
-            case INDEXED_MULTILAYER_32_BLOCK -> "INDEXED_MULTILAYER_32_BLOCK";
+            case INDEXED_32_MULTILAYER_BLOCK -> "INDEXED_32_MULTILAYER_BLOCK";
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         };
     }
@@ -76,7 +76,7 @@ public interface GeoDriverBytesConstants {
             case "FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK" -> FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK;
             case "NO_HOLES_MULTILAYER_BLOCK" -> NO_HOLES_MULTILAYER_BLOCK;
             case "INDEXED_MULTILAYER_BLOCK" -> INDEXED_MULTILAYER_BLOCK;
-            case "INDEXED_MULTILAYER_32_BLOCK" -> INDEXED_MULTILAYER_32_BLOCK;
+            case "INDEXED_32_MULTILAYER_BLOCK" -> INDEXED_32_MULTILAYER_BLOCK;
             default -> throw new RuntimeException("Unknown block name: " + blockName);
         };
     }
@@ -93,6 +93,6 @@ public interface GeoDriverBytesConstants {
         FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK,
         NO_HOLES_MULTILAYER_BLOCK,
         INDEXED_MULTILAYER_BLOCK,
-        INDEXED_MULTILAYER_32_BLOCK,
+        INDEXED_32_MULTILAYER_BLOCK,
     }
 }

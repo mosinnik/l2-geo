@@ -54,7 +54,7 @@ public class GeoDriverBytesTest {
         geoConfig.setFewHeightsOneNsweComplexBlockEnabled(true);
         geoConfig.setNoHolesMultilayerBlockEnabled(true);
         geoConfig.setIndexedMultilayerBlockEnabled(true);
-        geoConfig.setIndexedMultilayer32BlockEnabled(true);
+        geoConfig.setIndexed32MultilayerBlockEnabled(true);
 
         GeoDriverBytes driver = new GeoDriverBytes(geoConfig);
 
@@ -87,7 +87,7 @@ public class GeoDriverBytesTest {
 //        geoConfig.setFewHeightsOneNsweComplexBlockEnabled(true);
 //        geoConfig.setNoHolesMultilayerBlockEnabled(true);
 //        geoConfig.setIndexedMultilayerBlockEnabled(true);
-//        geoConfig.setIndexedMultilayer32BlockEnabled(true);
+//        geoConfig.setIndexed32MultilayerBlockEnabled(true);
 
         GeoDriverBytes driver = new GeoDriverBytes(geoConfig);
 
@@ -109,7 +109,7 @@ public class GeoDriverBytesTest {
 //        geoConfig.setFewHeightsOneNsweComplexBlockEnabled(true);
 //        geoConfig.setNoHolesMultilayerBlockEnabled(true);
 //        geoConfig.setIndexedMultilayerBlockEnabled(true);
-//        geoConfig.setIndexedMultilayer32BlockEnabled(true);
+//        geoConfig.setIndexed32MultilayerBlockEnabled(true);
 
         GeoDriverBytes driver = new GeoDriverBytes(geoConfig);
 
@@ -143,7 +143,7 @@ public class GeoDriverBytesTest {
         geoConfig.setFewHeightsOneNsweComplexBlockEnabled(true);
         geoConfig.setNoHolesMultilayerBlockEnabled(true);
         geoConfig.setIndexedMultilayerBlockEnabled(true);
-        geoConfig.setIndexedMultilayer32BlockEnabled(true);
+        geoConfig.setIndexed32MultilayerBlockEnabled(true);
 
         GeoDriver oldDriver = new GeoDriver(new GeoConfig());
         oldDriver.loadRegion(resource.toPath(), regionX, regionY);
@@ -185,7 +185,7 @@ public class GeoDriverBytesTest {
         geoConfig.setFewHeightsOneNsweComplexBlockEnabled(true);
         geoConfig.setNoHolesMultilayerBlockEnabled(true);
         geoConfig.setIndexedMultilayerBlockEnabled(true);
-        geoConfig.setIndexedMultilayer32BlockEnabled(true);
+        geoConfig.setIndexed32MultilayerBlockEnabled(true);
 
         GeoDriver oldDriver = new GeoDriver(geoConfig);
         oldDriver.loadRegion(resource.toPath(), regionX, regionY);

@@ -24,22 +24,22 @@ package ru.mosinnik.l2eve.geodriver.bytes;
 
 
 import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
-import ru.mosinnik.l2eve.geodriver.blocks.MultilayerIndexed32Block;
+import ru.mosinnik.l2eve.geodriver.blocks.Indexed32MultilayerBlock;
 
 import java.nio.ByteBuffer;
 
-public class MultilayerIndexed32BlockBytes {
+public class Indexed32MultilayerBlockBytes {
 
     public static final int INDEX_SIZE = 2 * IBlock.BLOCK_CELLS;
 
     private static final int INDEX_OFFSET = 0;
     private static final int INNER_DATA_OFFSET = INDEX_SIZE;
 
-    public static int calcBytesCount(MultilayerIndexed32Block block) {
+    public static int calcBytesCount(Indexed32MultilayerBlock block) {
         return INDEX_SIZE + 2 * block.getData().length;
     }
 
-    public static void appendBytes(MultilayerIndexed32Block block, ByteBuffer data) {
+    public static void appendBytes(Indexed32MultilayerBlock block, ByteBuffer data) {
         for (short index : block.getIndex()) {
             data.putShort(index);
         }
@@ -48,7 +48,7 @@ public class MultilayerIndexed32BlockBytes {
         }
     }
 
-    public static byte[] toBytes(MultilayerIndexed32Block block) {
+    public static byte[] toBytes(Indexed32MultilayerBlock block) {
         ByteBuffer buffer = ByteBuffer.allocate(calcBytesCount(block));
         appendBytes(block, buffer);
         return buffer.array();

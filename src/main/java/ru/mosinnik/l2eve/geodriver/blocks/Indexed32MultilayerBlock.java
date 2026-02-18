@@ -53,7 +53,7 @@ import static ru.mosinnik.l2eve.geodriver.util.OrderType.detectOrder;
  * <p>
  * На всем объеме геодаты экономия ~33Мб + ускорение на работу с данными х1.5
  */
-public class MultilayerIndexed32Block implements IBlock {
+public class Indexed32MultilayerBlock implements IBlock {
     public final short[] data;
     public final short[] index;
 
@@ -63,7 +63,7 @@ public class MultilayerIndexed32Block implements IBlock {
      *
      * @param bb the buffer
      */
-    public MultilayerIndexed32Block(ByteBuffer bb) {
+    public Indexed32MultilayerBlock(ByteBuffer bb) {
         int start = bb.position();
 
         index = new short[IBlock.BLOCK_CELLS];
@@ -108,7 +108,7 @@ public class MultilayerIndexed32Block implements IBlock {
         }
     }
 
-    public MultilayerIndexed32Block(byte[] data) {
+    public Indexed32MultilayerBlock(byte[] data) {
         this(ByteBuffer.wrap(data));
     }
 

@@ -24,8 +24,6 @@ package ru.mosinnik.l2eve.geodriver.driver;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openjdk.jol.info.GraphLayout;
-import ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants;
 import ru.mosinnik.l2eve.geodriver.util.Cmp;
 
 import java.io.File;
@@ -56,7 +54,7 @@ public class GeoDriverBytesMmapTest {
         geoConfig.setFewHeightsOneNsweComplexBlockEnabled(true);
         geoConfig.setNoHolesMultilayerBlockEnabled(true);
         geoConfig.setIndexedMultilayerBlockEnabled(true);
-        geoConfig.setIndexedMultilayer32BlockEnabled(true);
+        geoConfig.setIndexed32MultilayerBlockEnabled(true);
 
         GeoDriver oldDriver = new GeoDriver();
         oldDriver.loadRegion(resource.toPath(), regionX, regionY);

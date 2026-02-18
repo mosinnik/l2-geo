@@ -24,29 +24,29 @@ package ru.mosinnik.l2eve.geodriver.bytes;
 
 
 import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
-import ru.mosinnik.l2eve.geodriver.blocks.MultilayerIndexedBlock;
+import ru.mosinnik.l2eve.geodriver.blocks.IndexedMultilayerBlock;
 
 import java.nio.ByteBuffer;
 
-public class MultilayerIndexedBlockBytes {
+public class IndexedMultilayerBlockBytes {
 
     public static final int INDEX_SIZE = 2 * IBlock.BLOCK_CELLS;
 
     private static final int INDEX_OFFSET = 0;
     private static final int INNER_DATA_OFFSET = INDEX_SIZE;
 
-    public static int calcBytesCount(MultilayerIndexedBlock block) {
+    public static int calcBytesCount(IndexedMultilayerBlock block) {
         return INDEX_SIZE + block.getData().length;
     }
 
-    public static void appendBytes(MultilayerIndexedBlock block, ByteBuffer data) {
+    public static void appendBytes(IndexedMultilayerBlock block, ByteBuffer data) {
         for (short index : block.getIndex()) {
             data.putShort(index);
         }
         data.put(block.getData());
     }
 
-    public static byte[] toBytes(MultilayerIndexedBlock block) {
+    public static byte[] toBytes(IndexedMultilayerBlock block) {
         ByteBuffer buffer = ByteBuffer.allocate(calcBytesCount(block));
         appendBytes(block, buffer);
         return buffer.array();
@@ -73,7 +73,7 @@ public class MultilayerIndexedBlockBytes {
 
     private static short extractLayerData(int dataOffset, int blockDataOffset, ByteBuffer data) {
         return (short) ((data.get(blockDataOffset + INNER_DATA_OFFSET + dataOffset) & 0xFF) |
-            (data.get(blockDataOffset + INNER_DATA_OFFSET + dataOffset + 1) << 8));
+                (data.get(blockDataOffset + INNER_DATA_OFFSET + dataOffset + 1) << 8));
     }
 
     private static int extractLayerHeight(short layer) {

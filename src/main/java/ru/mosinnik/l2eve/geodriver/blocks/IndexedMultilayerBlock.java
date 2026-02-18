@@ -27,7 +27,7 @@ import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 
 import java.nio.ByteBuffer;
 
-public class MultilayerIndexedBlock implements IBlock {
+public class IndexedMultilayerBlock implements IBlock {
     public final byte[] data;
     public final short[] index;
 
@@ -36,7 +36,7 @@ public class MultilayerIndexedBlock implements IBlock {
      *
      * @param bb the buffer
      */
-    public MultilayerIndexedBlock(ByteBuffer bb) {
+    public IndexedMultilayerBlock(ByteBuffer bb) {
         int start = bb.position();
 
         index = new short[IBlock.BLOCK_CELLS];
@@ -54,7 +54,7 @@ public class MultilayerIndexedBlock implements IBlock {
         bb.get(data);
     }
 
-    public MultilayerIndexedBlock(byte[] data) {
+    public IndexedMultilayerBlock(byte[] data) {
         this(ByteBuffer.wrap(data));
     }
 

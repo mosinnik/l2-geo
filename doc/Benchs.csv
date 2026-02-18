@@ -6,7 +6,7 @@ GeoDriverBenchParams.getNearestZ	BASE_HEIGHT_COMPLEX_BLOCK	thrpt	10	6487,699	±	
 GeoDriverBenchParams.getNearestZ	BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK	thrpt	10	6180,155	±	61,181	ops/s
 GeoDriverBenchParams.getNearestZ	FEW_HEIGHTS_COMPLEX_BLOCK	thrpt	10	7978,876	±	152,515	ops/s
 GeoDriverBenchParams.getNearestZ	NO_HOLES_MULTILAYER_BLOCK	thrpt	10	4919,029	±	222,352	ops/s
-GeoDriverBenchParams.getNearestZ	INDEXED_MULTILAYER_32_BLOCK	thrpt	10	3731,003	±	234,877	ops/s
+GeoDriverBenchParams.getNearestZ	INDEXED_32_MULTILAYER_BLOCK	thrpt	10	3731,003	±	234,877	ops/s
 GeoDriverBenchParams.getNearestZBytes	FLAT_BLOCK	thrpt	10	19490,488	±	503,181	ops/s
 GeoDriverBenchParams.getNearestZBytes	COMPLEX_BLOCK	thrpt	10	9450,317	±	109,212	ops/s
 GeoDriverBenchParams.getNearestZBytes	ONE_HEIGHT_COMPLEX_BLOCK	thrpt	10	16397,516	±	203,748	ops/s
@@ -14,7 +14,7 @@ GeoDriverBenchParams.getNearestZBytes	BASE_HEIGHT_COMPLEX_BLOCK	thrpt	10	8769,31
 GeoDriverBenchParams.getNearestZBytes	BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK	thrpt	10	8616,289	±	228,083	ops/s
 GeoDriverBenchParams.getNearestZBytes	FEW_HEIGHTS_COMPLEX_BLOCK	thrpt	10	8903,161	±	84,537	ops/s
 GeoDriverBenchParams.getNearestZBytes	NO_HOLES_MULTILAYER_BLOCK	thrpt	10	4837,650	±	31,054	ops/s
-GeoDriverBenchParams.getNearestZBytes	INDEXED_MULTILAYER_32_BLOCK	thrpt	10	4284,759	±	88,654	ops/s
+GeoDriverBenchParams.getNearestZBytes	INDEXED_32_MULTILAYER_BLOCK	thrpt	10	4284,759	±	88,654	ops/s
 GeoDriverBenchParams.getNearestZBytesMmap	FLAT_BLOCK	thrpt	10	19118,818	±	434,136	ops/s
 GeoDriverBenchParams.getNearestZBytesMmap	COMPLEX_BLOCK	thrpt	10	9438,127	±	110,221	ops/s
 GeoDriverBenchParams.getNearestZBytesMmap	ONE_HEIGHT_COMPLEX_BLOCK	thrpt	10	16573,810	±	240,113	ops/s
@@ -22,7 +22,7 @@ GeoDriverBenchParams.getNearestZBytesMmap	BASE_HEIGHT_COMPLEX_BLOCK	thrpt	10	507
 GeoDriverBenchParams.getNearestZBytesMmap	BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK	thrpt	10	8486,896	±	177,395	ops/s
 GeoDriverBenchParams.getNearestZBytesMmap	FEW_HEIGHTS_COMPLEX_BLOCK	thrpt	10	8879,706	±	116,491	ops/s
 GeoDriverBenchParams.getNearestZBytesMmap	NO_HOLES_MULTILAYER_BLOCK	thrpt	10	4905,197	±	85,789	ops/s
-GeoDriverBenchParams.getNearestZBytesMmap	INDEXED_MULTILAYER_32_BLOCK	thrpt	10	4355,722	±	50,430	ops/s
+GeoDriverBenchParams.getNearestZBytesMmap	INDEXED_32_MULTILAYER_BLOCK	thrpt	10	4355,722	±	50,430	ops/s
 GeoDriverBenchParams.getNearestZ_old	FLAT_BLOCK	thrpt	10	11574,045	±	384,069	ops/s
 GeoDriverBenchParams.getNearestZ_old	COMPLEX_BLOCK	thrpt	10	5705,538	±	46,835	ops/s
 GeoDriverBenchParams.getNearestZ_old	ONE_HEIGHT_COMPLEX_BLOCK	thrpt	10	12203,627	±	141,049	ops/s
@@ -30,7 +30,7 @@ GeoDriverBenchParams.getNearestZ_old	BASE_HEIGHT_COMPLEX_BLOCK	thrpt	10	6170,625
 GeoDriverBenchParams.getNearestZ_old	BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK	thrpt	10	5617,367	±	84,983	ops/s
 GeoDriverBenchParams.getNearestZ_old	FEW_HEIGHTS_COMPLEX_BLOCK	thrpt	10	8133,754	±	104,259	ops/s
 GeoDriverBenchParams.getNearestZ_old	NO_HOLES_MULTILAYER_BLOCK	thrpt	10	1168,057	±	3,582	ops/s
-GeoDriverBenchParams.getNearestZ_old	INDEXED_MULTILAYER_32_BLOCK	thrpt	10	1091,197	±	6,989	ops/s
+GeoDriverBenchParams.getNearestZ_old	INDEXED_32_MULTILAYER_BLOCK	thrpt	10	1091,197	±	6,989	ops/s
 GeoDriverBenchParams.getNextHigherZ	FLAT_BLOCK	thrpt	10	14335,546	±	102,125	ops/s
 GeoDriverBenchParams.getNextHigherZ	COMPLEX_BLOCK	thrpt	10	4803,999	±	62,202	ops/s
 GeoDriverBenchParams.getNextHigherZ	ONE_HEIGHT_COMPLEX_BLOCK	thrpt	10	16752,845	±	157,056	ops/s
@@ -38,7 +38,7 @@ GeoDriverBenchParams.getNextHigherZ	BASE_HEIGHT_COMPLEX_BLOCK	thrpt	10	6213,186	
 GeoDriverBenchParams.getNextHigherZ	BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK	thrpt	10	5981,770	±	104,627	ops/s
 GeoDriverBenchParams.getNextHigherZ	FEW_HEIGHTS_COMPLEX_BLOCK	thrpt	10	7632,891	±	152,219	ops/s
 GeoDriverBenchParams.getNextHigherZ	NO_HOLES_MULTILAYER_BLOCK	thrpt	10	5787,762	±	201,042	ops/s
-GeoDriverBenchParams.getNextHigherZ	INDEXED_MULTILAYER_32_BLOCK	thrpt	10	3900,456	±	164,009	ops/s
+GeoDriverBenchParams.getNextHigherZ	INDEXED_32_MULTILAYER_BLOCK	thrpt	10	3900,456	±	164,009	ops/s
 GeoDriverBenchParams.getNextHigherZBytes	FLAT_BLOCK	thrpt	10	17913,668	±	251,375	ops/s
 GeoDriverBenchParams.getNextHigherZBytes	COMPLEX_BLOCK	thrpt	10	8942,796	±	111,258	ops/s
 GeoDriverBenchParams.getNextHigherZBytes	ONE_HEIGHT_COMPLEX_BLOCK	thrpt	10	15348,526	±	134,219	ops/s
@@ -46,7 +46,7 @@ GeoDriverBenchParams.getNextHigherZBytes	BASE_HEIGHT_COMPLEX_BLOCK	thrpt	10	8487
 GeoDriverBenchParams.getNextHigherZBytes	BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK	thrpt	10	8413,107	±	155,103	ops/s
 GeoDriverBenchParams.getNextHigherZBytes	FEW_HEIGHTS_COMPLEX_BLOCK	thrpt	10	8564,997	±	78,697	ops/s
 GeoDriverBenchParams.getNextHigherZBytes	NO_HOLES_MULTILAYER_BLOCK	thrpt	10	5302,158	±	38,734	ops/s
-GeoDriverBenchParams.getNextHigherZBytes	INDEXED_MULTILAYER_32_BLOCK	thrpt	10	4496,419	±	66,366	ops/s
+GeoDriverBenchParams.getNextHigherZBytes	INDEXED_32_MULTILAYER_BLOCK	thrpt	10	4496,419	±	66,366	ops/s
 GeoDriverBenchParams.getNextHigherZBytesMmap	FLAT_BLOCK	thrpt	10	18161,331	±	531,075	ops/s
 GeoDriverBenchParams.getNextHigherZBytesMmap	COMPLEX_BLOCK	thrpt	10	9060,686	±	169,927	ops/s
 GeoDriverBenchParams.getNextHigherZBytesMmap	ONE_HEIGHT_COMPLEX_BLOCK	thrpt	10	15372,195	±	253,414	ops/s
@@ -54,7 +54,7 @@ GeoDriverBenchParams.getNextHigherZBytesMmap	BASE_HEIGHT_COMPLEX_BLOCK	thrpt	10	
 GeoDriverBenchParams.getNextHigherZBytesMmap	BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK	thrpt	10	8257,270	±	116,701	ops/s
 GeoDriverBenchParams.getNextHigherZBytesMmap	FEW_HEIGHTS_COMPLEX_BLOCK	thrpt	10	8441,139	±	96,674	ops/s
 GeoDriverBenchParams.getNextHigherZBytesMmap	NO_HOLES_MULTILAYER_BLOCK	thrpt	10	5432,236	±	25,843	ops/s
-GeoDriverBenchParams.getNextHigherZBytesMmap	INDEXED_MULTILAYER_32_BLOCK	thrpt	10	4584,894	±	128,138	ops/s
+GeoDriverBenchParams.getNextHigherZBytesMmap	INDEXED_32_MULTILAYER_BLOCK	thrpt	10	4584,894	±	128,138	ops/s
 GeoDriverBenchParams.getNextHigherZ_old	FLAT_BLOCK	thrpt	10	10942,243	±	159,246	ops/s
 GeoDriverBenchParams.getNextHigherZ_old	COMPLEX_BLOCK	thrpt	10	5306,444	±	68,967	ops/s
 GeoDriverBenchParams.getNextHigherZ_old	ONE_HEIGHT_COMPLEX_BLOCK	thrpt	10	11610,315	±	117,610	ops/s
@@ -62,7 +62,7 @@ GeoDriverBenchParams.getNextHigherZ_old	BASE_HEIGHT_COMPLEX_BLOCK	thrpt	10	5704,
 GeoDriverBenchParams.getNextHigherZ_old	BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK	thrpt	10	5261,136	±	75,130	ops/s
 GeoDriverBenchParams.getNextHigherZ_old	FEW_HEIGHTS_COMPLEX_BLOCK	thrpt	10	7643,810	±	163,911	ops/s
 GeoDriverBenchParams.getNextHigherZ_old	NO_HOLES_MULTILAYER_BLOCK	thrpt	10	1200,489	±	6,297	ops/s
-GeoDriverBenchParams.getNextHigherZ_old	INDEXED_MULTILAYER_32_BLOCK	thrpt	10	1119,640	±	8,424	ops/s
+GeoDriverBenchParams.getNextHigherZ_old	INDEXED_32_MULTILAYER_BLOCK	thrpt	10	1119,640	±	8,424	ops/s
 GeoDriverBenchParams.getNextLowerZ	FLAT_BLOCK	thrpt	10	14392,322	±	373,277	ops/s
 GeoDriverBenchParams.getNextLowerZ	COMPLEX_BLOCK	thrpt	10	4805,426	±	80,564	ops/s
 GeoDriverBenchParams.getNextLowerZ	ONE_HEIGHT_COMPLEX_BLOCK	thrpt	10	17037,611	±	523,222	ops/s
@@ -70,7 +70,7 @@ GeoDriverBenchParams.getNextLowerZ	BASE_HEIGHT_COMPLEX_BLOCK	thrpt	10	6264,311	�
 GeoDriverBenchParams.getNextLowerZ	BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK	thrpt	10	5925,199	±	155,227	ops/s
 GeoDriverBenchParams.getNextLowerZ	FEW_HEIGHTS_COMPLEX_BLOCK	thrpt	10	7763,415	±	138,602	ops/s
 GeoDriverBenchParams.getNextLowerZ	NO_HOLES_MULTILAYER_BLOCK	thrpt	10	5755,385	±	200,448	ops/s
-GeoDriverBenchParams.getNextLowerZ	INDEXED_MULTILAYER_32_BLOCK	thrpt	10	3866,687	±	144,595	ops/s
+GeoDriverBenchParams.getNextLowerZ	INDEXED_32_MULTILAYER_BLOCK	thrpt	10	3866,687	±	144,595	ops/s
 GeoDriverBenchParams.getNextLowerZBytes	FLAT_BLOCK	thrpt	10	17856,971	±	871,817	ops/s
 GeoDriverBenchParams.getNextLowerZBytes	COMPLEX_BLOCK	thrpt	10	8950,171	±	182,884	ops/s
 GeoDriverBenchParams.getNextLowerZBytes	ONE_HEIGHT_COMPLEX_BLOCK	thrpt	10	15532,336	±	161,657	ops/s
@@ -78,7 +78,7 @@ GeoDriverBenchParams.getNextLowerZBytes	BASE_HEIGHT_COMPLEX_BLOCK	thrpt	10	8615,
 GeoDriverBenchParams.getNextLowerZBytes	BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK	thrpt	10	8423,372	±	336,075	ops/s
 GeoDriverBenchParams.getNextLowerZBytes	FEW_HEIGHTS_COMPLEX_BLOCK	thrpt	10	8545,798	±	167,443	ops/s
 GeoDriverBenchParams.getNextLowerZBytes	NO_HOLES_MULTILAYER_BLOCK	thrpt	10	5364,868	±	73,312	ops/s
-GeoDriverBenchParams.getNextLowerZBytes	INDEXED_MULTILAYER_32_BLOCK	thrpt	10	4641,014	±	87,357	ops/s
+GeoDriverBenchParams.getNextLowerZBytes	INDEXED_32_MULTILAYER_BLOCK	thrpt	10	4641,014	±	87,357	ops/s
 GeoDriverBenchParams.getNextLowerZBytesMmap	FLAT_BLOCK	thrpt	10	18060,587	±	1010,484	ops/s
 GeoDriverBenchParams.getNextLowerZBytesMmap	COMPLEX_BLOCK	thrpt	10	9067,653	±	249,919	ops/s
 GeoDriverBenchParams.getNextLowerZBytesMmap	ONE_HEIGHT_COMPLEX_BLOCK	thrpt	10	15278,337	±	483,314	ops/s
@@ -86,7 +86,7 @@ GeoDriverBenchParams.getNextLowerZBytesMmap	BASE_HEIGHT_COMPLEX_BLOCK	thrpt	10	8
 GeoDriverBenchParams.getNextLowerZBytesMmap	BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK	thrpt	10	8303,892	±	210,344	ops/s
 GeoDriverBenchParams.getNextLowerZBytesMmap	FEW_HEIGHTS_COMPLEX_BLOCK	thrpt	10	8432,426	±	250,203	ops/s
 GeoDriverBenchParams.getNextLowerZBytesMmap	NO_HOLES_MULTILAYER_BLOCK	thrpt	10	5535,919	±	63,229	ops/s
-GeoDriverBenchParams.getNextLowerZBytesMmap	INDEXED_MULTILAYER_32_BLOCK	thrpt	10	4427,044	±	72,679	ops/s
+GeoDriverBenchParams.getNextLowerZBytesMmap	INDEXED_32_MULTILAYER_BLOCK	thrpt	10	4427,044	±	72,679	ops/s
 GeoDriverBenchParams.getNextLowerZ_old	FLAT_BLOCK	thrpt	10	11052,653	±	426,128	ops/s
 GeoDriverBenchParams.getNextLowerZ_old	COMPLEX_BLOCK	thrpt	10	5306,778	±	156,037	ops/s
 GeoDriverBenchParams.getNextLowerZ_old	ONE_HEIGHT_COMPLEX_BLOCK	thrpt	10	11791,156	±	124,072	ops/s
@@ -94,4 +94,4 @@ GeoDriverBenchParams.getNextLowerZ_old	BASE_HEIGHT_COMPLEX_BLOCK	thrpt	10	5709,0
 GeoDriverBenchParams.getNextLowerZ_old	BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK	thrpt	10	5240,985	±	173,544	ops/s
 GeoDriverBenchParams.getNextLowerZ_old	FEW_HEIGHTS_COMPLEX_BLOCK	thrpt	10	7584,100	±	138,638	ops/s
 GeoDriverBenchParams.getNextLowerZ_old	NO_HOLES_MULTILAYER_BLOCK	thrpt	10	1188,380	±	10,976	ops/s
-GeoDriverBenchParams.getNextLowerZ_old	INDEXED_MULTILAYER_32_BLOCK	thrpt	10	1095,584	±	12,967	ops/s
+GeoDriverBenchParams.getNextLowerZ_old	INDEXED_32_MULTILAYER_BLOCK	thrpt	10	1095,584	±	12,967	ops/s

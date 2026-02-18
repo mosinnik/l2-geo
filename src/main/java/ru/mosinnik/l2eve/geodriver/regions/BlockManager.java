@@ -42,29 +42,29 @@ public class BlockManager {
     public static final Map<IBlock, BlockStat> stats = new ConcurrentHashMap<>();
 
     public static final List<FlatBlock> allFlatBlocks = new ArrayList<>();
+    public static final List<ComplexBlock> allComplexBlocks = new ArrayList<>();
+    public static final List<MultilayerBlock> allMultilayerBlocks = new ArrayList<>();
     public static final List<OneHeightComplexBlock> allOneHeightComplexBlocks = new ArrayList<>();
     public static final List<FewHeightsComplexBlock> allFewHeightComplexBlocks = new ArrayList<>();
     public static final List<FewHeightsOneNsweComplexBlock> allFewHeightOneNsweComplexBlocks = new ArrayList<>();
     public static final List<BaseHeightComplexBlock> allBaseHeightComplexBlocks = new ArrayList<>();
     public static final List<BaseHeightOneNsweComplexBlock> allBaseHeightOneNsweComplexBlocks = new ArrayList<>();
-    public static final List<ComplexBlock> allComplexBlocks = new ArrayList<>();
-    public static final List<MultilayerBlock> allMultilayerBlocks = new ArrayList<>();
-    public static final List<MultilayerIndexedBlock> allMultilayerIndexedBlocks = new ArrayList<>();
     public static final List<NoHolesMultilayerBlock> allNoHolesMultilayerBlocks = new ArrayList<>();
-    public static final List<MultilayerIndexed32Block> allMultilayerIndexed32Blocks = new ArrayList<>();
+    public static final List<IndexedMultilayerBlock> allIndexedMultilayerBlocks = new ArrayList<>();
+    public static final List<Indexed32MultilayerBlock> allIndexed32MultilayerBlocks = new ArrayList<>();
 
     public static final List<List<? extends IBlock>> allBlocksLists = List.of(
             allFlatBlocks,
+            allComplexBlocks,
+            allMultilayerBlocks,
             allOneHeightComplexBlocks,
             allFewHeightComplexBlocks,
             allFewHeightOneNsweComplexBlocks,
             allBaseHeightComplexBlocks,
             allBaseHeightOneNsweComplexBlocks,
-            allComplexBlocks,
-            allMultilayerBlocks,
             allNoHolesMultilayerBlocks,
-            allMultilayerIndexedBlocks,
-            allMultilayerIndexed32Blocks
+            allIndexedMultilayerBlocks,
+            allIndexed32MultilayerBlocks
     );
 
 
@@ -78,7 +78,7 @@ public class BlockManager {
     private final boolean baseHeightOneNsweComplexBlockEnabled;
     private final boolean noHolesMultilayerBlockEnabled;
     private final boolean indexedMultilayerBlockEnabled;
-    private final boolean indexedMultilayer32BlockEnabled;
+    private final boolean indexed32MultilayerBlockEnabled;
 
 
     public BlockManager(GeoConfig geoConfig) {
@@ -92,7 +92,7 @@ public class BlockManager {
         this.baseHeightOneNsweComplexBlockEnabled = geoConfig.isBaseHeightOneNsweComplexBlockEnabled();
         this.noHolesMultilayerBlockEnabled = geoConfig.isNoHolesMultilayerBlockEnabled();
         this.indexedMultilayerBlockEnabled = geoConfig.isIndexedMultilayerBlockEnabled();
-        this.indexedMultilayer32BlockEnabled = geoConfig.isIndexedMultilayer32BlockEnabled();
+        this.indexed32MultilayerBlockEnabled = geoConfig.isIndexed32MultilayerBlockEnabled();
     }
 
 
@@ -181,12 +181,12 @@ public class BlockManager {
         if (blockStat.layers.size() == 1 && noHolesMultilayerBlockEnabled) {
             result = new NoHolesMultilayerBlock(data, blockStat);
             saveBlockForMemoryStat(allNoHolesMultilayerBlocks, (NoHolesMultilayerBlock) result);
-        } else if (blockStat.layers.stream().max(Byte::compareTo).orElseThrow() < 32 && indexedMultilayer32BlockEnabled) {
-            result = new MultilayerIndexed32Block(data);
-            saveBlockForMemoryStat(allMultilayerIndexed32Blocks, (MultilayerIndexed32Block) result);
+        } else if (blockStat.layers.stream().max(Byte::compareTo).orElseThrow() < 32 && indexed32MultilayerBlockEnabled) {
+            result = new Indexed32MultilayerBlock(data);
+            saveBlockForMemoryStat(allIndexed32MultilayerBlocks, (Indexed32MultilayerBlock) result);
         } else if (indexedMultilayerBlockEnabled) {
-            result = new MultilayerIndexedBlock(data);
-            saveBlockForMemoryStat(allMultilayerIndexedBlocks, (MultilayerIndexedBlock) result);
+            result = new IndexedMultilayerBlock(data);
+            saveBlockForMemoryStat(allIndexedMultilayerBlocks, (IndexedMultilayerBlock) result);
         } else {
             result = new MultilayerBlock(data);
             saveBlockForMemoryStat(allMultilayerBlocks, (MultilayerBlock) result);

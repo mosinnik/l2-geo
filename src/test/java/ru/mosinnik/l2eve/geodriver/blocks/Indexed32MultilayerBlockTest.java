@@ -36,7 +36,7 @@ import java.util.List;
 
 import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.TST_BLOCK_RESOURCE_BIGGEST;
 
-public class MultilayerIndexed32BlockTest {
+public class Indexed32MultilayerBlockTest {
 
     @Test
     public void compare() throws IOException {
@@ -55,7 +55,7 @@ public class MultilayerIndexed32BlockTest {
 
         for (BlockStat blockStat : blockStats) {
             MultilayerBlock block1 = (MultilayerBlock) blockStat.block;
-            MultilayerIndexed32Block block2 = new MultilayerIndexed32Block(block1.data);
+            Indexed32MultilayerBlock block2 = new Indexed32MultilayerBlock(block1.data);
 
             int minHeight = block1.getMinHeight();
             int maxHeight = block1.getMaxHeight();
