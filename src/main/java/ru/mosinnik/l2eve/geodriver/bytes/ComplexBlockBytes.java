@@ -38,13 +38,8 @@ public final class ComplexBlockBytes {
     }
 
     public static void appendBytes(ComplexBlock block, ByteBuffer data) {
-        for (short height : block.getData()) {
-            int position = data.position();
-            data.putShort(height);
-            short s2 = data.getShort(position);
-            if (s2 != height) {
-                throw new RuntimeException("Wrong block height");
-            }
+        for (short cellData : block.getData()) {
+            data.putShort(cellData);
         }
     }
 
