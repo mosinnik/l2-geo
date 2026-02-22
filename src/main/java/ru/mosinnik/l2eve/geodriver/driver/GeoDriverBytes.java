@@ -193,7 +193,7 @@ public final class GeoDriverBytes implements IGeoDriver {
                 } else {
                     int blockDataOffset = data.position();
                     blockDataOffsets[blockIndex] = blockDataOffset;
-                    data.put(toBytes(block));
+                    appendBytes(block, data);
                 }
 
                 blockIndex++;
@@ -347,6 +347,35 @@ public final class GeoDriverBytes implements IGeoDriver {
         }
 
         throw new RuntimeException("Unknown block class: " + blockClass.getName());
+    }
+
+    private static void appendBytes(IBlock block, ByteBuffer data) {
+        Class<? extends IBlock> blockClass = block.getClass();
+        if (blockClass.equals(FlatBlock.class)) {
+            FlatBlockFromOffsetBytes.appendBytes((FlatBlock) block, data);
+        } else if (blockClass.equals(ComplexBlock.class)) {
+            ComplexBlockBytes.appendBytes((ComplexBlock) block, data);
+        } else if (blockClass.equals(MultilayerBlock.class)) {
+            MultilayerBlockBytes.appendBytes((MultilayerBlock) block, data);
+        } else if (blockClass.equals(OneHeightComplexBlock.class)) {
+            OneHeightComplexBlockBytes.appendBytes((OneHeightComplexBlock) block, data);
+        } else if (blockClass.equals(BaseHeightComplexBlock.class)) {
+            BaseHeightComplexBlockBytes.appendBytes((BaseHeightComplexBlock) block, data);
+        } else if (blockClass.equals(BaseHeightOneNsweComplexBlock.class)) {
+            BaseHeightOneNsweComplexBlockBytes.appendBytes((BaseHeightOneNsweComplexBlock) block, data);
+        } else if (blockClass.equals(FewHeightsComplexBlock.class)) {
+            FewHeightsComplexBlockBytes.appendBytes((FewHeightsComplexBlock) block, data);
+        } else if (blockClass.equals(FewHeightsOneNsweComplexBlock.class)) {
+            FewHeightsOneNsweComplexBlockBytes.appendBytes((FewHeightsOneNsweComplexBlock) block, data);
+        } else if (blockClass.equals(NoHolesMultilayerBlock.class)) {
+            NoHolesMultilayerBlockBytes.appendBytes((NoHolesMultilayerBlock) block, data);
+        } else if (blockClass.equals(IndexedMultilayerBlock.class)) {
+            IndexedMultilayerBlockBytes.appendBytes((IndexedMultilayerBlock) block, data);
+        } else if (blockClass.equals(Indexed32MultilayerBlock.class)) {
+            Indexed32MultilayerBlockBytes.appendBytes((Indexed32MultilayerBlock) block, data);
+        } else {
+            throw new RuntimeException("Unknown block class: " + blockClass.getName());
+        }
     }
 
     private static int getBytesCount(IBlock block) {
