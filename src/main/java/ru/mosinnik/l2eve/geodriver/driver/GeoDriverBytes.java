@@ -426,8 +426,6 @@ public final class GeoDriverBytes implements IGeoDriver {
         return true;
     }
 
-    public static Map<Integer, AtomicInteger> blockTypesCount = new HashMap<>();
-
     public int getBlockType(int geoX, int geoY) {
         int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
@@ -439,6 +437,8 @@ public final class GeoDriverBytes implements IGeoDriver {
 
         return blockTypes[regionFirstBlockIndex + blockIndexInRegion];
     }
+
+//    public static Map<Integer, AtomicInteger> blockTypesCount = new HashMap<>();
 
     @Override
     public boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe) {
@@ -457,7 +457,7 @@ public final class GeoDriverBytes implements IGeoDriver {
         int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
 
         byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
-        blockTypesCount.computeIfAbsent((int) blockType, k -> new AtomicInteger()).incrementAndGet();
+//        blockTypesCount.computeIfAbsent((int) blockType, k -> new AtomicInteger()).incrementAndGet();
 
         int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
         switch (blockType) {
