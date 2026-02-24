@@ -23,7 +23,6 @@
 package ru.mosinnik.l2eve.geodriver.blocks;
 
 
-import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 import ru.mosinnik.l2eve.geodriver.util.OrderType;
 
 import java.nio.ByteBuffer;
@@ -53,7 +52,7 @@ import static ru.mosinnik.l2eve.geodriver.util.OrderType.detectOrder;
  * <p>
  * На всем объеме геодаты экономия ~33Мб + ускорение на работу с данными х1.5
  */
-public class Indexed32MultilayerBlock implements IBlock {
+public final class Indexed32MultilayerBlock implements IBlock {
     public final short[] data;
     public final short[] index;
 

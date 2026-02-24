@@ -1,5 +1,7 @@
 package ru.mosinnik.l2eve.geodriver.abstraction;
 
+import ru.mosinnik.l2eve.geodriver.blocks.IBlock;
+
 /**
  * @author FBIagent
  */

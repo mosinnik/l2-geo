@@ -28,6 +28,7 @@ import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
+import ru.mosinnik.l2eve.geodriver.abstraction.IGeoDriver;
 import ru.mosinnik.l2eve.geodriver.driver.*;
 
 import java.io.File;
@@ -45,7 +46,7 @@ import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.*;
 @Threads(1)
 @Fork(1)
 @Warmup(iterations = 5, time = 2)
-@Measurement(iterations = 5, time = 2)
+@Measurement(iterations = 5, time = 10)
 @Timeout(time = 10)
 public class GeoDriverBenchParams {
     private static final int checkPointCount = 10000;
@@ -62,7 +63,7 @@ public class GeoDriverBenchParams {
 
 
     public static void main(String[] args) throws RunnerException {
-        generatePoints();
+//        generatePoints();
 
         new Runner(new OptionsBuilder()
                 .include(GeoDriverBenchParams.class.getSimpleName())
@@ -106,27 +107,28 @@ public class GeoDriverBenchParams {
     @State(Scope.Benchmark)
     public static class MyState {
 
+        IGeoDriver driverOldI;
         GeoDriver driverOld;
         GeoDriver driver;
         GeoDriverBytes driverBytes;
         GeoDriverBytesMmap driverBytesMmap;
         List<Point> checkPoints = new ArrayList<>();
 
-        @Param({
-//                "FLAT_BLOCK",
+//        @Param({
+////                "FLAT_BLOCK",
 //                "COMPLEX_BLOCK",
-////            "MULTILAYER_BLOCK",
-//                "ONE_HEIGHT_COMPLEX_BLOCK",
-//                "BASE_HEIGHT_COMPLEX_BLOCK",
-//                "BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK",
-//                "FEW_HEIGHTS_COMPLEX_BLOCK",
-////            "FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK",
-                "NO_HOLES_MULTILAYER_BLOCK",
-////            "INDEXED_MULTILAYER_BLOCK",
-//                "INDEXED_32_MULTILAYER_BLOCK",
-        })
+        /// ///            "MULTILAYER_BLOCK",
+        /// /                "ONE_HEIGHT_COMPLEX_BLOCK",
+        /// /                "BASE_HEIGHT_COMPLEX_BLOCK",
+        /// /                "BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK",
+        /// /                "FEW_HEIGHTS_COMPLEX_BLOCK",
+        /// ///            "FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK",
+        /// /                "NO_HOLES_MULTILAYER_BLOCK",
+        /// /            "INDEXED_MULTILAYER_BLOCK",
+        /// /                "INDEXED_32_MULTILAYER_BLOCK",
+//        })
         GeoDriverBytesConstants.E blockType;
-        boolean loadFromFile = true;
+        boolean loadFromFile = false;
         boolean saveToFile = false;
 
         @SneakyThrows
@@ -136,6 +138,7 @@ public class GeoDriverBenchParams {
             geoConfigOld.setReuseFlatBlockEnabled(false);
 
             driverOld = new GeoDriver(geoConfigOld);
+            driverOldI = driverOld;
 
             GeoConfig geoConfig = new GeoConfig();
             geoConfig.setOneHeightComplexBlockEnabled(true);
@@ -182,12 +185,16 @@ public class GeoDriverBenchParams {
                 List<String> pointsStrs = Files.readAllLines(dir.resolve(blockType.name() + "_points.txt"));
                 pointsStrs.forEach(pointStr -> {
                     String[] split = pointStr.split(";");
+                    int geoX = Integer.parseInt(split[2]);
+                    int geoY = Integer.parseInt(split[3]);
                     checkPoints.add(new Point(
                             Integer.parseInt(split[0]),
                             Integer.parseInt(split[1]),
-                            Integer.parseInt(split[2]),
-                            Integer.parseInt(split[3]),
-                            Byte.parseByte(split[4])
+                            geoX,
+                            geoY,
+                            Byte.parseByte(split[4]),
+                            driver.getBlock(geoX, geoY),
+                            driver.getBlockType(geoX, geoY)
                     ));
                 });
             } else {
@@ -206,12 +213,13 @@ public class GeoDriverBenchParams {
 
                     if (filteredBlockType == -1 || driver.getBlockType(geoX, geoY) == filteredBlockType) {
                         checkPoints.add(new Point(
-                                        worldX,
-                                        worldY,
-                                        geoX,
-                                        geoY,
-                                        (byte) (1 << r.nextInt(4))
-                                )
+                                worldX,
+                                worldY,
+                                geoX,
+                                geoY,
+                                (byte) (1 << r.nextInt(4)),
+                                driver.getBlock(geoX, geoY),
+                                driver.getBlockType(geoX, geoY))
                         );
                     }
                 }
@@ -230,7 +238,29 @@ public class GeoDriverBenchParams {
         }
     }
 
-    record Point(int x, int y, int geoX, int geoY, byte nswe) {
+    record Point(int x, int y, int geoX, int geoY, byte nswe, ru.mosinnik.l2eve.geodriver.blocks.IBlock block, int blockType) {
+    }
+
+
+    @Benchmark
+    public void getType(Blackhole blackhole, MyState state) {
+        for (Point checkPoint : state.checkPoints) {
+            blackhole.consume(GeoDriverBytes.getType(checkPoint.block));
+        }
+    }
+
+    @Benchmark
+    public void getType2(Blackhole blackhole, MyState state) {
+        for (Point checkPoint : state.checkPoints) {
+            blackhole.consume(GeoDriverBytes.getType2(checkPoint.block));
+        }
+    }
+
+    @Benchmark
+    public void getType3(Blackhole blackhole, MyState state) {
+        for (Point checkPoint : state.checkPoints) {
+            blackhole.consume(GeoDriverBytes.getType3(checkPoint.block));
+        }
     }
 
     //----  geo old driver
@@ -245,6 +275,14 @@ public class GeoDriverBenchParams {
 //    }
 
 //    @Benchmark
+//    public void hasGeoPos_oldI(Blackhole blackhole, MyState state) {
+//        IGeoDriver driver = state.driverOldI;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.hasGeoPos(checkPoint.geoX(), checkPoint.geoY()));
+//        }
+//    }
+
+//    @Benchmark
 //    public void getNearestZ_old(Blackhole blackhole, MyState state) {
 //        GeoDriver driver = state.driverOld;
 //        for (Point checkPoint : state.checkPoints) {
@@ -252,13 +290,13 @@ public class GeoDriverBenchParams {
 //        }
 //    }
 //
-    @Benchmark
-    public void getNextLowerZ_old(Blackhole blackhole, MyState state) {
-        GeoDriver driver = state.driverOld;
-        for (Point checkPoint : state.checkPoints) {
-            blackhole.consume(driver.getNextLowerZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
-        }
-    }
+//    @Benchmark
+//    public void getNextLowerZ_old(Blackhole blackhole, MyState state) {
+//        GeoDriver driver = state.driverOld;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.getNextLowerZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
+//        }
+//    }
 //
 //    @Benchmark
 //    public void getNextHigherZ_old(Blackhole blackhole, MyState state) {
@@ -295,13 +333,13 @@ public class GeoDriverBenchParams {
 //        }
 //    }
 
-    @Benchmark
-    public void getNextLowerZ(Blackhole blackhole, MyState state) {
-        GeoDriver driver = state.driver;
-        for (Point checkPoint : state.checkPoints) {
-            blackhole.consume(driver.getNextLowerZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
-        }
-    }
+//    @Benchmark
+//    public void getNextLowerZ(Blackhole blackhole, MyState state) {
+//        GeoDriver driver = state.driver;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.getNextLowerZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
+//        }
+//    }
 
 //    @Benchmark
 //    public void getNextHigherZ(Blackhole blackhole, MyState state) {

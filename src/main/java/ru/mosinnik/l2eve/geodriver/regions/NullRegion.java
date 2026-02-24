@@ -19,7 +19,7 @@
 package ru.mosinnik.l2eve.geodriver.regions;
 
 
-import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
+import ru.mosinnik.l2eve.geodriver.blocks.IBlock;
 import ru.mosinnik.l2eve.geodriver.abstraction.IRegion;
 
 /**

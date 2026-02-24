@@ -23,11 +23,9 @@
 package ru.mosinnik.l2eve.geodriver.blocks;
 
 
-import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
-
 import java.nio.ByteBuffer;
 
-public class IndexedMultilayerBlock implements IBlock {
+public final class IndexedMultilayerBlock implements IBlock {
     public final byte[] data;
     public final short[] index;
 

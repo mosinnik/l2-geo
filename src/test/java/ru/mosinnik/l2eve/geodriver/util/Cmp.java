@@ -22,7 +22,7 @@
 
 package ru.mosinnik.l2eve.geodriver.util;
 
-import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
+import ru.mosinnik.l2eve.geodriver.blocks.IBlock;
 import ru.mosinnik.l2eve.geodriver.abstraction.IGeoDriver;
 
 import static org.junit.Assert.assertEquals;

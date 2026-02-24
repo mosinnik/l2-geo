@@ -19,8 +19,6 @@
 package ru.mosinnik.l2eve.geodriver.blocks;
 
 
-import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
-
 import java.nio.ByteBuffer;
 
 /**
@@ -28,7 +26,7 @@ import java.nio.ByteBuffer;
  * <p>
  * Not optimzable because of complex getCellDataOffset
  */
-public class MultilayerBlock implements IBlock {
+public final class MultilayerBlock implements IBlock {
     public final byte[] data;
 
     /**

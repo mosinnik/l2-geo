@@ -25,7 +25,7 @@ package ru.mosinnik.l2eve.geodriver.driver;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openjdk.jol.info.GraphLayout;
-import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
+import ru.mosinnik.l2eve.geodriver.blocks.IBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.ComplexBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.FlatBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.MultilayerBlock;

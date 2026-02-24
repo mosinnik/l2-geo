@@ -23,7 +23,6 @@
 package ru.mosinnik.l2eve.geodriver.blocks;
 
 
-import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 import ru.mosinnik.l2eve.geodriver.util.BlockStat;
 
 /**

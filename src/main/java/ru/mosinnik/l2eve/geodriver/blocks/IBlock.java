@@ -20,56 +20,33 @@
  * SOFTWARE.
  */
 
-package ru.mosinnik.l2eve.geodriver.driver;
+package ru.mosinnik.l2eve.geodriver.blocks;
 
-
-import ru.mosinnik.l2eve.geodriver.blocks.IBlock;
-import ru.mosinnik.l2eve.geodriver.abstraction.IRegion;
-
-public interface GeoConstants {
-    // world dimensions: 1048576 * 1048576 = 1_099_511_627_776
-    int WORLD_MIN_X = -655360;
-    int WORLD_MAX_X = 393215;
-    int WORLD_MIN_Y = -589824;
-    int WORLD_MAX_Y = 458751;
+//public sealed interface IBlock permits BaseHeightComplexBlock, BaseHeightOneNsweComplexBlock, ComplexBlock, FewHeightsComplexBlock, FewHeightsOneNsweComplexBlock, FlatBlock, Indexed32MultilayerBlock, IndexedMultilayerBlock, MultilayerBlock, NoHolesMultilayerBlock, OneHeightComplexBlock {
+public interface IBlock {
+    int TYPE_FLAT = 0;
+    int TYPE_COMPLEX = 1;
+    int TYPE_MULTILAYER = 2;
 
     /**
-     * Regions in the world on the x axis
+     * Cells in a block on the x axis
      */
-    int GEO_REGIONS_X = 32;
-
+    int BLOCK_CELLS_X = 8;
     /**
-     * Blocks in the world on the x axis
+     * Cells in a block on the y axis
      */
-    int GEO_BLOCKS_X = GEO_REGIONS_X * IRegion.REGION_BLOCKS_X;
-
+    int BLOCK_CELLS_Y = 8;
     /**
-     * Cells in the world on the x axis
+     * Cells in a block
      */
-    int GEO_CELLS_X = GEO_BLOCKS_X * IBlock.BLOCK_CELLS_X;
+    int BLOCK_CELLS = BLOCK_CELLS_X * BLOCK_CELLS_Y;
 
-    /**
-     * Regions in the world on the y axis
-     */
-    int GEO_REGIONS_Y = 32;
 
-    /**
-     * Blocks in the world on the y axis
-     */
-    int GEO_BLOCKS_Y = GEO_REGIONS_Y * IRegion.REGION_BLOCKS_Y;
+    boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe);
 
-    /**
-     * Cells in the world in the y axis
-     */
-    int GEO_CELLS_Y = GEO_BLOCKS_Y * IBlock.BLOCK_CELLS_Y;
+    int getNearestZ(int geoX, int geoY, int worldZ);
 
-    /**
-     * Region in the world
-     */
-    int GEO_REGIONS = GEO_REGIONS_X * GEO_REGIONS_Y;
+    int getNextLowerZ(int geoX, int geoY, int worldZ);
 
-    /**
-     * Blocks in the world
-     */
-    int GEO_BLOCKS = GEO_REGIONS * IRegion.REGION_BLOCKS;
+    int getNextHigherZ(int geoX, int geoY, int worldZ);
 }

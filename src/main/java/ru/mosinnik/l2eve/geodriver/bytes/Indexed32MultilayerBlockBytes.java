@@ -23,7 +23,7 @@
 package ru.mosinnik.l2eve.geodriver.bytes;
 
 
-import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
+import ru.mosinnik.l2eve.geodriver.blocks.IBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.Indexed32MultilayerBlock;
 
 import java.nio.ByteBuffer;

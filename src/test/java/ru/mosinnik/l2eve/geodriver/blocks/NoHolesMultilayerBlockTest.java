@@ -24,7 +24,6 @@ package ru.mosinnik.l2eve.geodriver.blocks;
 
 import org.junit.Test;
 import ru.mosinnik.l2eve.geodriver.driver.GeoDriverTest;
-import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 import ru.mosinnik.l2eve.geodriver.driver.GeoConfig;
 import ru.mosinnik.l2eve.geodriver.driver.GeoDriver;
 import ru.mosinnik.l2eve.geodriver.regions.BlockManager;

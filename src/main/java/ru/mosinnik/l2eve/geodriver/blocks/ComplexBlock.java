@@ -19,8 +19,6 @@
 package ru.mosinnik.l2eve.geodriver.blocks;
 
 
-import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
-
 import java.nio.ByteBuffer;
 
 /**

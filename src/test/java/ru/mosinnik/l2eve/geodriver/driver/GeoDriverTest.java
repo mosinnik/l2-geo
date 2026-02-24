@@ -24,6 +24,7 @@ package ru.mosinnik.l2eve.geodriver.driver;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openjdk.jol.info.ClassLayout;
 import org.openjdk.jol.info.GraphLayout;
 import ru.mosinnik.l2eve.geodriver.Cell;
 import ru.mosinnik.l2eve.geodriver.regions.BlockManager;
@@ -95,14 +96,16 @@ public class GeoDriverTest {
         GeoConfig geoConfig = new GeoConfig();
         geoConfig.setBlockStatSavingEnabled(true);
 
-//        geoConfig.setOneHeightComplexBlockEnabled(true);
-//        geoConfig.setFewHeightsOneNsweComplexBlockEnabled(true);
-//        geoConfig.setFewHeightsComplexBlockEnabled(true);
-//        geoConfig.setBaseHeightComplexBlockEnabled(true);
-//        geoConfig.setBaseHeightOneNsweComplexBlockEnabled(true);
-//        geoConfig.setNoHolesMultilayerBlockEnabled(true);
-//        geoConfig.setIndexedMultilayerBlockEnabled(true);
-//        geoConfig.setIndexedMultilayer32BlockEnabled(true);
+        geoConfig.setReuseFlatBlockEnabled(true);
+
+        geoConfig.setOneHeightComplexBlockEnabled(true);
+        geoConfig.setFewHeightsOneNsweComplexBlockEnabled(true);
+        geoConfig.setFewHeightsComplexBlockEnabled(true);
+        geoConfig.setBaseHeightComplexBlockEnabled(true);
+        geoConfig.setBaseHeightOneNsweComplexBlockEnabled(true);
+        geoConfig.setNoHolesMultilayerBlockEnabled(true);
+        geoConfig.setIndexedMultilayerBlockEnabled(true);
+        geoConfig.setIndexed32MultilayerBlockEnabled(true);
 
         GeoDriver driver = new GeoDriver(geoConfig);
 
@@ -132,7 +135,60 @@ public class GeoDriverTest {
 
         System.out.println("-------------------------");
 
-        printBlocksLayouts();
+//        printBlocksLayouts();
+
+
+//        GraphLayout allOneHeightComplexBlocksLayout = GraphLayout.parseInstance(BlockManager.allOneHeightComplexBlocks.getFirst());
+//        System.out.println("--- allOneHeightComplexBlocksLayout");
+//        System.out.println(allOneHeightComplexBlocksLayout.toFootprint());
+//        System.out.println("----");
+//        System.out.println(ClassLayout.parseInstance(BlockManager.allOneHeightComplexBlocks.getFirst()).toPrintable());
+
+//        GraphLayout allComplexBlocksLayout = GraphLayout.parseInstance(BlockManager.allComplexBlocks.getFirst());
+//        System.out.println("--- allComplexBlocksLayout");
+//        System.out.println(allComplexBlocksLayout.toFootprint());
+//        System.out.println("----");
+//        System.out.println(ClassLayout.parseInstance(BlockManager.allComplexBlocks.getFirst()).toPrintable());
+//
+//        GraphLayout allBaseHeightOneNsweComplexBlocks = GraphLayout.parseInstance(BlockManager.allBaseHeightOneNsweComplexBlocks.getFirst());
+//        System.out.println("--- allBaseHeightOneNsweComplexBlocks");
+//        System.out.println(allBaseHeightOneNsweComplexBlocks.toFootprint());
+//        System.out.println("----");
+//        System.out.println(ClassLayout.parseInstance(BlockManager.allBaseHeightOneNsweComplexBlocks.getFirst()).toPrintable());
+//
+//        GraphLayout allFewHeightComplexBlocks = GraphLayout.parseInstance(BlockManager.allFewHeightComplexBlocks.getFirst());
+//        System.out.println("--- allFewHeightComplexBlocks");
+//        System.out.println(allFewHeightComplexBlocks.toFootprint());
+//        System.out.println("----");
+//        System.out.println(ClassLayout.parseInstance(BlockManager.allFewHeightComplexBlocks.getFirst()).toPrintable());
+//
+//        GraphLayout allFewHeightOneNsweComplexBlocks = GraphLayout.parseInstance(BlockManager.allFewHeightOneNsweComplexBlocks.getFirst());
+//        System.out.println("--- allFewHeightOneNsweComplexBlocks");
+//        System.out.println(allFewHeightOneNsweComplexBlocks.toFootprint());
+//        System.out.println("----");
+//        System.out.println(ClassLayout.parseInstance(BlockManager.allFewHeightOneNsweComplexBlocks.getFirst()).toPrintable());
+//
+//        GraphLayout allMultilayerBlocks = GraphLayout.parseInstance(BlockManager.allMultilayerBlocks.getFirst());
+//        System.out.println("--- allMultilayerBlocks");
+//        System.out.println(allMultilayerBlocks.toFootprint());
+//        System.out.println("----");
+//        System.out.println(ClassLayout.parseInstance(BlockManager.allMultilayerBlocks.getFirst()).toPrintable());
+
+        GraphLayout allNoHolesMultilayerBlocks = GraphLayout.parseInstance(BlockManager.allNoHolesMultilayerBlocks.getFirst());
+        System.out.println("--- allNoHolesMultilayerBlocks");
+//        System.out.println(allNoHolesMultilayerBlocks.toFootprint());
+//        System.out.println("----");
+        System.out.println(ClassLayout.parseInstance(BlockManager.allNoHolesMultilayerBlocks.getFirst()).toPrintable());
+
+//        GraphLayout allIndexedMultilayerBlocks = GraphLayout.parseInstance(BlockManager.allIndexedMultilayerBlocks.getFirst());
+//        System.out.println("--- allIndexedMultilayerBlocks");
+////        System.out.println(allIndexedMultilayerBlocks.toFootprint());
+////        System.out.println("----");
+//        System.out.println(ClassLayout.parseInstance(BlockManager.allIndexedMultilayerBlocks.getFirst()).toPrintable());
+
+        System.out.println("--- allIndexed32MultilayerBlocks");
+//        System.out.println("----");
+        System.out.println(ClassLayout.parseInstance(BlockManager.allIndexed32MultilayerBlocks.getFirst()).toPrintable());
 
     }
 

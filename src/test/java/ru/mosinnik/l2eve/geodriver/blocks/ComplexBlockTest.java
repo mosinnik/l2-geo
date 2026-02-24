@@ -23,7 +23,6 @@
 package ru.mosinnik.l2eve.geodriver.blocks;
 
 import org.junit.Test;
-import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 
 import java.util.Random;
 

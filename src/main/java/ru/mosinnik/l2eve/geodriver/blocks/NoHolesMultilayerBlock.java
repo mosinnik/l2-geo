@@ -23,7 +23,6 @@
 package ru.mosinnik.l2eve.geodriver.blocks;
 
 
-import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 import ru.mosinnik.l2eve.geodriver.util.BlockStat;
 
 import java.nio.ByteBuffer;
@@ -37,7 +36,7 @@ import java.nio.ByteOrder;
  * цепочки высот, относящейся к ячейке.
  * На всем объеме геодаты экономия ~33Мб + ускорение на работу с данными х2.6
  */
-public class NoHolesMultilayerBlock implements IBlock {
+public final class NoHolesMultilayerBlock implements IBlock {
     public final short[] data;
     public final byte layersCount;
 

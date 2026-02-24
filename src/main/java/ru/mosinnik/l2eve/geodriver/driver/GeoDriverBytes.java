@@ -24,7 +24,6 @@ package ru.mosinnik.l2eve.geodriver.driver;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 import ru.mosinnik.l2eve.geodriver.abstraction.IGeoDriver;
 import ru.mosinnik.l2eve.geodriver.abstraction.IRegion;
 import ru.mosinnik.l2eve.geodriver.blocks.*;
@@ -131,8 +130,8 @@ public final class GeoDriverBytes implements IGeoDriver {
     public void loadFromL2JDir(Path geoDataDir) {
         try (Stream<Path> pathStream = Files.list(geoDataDir)) {
             List<Path> paths = pathStream
-                .filter(path -> path.getFileName().toString().endsWith(".l2j"))
-                .toList();
+                    .filter(path -> path.getFileName().toString().endsWith(".l2j"))
+                    .toList();
             loadFromL2J(paths);
         }
     }
@@ -150,8 +149,8 @@ public final class GeoDriverBytes implements IGeoDriver {
 
             try (RandomAccessFile raf = new RandomAccessFile(path.toFile(), "r")) {
                 Region region = new Region(
-                    raf.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, raf.length()).order(ByteOrder.LITTLE_ENDIAN),
-                    config
+                        raf.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, raf.length()).order(ByteOrder.LITTLE_ENDIAN),
+                        config
                 );
                 regions.add(new RegionCoordinated(region, regionX, regionY));
             }
@@ -235,15 +234,15 @@ public final class GeoDriverBytes implements IGeoDriver {
             int size = typesSizes.get(entry.getKey()).get();
             int blockCount = entry.getValue().get();
             log.info("-- Block type: {} -> {}, in data {} bytes ({})  -- {}",
-                entry.getKey(), blockCount, size, (double) size / blockCount,
-                GeoDriverBytesConstants.blockTypeToName(entry.getKey())
+                    entry.getKey(), blockCount, size, (double) size / blockCount,
+                    blockTypeToName(entry.getKey())
             );
         }
         log.info("Multilayer data sizes count: {}", multilayerSizes.size());
         for (Map.Entry<Integer, AtomicInteger> entry : multilayerSizes.entrySet()) {
             int blockCount = entry.getValue().get();
             log.info("-- Multilayer size: {} -> {}",
-                entry.getKey(), blockCount
+                    entry.getKey(), blockCount
             );
         }
     }
@@ -318,6 +317,50 @@ public final class GeoDriverBytes implements IGeoDriver {
         }
 
         throw new RuntimeException("Unknown block class: " + blockClass.getName());
+    }
+
+    public static byte getType2(IBlock block) {
+        return switch (block) {
+            case FlatBlock _ -> FLAT_BLOCK;
+            case ComplexBlock _ -> COMPLEX_BLOCK;
+            case MultilayerBlock _ -> MULTILAYER_BLOCK;
+            case OneHeightComplexBlock _ -> ONE_HEIGHT_COMPLEX_BLOCK;
+            case BaseHeightComplexBlock _ -> BASE_HEIGHT_COMPLEX_BLOCK;
+            case BaseHeightOneNsweComplexBlock _ -> BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK;
+            case FewHeightsComplexBlock _ -> FEW_HEIGHTS_COMPLEX_BLOCK;
+            case FewHeightsOneNsweComplexBlock _ -> FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK;
+            case NoHolesMultilayerBlock _ -> NO_HOLES_MULTILAYER_BLOCK;
+            case IndexedMultilayerBlock _ -> INDEXED_MULTILAYER_BLOCK;
+            case Indexed32MultilayerBlock _ -> INDEXED_32_MULTILAYER_BLOCK;
+            default -> throw new IllegalStateException("Unexpected value: " + block);
+        };
+    }
+
+    public static byte getType3(IBlock block) {
+        if (Objects.requireNonNull(block) instanceof FlatBlock) {
+            return FLAT_BLOCK;
+        } else if (block instanceof ComplexBlock) {
+            return COMPLEX_BLOCK;
+        } else if (block instanceof MultilayerBlock) {
+            return MULTILAYER_BLOCK;
+        } else if (block instanceof OneHeightComplexBlock) {
+            return ONE_HEIGHT_COMPLEX_BLOCK;
+        } else if (block instanceof BaseHeightComplexBlock) {
+            return BASE_HEIGHT_COMPLEX_BLOCK;
+        } else if (block instanceof BaseHeightOneNsweComplexBlock) {
+            return BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK;
+        } else if (block instanceof FewHeightsComplexBlock) {
+            return FEW_HEIGHTS_COMPLEX_BLOCK;
+        } else if (block instanceof FewHeightsOneNsweComplexBlock) {
+            return FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK;
+        } else if (block instanceof NoHolesMultilayerBlock) {
+            return NO_HOLES_MULTILAYER_BLOCK;
+        } else if (block instanceof IndexedMultilayerBlock) {
+            return INDEXED_MULTILAYER_BLOCK;
+        } else if (block instanceof Indexed32MultilayerBlock) {
+            return INDEXED_32_MULTILAYER_BLOCK;
+        }
+        throw new IllegalArgumentException();
     }
 
     private static byte[] toBytes(IBlock block) {
