@@ -32,9 +32,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static ru.mosinnik.l2eve.geodriver.driver.GeoConstants.GEO_REGIONS_X;
 import static ru.mosinnik.l2eve.geodriver.driver.GeoConstants.GEO_REGIONS_Y;
@@ -92,88 +89,6 @@ public final class GeoDriverBytesMmap implements IGeoDriver {
         FileChannel channel = file.getChannel();
         data = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
         log.info("Read {} bytes from data file: {}", data.capacity(), DATA_FILE_NAME);
-    }
-
-
-    public void printStats() {
-        int regionCount = 0;
-        for (int regionFirstBlockIndex : regionFirstBlockIndexes) {
-            if (regionFirstBlockIndex != NO_INDEX) {
-                regionCount++;
-            }
-        }
-        Map<Byte, AtomicInteger> typesCount = new TreeMap<>();
-        for (byte blockType : blockTypes) {
-            typesCount.computeIfAbsent(blockType, k -> new AtomicInteger()).incrementAndGet();
-        }
-        Map<Byte, AtomicInteger> typesSizes = new TreeMap<>();
-        Map<Integer, AtomicInteger> multilayerSizes = new TreeMap<>();
-        for (int i = 0; i < blockTypes.length; i++) {
-            byte blockType = blockTypes[i];
-            int size = getSize(blockType, blockDataOffsets[i]);
-            typesSizes.computeIfAbsent(blockType, k -> new AtomicInteger()).addAndGet(size);
-            if (blockType == MULTILAYER_BLOCK) {
-                multilayerSizes.computeIfAbsent(size, k -> new AtomicInteger()).incrementAndGet();
-            }
-        }
-
-        log.info("Regions data size: {} (ints), with offsets: {}", regionFirstBlockIndexes.length, regionCount);
-        log.info("Data size: {} (bytes)", data.capacity());
-        log.info("Blocks offsets: {} (ints)", blockDataOffsets.length);
-        log.info("Blocks count: {} (bytes)", blockTypes.length);
-        for (Map.Entry<Byte, AtomicInteger> entry : typesCount.entrySet()) {
-            int size = typesSizes.get(entry.getKey()).get();
-            int blockCount = entry.getValue().get();
-            log.info("-- Block type: {} -> {}, in data {} bytes ({})",
-                entry.getKey(), blockCount, size, (double) size / blockCount
-            );
-        }
-        log.info("Multilayer data sizes count: {}", multilayerSizes.size());
-        for (Map.Entry<Integer, AtomicInteger> entry : multilayerSizes.entrySet()) {
-            int blockCount = entry.getValue().get();
-            log.info("-- Multilayer size: {} -> {}",
-                entry.getKey(), blockCount
-            );
-        }
-    }
-
-    private int getSize(byte blockType, int blockDataOffset) {
-        switch (blockType) {
-            case FLAT_BLOCK -> {
-                return FlatBlockFromOffsetBytes.getSize(blockDataOffset, data);
-            }
-            case COMPLEX_BLOCK -> {
-                return ComplexBlockBytes.getSize(blockDataOffset, data);
-            }
-            case MULTILAYER_BLOCK -> {
-                return MultilayerBlockBytes.getSize(blockDataOffset, data);
-            }
-            case ONE_HEIGHT_COMPLEX_BLOCK -> {
-                return OneHeightComplexBlockBytes.getSize(blockDataOffset, data);
-            }
-            case BASE_HEIGHT_COMPLEX_BLOCK -> {
-                return BaseHeightComplexBlockBytes.getSize(blockDataOffset, data);
-            }
-            case BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK -> {
-                return BaseHeightOneNsweComplexBlockBytes.getSize(blockDataOffset, data);
-            }
-            case FEW_HEIGHTS_COMPLEX_BLOCK -> {
-                return FewHeightsComplexBlockBytes.getSize(blockDataOffset, data);
-            }
-            case FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK -> {
-                return FewHeightsOneNsweComplexBlockBytes.getSize(blockDataOffset, data);
-            }
-            case NO_HOLES_MULTILAYER_BLOCK -> {
-                return NoHolesMultilayerBlockBytes.getSize(blockDataOffset, data);
-            }
-            case INDEXED_MULTILAYER_BLOCK -> {
-                return IndexedMultilayerBlockBytes.getSize(blockDataOffset, data);
-            }
-            case INDEXED_32_MULTILAYER_BLOCK -> {
-                return Indexed32MultilayerBlockBytes.getSize(blockDataOffset, data);
-            }
-            default -> throw new RuntimeException("Unknown block type: " + blockType);
-        }
     }
 
 
