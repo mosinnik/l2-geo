@@ -81,14 +81,20 @@ public final class FewHeightsOneNsweComplexBlock implements IBlock {
         return nswe;
     }
 
+    /**
+     * more readable heightIndex calculation:
+     * <pre>
+     *   int heightIndex;
+     *   if ((cellOffset & 0x01) == 0) {
+     *       heightIndex = data[cellOffset / 2] & 0x0F;
+     *   } else {
+     *       heightIndex = (data[cellOffset / 2] >> 4) & 0x0F;
+     *   }
+     * </pre>
+     */
     private int getCellHeight(int geoX, int geoY) {
         int cellOffset = ((geoX & 0x07) << 3) + (geoY & 0x07);
-        int heightIndex;
-        if ((cellOffset & 0x01) == 0) {
-            heightIndex = data[cellOffset / 2] & 0x0F;
-        } else {
-            heightIndex = (data[cellOffset / 2] >> 4) & 0x0F;
-        }
+        int heightIndex = (data[cellOffset >> 1] >> ((cellOffset & 0x01) << 2)) & 0x0F;
         return heights[heightIndex];
     }
 
