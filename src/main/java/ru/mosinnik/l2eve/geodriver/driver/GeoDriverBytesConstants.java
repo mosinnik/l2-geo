@@ -39,6 +39,7 @@ public interface GeoDriverBytesConstants {
     byte NO_HOLES_MULTILAYER_BLOCK = 9;
     byte INDEXED_MULTILAYER_BLOCK = 10;
     byte INDEXED_32_MULTILAYER_BLOCK = 11;
+    byte SPLIT_COMPLEX_BLOCK = 12;
 
     String DATA_FILE_NAME = "data.bin";
     String REGION_FIRST_BLOCK_INDEXES_FILE_NAME = "regionFirstBlockIndexes.bin";
@@ -59,6 +60,7 @@ public interface GeoDriverBytesConstants {
             case NO_HOLES_MULTILAYER_BLOCK -> "NO_HOLES_MULTILAYER_BLOCK";
             case INDEXED_MULTILAYER_BLOCK -> "INDEXED_MULTILAYER_BLOCK";
             case INDEXED_32_MULTILAYER_BLOCK -> "INDEXED_32_MULTILAYER_BLOCK";
+            case SPLIT_COMPLEX_BLOCK -> "SPLIT_COMPLEX_BLOCK";
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         };
     }
@@ -77,6 +79,7 @@ public interface GeoDriverBytesConstants {
             case "NO_HOLES_MULTILAYER_BLOCK" -> NO_HOLES_MULTILAYER_BLOCK;
             case "INDEXED_MULTILAYER_BLOCK" -> INDEXED_MULTILAYER_BLOCK;
             case "INDEXED_32_MULTILAYER_BLOCK" -> INDEXED_32_MULTILAYER_BLOCK;
+            case "SPLIT_COMPLEX_BLOCK" -> SPLIT_COMPLEX_BLOCK;
             default -> throw new RuntimeException("Unknown block name: " + blockName);
         };
     }
@@ -94,5 +97,6 @@ public interface GeoDriverBytesConstants {
         NO_HOLES_MULTILAYER_BLOCK,
         INDEXED_MULTILAYER_BLOCK,
         INDEXED_32_MULTILAYER_BLOCK,
+        SPLIT_COMPLEX_BLOCK,
     }
 }

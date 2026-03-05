@@ -160,6 +160,9 @@ public final class GeoDriverBytesMmap implements IGeoDriver {
             case INDEXED_32_MULTILAYER_BLOCK -> {
                 return Indexed32MultilayerBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
             }
+            case SPLIT_COMPLEX_BLOCK -> {
+                return SplitComplexBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
+            }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }
     }
@@ -211,6 +214,9 @@ public final class GeoDriverBytesMmap implements IGeoDriver {
             case INDEXED_32_MULTILAYER_BLOCK -> {
                 return Indexed32MultilayerBlockBytes.getNearestZ(geoX, geoY, worldZ, blockDataOffset, data);
             }
+            case SPLIT_COMPLEX_BLOCK -> {
+                return SplitComplexBlockBytes.getNearestZ(geoX, geoY, worldZ, blockDataOffset, data);
+            }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }
     }
@@ -261,6 +267,9 @@ public final class GeoDriverBytesMmap implements IGeoDriver {
             case INDEXED_32_MULTILAYER_BLOCK -> {
                 return Indexed32MultilayerBlockBytes.getNextLowerZ(geoX, geoY, worldZ, blockDataOffset, data);
             }
+            case SPLIT_COMPLEX_BLOCK -> {
+                return SplitComplexBlockBytes.getNextLowerZ(geoX, geoY, worldZ, blockDataOffset, data);
+            }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }
     }
@@ -310,6 +319,9 @@ public final class GeoDriverBytesMmap implements IGeoDriver {
             }
             case INDEXED_32_MULTILAYER_BLOCK -> {
                 return Indexed32MultilayerBlockBytes.getNextHigherZ(geoX, geoY, worldZ, blockDataOffset, data);
+            }
+            case SPLIT_COMPLEX_BLOCK -> {
+                return SplitComplexBlockBytes.getNextHigherZ(geoX, geoY, worldZ, blockDataOffset, data);
             }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }

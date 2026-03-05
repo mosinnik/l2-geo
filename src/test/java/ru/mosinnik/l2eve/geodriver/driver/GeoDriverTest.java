@@ -32,9 +32,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
 import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.*;
 
 public class GeoDriverTest {
@@ -95,14 +100,15 @@ public class GeoDriverTest {
         GeoConfig geoConfig = new GeoConfig();
         geoConfig.setBlockStatSavingEnabled(true);
 
-//        geoConfig.setOneHeightComplexBlockEnabled(true);
+        geoConfig.setOneHeightComplexBlockEnabled(true);
 //        geoConfig.setFewHeightsOneNsweComplexBlockEnabled(true);
 //        geoConfig.setFewHeightsComplexBlockEnabled(true);
 //        geoConfig.setBaseHeightComplexBlockEnabled(true);
 //        geoConfig.setBaseHeightOneNsweComplexBlockEnabled(true);
-//        geoConfig.setNoHolesMultilayerBlockEnabled(true);
+        geoConfig.setNoHolesMultilayerBlockEnabled(true);
 //        geoConfig.setIndexedMultilayerBlockEnabled(true);
-//        geoConfig.setIndexedMultilayer32BlockEnabled(true);
+        geoConfig.setIndexed32MultilayerBlockEnabled(true);
+//        geoConfig.setSplitComplexBlockEnabled(true);
 
         GeoDriver driver = new GeoDriver(geoConfig);
 
@@ -180,6 +186,10 @@ public class GeoDriverTest {
         GraphLayout allIndexed32MultilayerBlocksLayout = GraphLayout.parseInstance(BlockManager.allIndexed32MultilayerBlocks);
         System.out.println("--- allIndexed32MultilayerBlocks");
         System.out.println(allIndexed32MultilayerBlocksLayout.toFootprint());
+
+        GraphLayout allSplitComplexBlocksLayout = GraphLayout.parseInstance(BlockManager.allSplitComplexBlocks);
+        System.out.println("--- allSplitComplexBlocks");
+        System.out.println(allSplitComplexBlocksLayout.toFootprint());
     }
 
 
@@ -218,4 +228,124 @@ public class GeoDriverTest {
 
 
     }
+
+
+
+    @Ignore("Manual")
+    @Test
+    public void loadAll2() throws IOException {
+
+        GeoConfig geoConfig = new GeoConfig();
+        geoConfig.setBlockStatSavingEnabled(true);
+
+        geoConfig.setOneHeightComplexBlockEnabled(true);
+        geoConfig.setFewHeightsOneNsweComplexBlockEnabled(true);
+        geoConfig.setFewHeightsComplexBlockEnabled(true);
+        geoConfig.setBaseHeightComplexBlockEnabled(true);
+        geoConfig.setBaseHeightOneNsweComplexBlockEnabled(true);
+        geoConfig.setNoHolesMultilayerBlockEnabled(true);
+        geoConfig.setIndexedMultilayerBlockEnabled(true);
+        geoConfig.setIndexed32MultilayerBlockEnabled(true);
+
+        GeoDriver driver = new GeoDriver(geoConfig);
+
+        String geodataDir = GEODATA_DIR;
+        try (Stream<Path> pathStream = Files.list(Path.of(geodataDir))) {
+            List<Path> paths = pathStream
+                    .filter(path -> path.getFileName().toString().endsWith(".l2j"))
+                    .toList();
+            Map<String, Long> blockCountsPrev = null;
+            for (Path path : paths) {
+                String fileName = path.getFileName().toString();
+                String[] split = fileName.split("[_.]");
+                int regionX = Integer.parseInt(split[0]);
+                int regionY = Integer.parseInt(split[1]);
+                try {
+                    driver.loadRegion(path, regionX, regionY);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                System.out.println("--- " + fileName + ":");
+                Map<String, Long> blockCounts = BlockManager.allBlocksLists.stream()
+                        .flatMap(Collection::stream)
+                        .collect(groupingBy(iBlock -> iBlock.getClass().getSimpleName(), counting()));
+                if (blockCountsPrev == null) {
+                    blockCounts.forEach((clazz, count) -> System.out.println(clazz + " -> " + count));
+                } else {
+                    for (Map.Entry<String, Long> entry : blockCounts.entrySet()) {
+                        String clazz = entry.getKey();
+                        Long count = entry.getValue();
+                        Long prevCount = blockCountsPrev.get(clazz);
+                        if (prevCount == null) {
+                            if (count > 0) {
+                                System.out.println(clazz + " -> " + count);
+                            }
+                        } else {
+                            if ((count - prevCount) > 0) {
+                                System.out.println(clazz + " -> " + (count - prevCount));
+                            }
+                        }
+                    }
+                }
+                blockCountsPrev = blockCounts;
+            }
+        }
+
+        GraphLayout graphLayout = GraphLayout.parseInstance(driver);
+
+        System.out.println("footprint = " + graphLayout.toFootprint());
+        System.out.println("totalCount = " + graphLayout.totalCount());
+        System.out.println("totalSize = " + graphLayout.totalSize());
+
+//        System.out.println("-------------------------");
+//        System.out.println("size: " + ComplexBlock.heights.size());
+//        ComplexBlock.heights.forEach((key, value) -> System.out.println(key + " : " + value));
+//        System.out.println("-------------------------");
+//        ComplexBlock.heightsMinMAx.values()
+//            .stream()
+//            .sorted(Comparator.comparingInt(ComplexBlock.MinMax::delta).reversed())
+//            .collect(Collectors.groupingBy(
+//                ComplexBlock.MinMax::delta, Collectors.counting()
+//            )).entrySet().stream()
+//            .sorted(Comparator.comparingInt(Map.Entry::getKey))
+//////            .limit(10)
+//
+//            .forEach(e -> {
+//                System.out.println("e = " + e);
+//            });
+//        System.out.println("-------------------------");
+//        ComplexBlock.heightsMinMAx.values()
+//            .stream()
+//            .collect(Collectors.groupingBy(
+//                mm -> mm.heights.size(), Collectors.counting()
+//            )).entrySet().stream()
+//            .sorted(Comparator.comparingInt(Map.Entry::getKey))
+//////            .limit(10)
+//
+//            .forEach(e -> {
+//                System.out.println("cc = " + e);
+//            });
+//        System.out.println("-------------------------");
+//        System.out.println("zero delta count " + ComplexBlock.heightsMinMAx.values().stream()
+//            .filter(mm -> mm.delta() == 0)
+//            .count());
+        System.out.println("-------------------------");
+
+        BlockManager.stats.values().stream()
+                .collect(groupingBy(minMax -> minMax.nswes.size(), Collectors.counting()))
+                .forEach((k, v) -> {
+                    System.out.println(k + " -> " + v);
+                });
+
+        BlockManager.stats.entrySet().stream()
+                .collect(groupingBy(e -> "%s:%s".formatted(e.getKey().getClass().getSimpleName(), e.getValue().nswes.size()), Collectors.counting()))
+                .entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach((e) -> {
+                    System.out.println(e.getKey() + " -> " + e.getValue());
+                });
+
+        printBlocksLayouts();
+    }
+
 }

@@ -131,8 +131,8 @@ public final class GeoDriverBytes implements IGeoDriver {
     public void loadFromL2JDir(Path geoDataDir) {
         try (Stream<Path> pathStream = Files.list(geoDataDir)) {
             List<Path> paths = pathStream
-                .filter(path -> path.getFileName().toString().endsWith(".l2j"))
-                .toList();
+                    .filter(path -> path.getFileName().toString().endsWith(".l2j"))
+                    .toList();
             loadFromL2J(paths);
         }
     }
@@ -150,8 +150,8 @@ public final class GeoDriverBytes implements IGeoDriver {
 
             try (RandomAccessFile raf = new RandomAccessFile(path.toFile(), "r")) {
                 Region region = new Region(
-                    raf.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, raf.length()).order(ByteOrder.LITTLE_ENDIAN),
-                    config
+                        raf.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, raf.length()).order(ByteOrder.LITTLE_ENDIAN),
+                        config
                 );
                 regions.add(new RegionCoordinated(region, regionX, regionY));
             }
@@ -235,15 +235,15 @@ public final class GeoDriverBytes implements IGeoDriver {
             int size = typesSizes.get(entry.getKey()).get();
             int blockCount = entry.getValue().get();
             log.info("-- Block type: {} -> {}, in data {} bytes ({})  -- {}",
-                entry.getKey(), blockCount, size, (double) size / blockCount,
-                GeoDriverBytesConstants.blockTypeToName(entry.getKey())
+                    entry.getKey(), blockCount, size, (double) size / blockCount,
+                    GeoDriverBytesConstants.blockTypeToName(entry.getKey())
             );
         }
         log.info("Multilayer data sizes count: {}", multilayerSizes.size());
         for (Map.Entry<Integer, AtomicInteger> entry : multilayerSizes.entrySet()) {
             int blockCount = entry.getValue().get();
             log.info("-- Multilayer size: {} -> {}",
-                entry.getKey(), blockCount
+                    entry.getKey(), blockCount
             );
         }
     }
@@ -287,6 +287,9 @@ public final class GeoDriverBytes implements IGeoDriver {
             case INDEXED_32_MULTILAYER_BLOCK -> {
                 return Indexed32MultilayerBlockBytes.getSize(blockDataOffset, data);
             }
+            case SPLIT_COMPLEX_BLOCK -> {
+                return SplitComplexBlockBytes.getSize(blockDataOffset, data);
+            }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }
     }
@@ -315,6 +318,8 @@ public final class GeoDriverBytes implements IGeoDriver {
             return INDEXED_MULTILAYER_BLOCK;
         } else if (blockClass.equals(Indexed32MultilayerBlock.class)) {
             return INDEXED_32_MULTILAYER_BLOCK;
+        } else if (blockClass.equals(SplitComplexBlock.class)) {
+            return SPLIT_COMPLEX_BLOCK;
         }
 
         throw new RuntimeException("Unknown block class: " + blockClass.getName());
@@ -344,6 +349,8 @@ public final class GeoDriverBytes implements IGeoDriver {
             return IndexedMultilayerBlockBytes.toBytes((IndexedMultilayerBlock) block);
         } else if (blockClass.equals(Indexed32MultilayerBlock.class)) {
             return Indexed32MultilayerBlockBytes.toBytes((Indexed32MultilayerBlock) block);
+        } else if (blockClass.equals(SplitComplexBlock.class)) {
+            return SplitComplexBlockBytes.toBytes((SplitComplexBlock) block);
         }
 
         throw new RuntimeException("Unknown block class: " + blockClass.getName());
@@ -373,6 +380,8 @@ public final class GeoDriverBytes implements IGeoDriver {
             IndexedMultilayerBlockBytes.appendBytes((IndexedMultilayerBlock) block, data);
         } else if (blockClass.equals(Indexed32MultilayerBlock.class)) {
             Indexed32MultilayerBlockBytes.appendBytes((Indexed32MultilayerBlock) block, data);
+        } else if (blockClass.equals(SplitComplexBlock.class)) {
+            SplitComplexBlockBytes.appendBytes((SplitComplexBlock) block, data);
         } else {
             throw new RuntimeException("Unknown block class: " + blockClass.getName());
         }
@@ -402,6 +411,8 @@ public final class GeoDriverBytes implements IGeoDriver {
             return IndexedMultilayerBlockBytes.calcBytesCount((IndexedMultilayerBlock) block);
         } else if (blockClass.equals(Indexed32MultilayerBlock.class)) {
             return Indexed32MultilayerBlockBytes.calcBytesCount((Indexed32MultilayerBlock) block);
+        } else if (blockClass.equals(SplitComplexBlock.class)) {
+            return SplitComplexBlockBytes.calcBytesCount((SplitComplexBlock) block);
         }
 
         throw new RuntimeException("Unknown block class: " + blockClass.getName());
@@ -494,6 +505,9 @@ public final class GeoDriverBytes implements IGeoDriver {
             case INDEXED_32_MULTILAYER_BLOCK -> {
                 return Indexed32MultilayerBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
             }
+            case SPLIT_COMPLEX_BLOCK -> {
+                return SplitComplexBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
+            }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }
     }
@@ -545,6 +559,9 @@ public final class GeoDriverBytes implements IGeoDriver {
             case INDEXED_32_MULTILAYER_BLOCK -> {
                 return Indexed32MultilayerBlockBytes.getNearestZ(geoX, geoY, worldZ, blockDataOffset, data);
             }
+            case SPLIT_COMPLEX_BLOCK -> {
+                return SplitComplexBlockBytes.getNearestZ(geoX, geoY, worldZ, blockDataOffset, data);
+            }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }
     }
@@ -595,6 +612,9 @@ public final class GeoDriverBytes implements IGeoDriver {
             case INDEXED_32_MULTILAYER_BLOCK -> {
                 return Indexed32MultilayerBlockBytes.getNextLowerZ(geoX, geoY, worldZ, blockDataOffset, data);
             }
+            case SPLIT_COMPLEX_BLOCK -> {
+                return SplitComplexBlockBytes.getNextLowerZ(geoX, geoY, worldZ, blockDataOffset, data);
+            }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }
     }
@@ -644,6 +664,9 @@ public final class GeoDriverBytes implements IGeoDriver {
             }
             case INDEXED_32_MULTILAYER_BLOCK -> {
                 return Indexed32MultilayerBlockBytes.getNextHigherZ(geoX, geoY, worldZ, blockDataOffset, data);
+            }
+            case SPLIT_COMPLEX_BLOCK -> {
+                return SplitComplexBlockBytes.getNextHigherZ(geoX, geoY, worldZ, blockDataOffset, data);
             }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }

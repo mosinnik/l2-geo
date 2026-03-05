@@ -52,6 +52,7 @@ public class BlockManager {
     public static final List<NoHolesMultilayerBlock> allNoHolesMultilayerBlocks = new ArrayList<>();
     public static final List<IndexedMultilayerBlock> allIndexedMultilayerBlocks = new ArrayList<>();
     public static final List<Indexed32MultilayerBlock> allIndexed32MultilayerBlocks = new ArrayList<>();
+    public static final List<SplitComplexBlock> allSplitComplexBlocks = new ArrayList<>();
 
     public static final List<List<? extends IBlock>> allBlocksLists = List.of(
             allFlatBlocks,
@@ -64,7 +65,8 @@ public class BlockManager {
             allBaseHeightOneNsweComplexBlocks,
             allNoHolesMultilayerBlocks,
             allIndexedMultilayerBlocks,
-            allIndexed32MultilayerBlocks
+            allIndexed32MultilayerBlocks,
+            allSplitComplexBlocks
     );
 
 
@@ -79,6 +81,7 @@ public class BlockManager {
     private final boolean noHolesMultilayerBlockEnabled;
     private final boolean indexedMultilayerBlockEnabled;
     private final boolean indexed32MultilayerBlockEnabled;
+    private final boolean splitComplexBlockEnabled;
 
 
     public BlockManager(GeoConfig geoConfig) {
@@ -93,6 +96,7 @@ public class BlockManager {
         this.noHolesMultilayerBlockEnabled = geoConfig.isNoHolesMultilayerBlockEnabled();
         this.indexedMultilayerBlockEnabled = geoConfig.isIndexedMultilayerBlockEnabled();
         this.indexed32MultilayerBlockEnabled = geoConfig.isIndexed32MultilayerBlockEnabled();
+        this.splitComplexBlockEnabled = geoConfig.isSplitComplexBlockEnabled();
     }
 
 
@@ -148,6 +152,9 @@ public class BlockManager {
                 result = new FewHeightsComplexBlock(tmpData, blockStat);
                 saveBlockForMemoryStat(allFewHeightComplexBlocks, (FewHeightsComplexBlock) result);
             }
+        } else if (splitComplexBlockEnabled) {
+            result = new SplitComplexBlock(tmpData);
+            saveBlockForMemoryStat(allSplitComplexBlocks, (SplitComplexBlock) result);
         } else {
             result = new ComplexBlock(tmpData);
             saveBlockForMemoryStat(allComplexBlocks, (ComplexBlock) result);

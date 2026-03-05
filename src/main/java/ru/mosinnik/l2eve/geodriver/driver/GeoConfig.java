@@ -38,6 +38,7 @@ public class GeoConfig {
     private boolean noHolesMultilayerBlockEnabled;
     private boolean indexedMultilayerBlockEnabled;
     private boolean indexed32MultilayerBlockEnabled;
+    private boolean splitComplexBlockEnabled;
 
 
     public static GeoConfig maxPerfBytes() {
