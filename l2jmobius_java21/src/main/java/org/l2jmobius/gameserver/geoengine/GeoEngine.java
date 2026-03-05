@@ -21,6 +21,7 @@
 package org.l2jmobius.gameserver.geoengine;
 
 import org.l2jmobius.gameserver.config.GeoEngineConfig;
+import org.l2jmobius.gameserver.config.L2EveGeoDataDriverConfig;
 import org.l2jmobius.gameserver.data.xml.DoorData;
 import org.l2jmobius.gameserver.data.xml.FenceData;
 import org.l2jmobius.gameserver.geoengine.geodata.Cell;
@@ -35,6 +36,11 @@ import org.l2jmobius.gameserver.model.WorldObject;
 import org.l2jmobius.gameserver.model.instancezone.Instance;
 import org.l2jmobius.gameserver.model.interfaces.ILocational;
 import org.l2jmobius.gameserver.util.GeoUtils;
+import ru.mosinnik.l2eve.geodriver.abstraction.IGeoDriver;
+import ru.mosinnik.l2eve.geodriver.driver.GeoConfig;
+import ru.mosinnik.l2eve.geodriver.driver.GeoDriver;
+import ru.mosinnik.l2eve.geodriver.driver.GeoDriverBytes;
+import ru.mosinnik.l2eve.geodriver.driver.GeoDriverBytesMmap;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -43,6 +49,7 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -83,6 +90,8 @@ public class GeoEngine {
     // Region Management.
     private static final AtomicReferenceArray<IRegion> REGIONS = new AtomicReferenceArray<>(GEO_REGIONS);
 
+    private IGeoDriver geoDriver;
+
     protected GeoEngine() {
         // Initially set all regions to NullRegion.
         for (int i = 0; i < GEO_REGIONS; i++) {
@@ -90,6 +99,22 @@ public class GeoEngine {
         }
 
         int loadedRegions = 0;
+        if (L2EveGeoDataDriverConfig.ENABLED) {
+            geoDriver = loadL2EveDriver();
+            // just to pass PATHFINDING check
+            loadedRegions = 1;
+        } else {
+            loadedRegions = loadRegionsDefault(loadedRegions);
+        }
+
+        // Avoid wrong configuration when no files are loaded.
+        if ((loadedRegions == 0) && (GeoEngineConfig.PATHFINDING > 0)) {
+            GeoEngineConfig.PATHFINDING = 0;
+            LOGGER.info(getClass().getSimpleName() + ": Pathfinding is disabled.");
+        }
+    }
+
+    private int loadRegionsDefault(int loadedRegions) {
         try {
             for (int regionX = World.TILE_X_MIN; regionX <= World.TILE_X_MAX; regionX++) {
                 for (int regionY = World.TILE_Y_MIN; regionY <= World.TILE_Y_MAX; regionY++) {
@@ -111,11 +136,63 @@ public class GeoEngine {
         }
 
         LOGGER.info(getClass().getSimpleName() + ": Loaded " + loadedRegions + " regions.");
+        return loadedRegions;
+    }
 
-        // Avoid wrong configuration when no files are loaded.
-        if ((loadedRegions == 0) && (GeoEngineConfig.PATHFINDING > 0)) {
-            GeoEngineConfig.PATHFINDING = 0;
-            LOGGER.info(getClass().getSimpleName() + ": Pathfinding is disabled.");
+
+    private IGeoDriver loadL2EveDriver() {
+        GeoConfig geoConfig = new GeoConfig();
+        geoConfig.setReuseFlatBlockEnabled(L2EveGeoDataDriverConfig.REUSE_FLAT_BLOCK_ENABLED);
+        geoConfig.setOneHeightComplexBlockEnabled(L2EveGeoDataDriverConfig.ONE_HEIGHT_COMPLEX_BLOCK_ENABLED);
+        geoConfig.setBaseHeightComplexBlockEnabled(L2EveGeoDataDriverConfig.FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK_ENABLED);
+        geoConfig.setBaseHeightOneNsweComplexBlockEnabled(L2EveGeoDataDriverConfig.FEW_HEIGHTS_COMPLEX_BLOCK_ENABLED);
+        geoConfig.setFewHeightsComplexBlockEnabled(L2EveGeoDataDriverConfig.BASE_HEIGHT_COMPLEX_BLOCK_ENABLED);
+        geoConfig.setFewHeightsOneNsweComplexBlockEnabled(L2EveGeoDataDriverConfig.BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK_ENABLED);
+        geoConfig.setNoHolesMultilayerBlockEnabled(L2EveGeoDataDriverConfig.NO_HOLES_MULTILAYER_BLOCK_ENABLED);
+        geoConfig.setIndexedMultilayerBlockEnabled(L2EveGeoDataDriverConfig.INDEXED_MULTILAYER_BLOCK_ENABLED);
+        geoConfig.setIndexed32MultilayerBlockEnabled(L2EveGeoDataDriverConfig.INDEXED_32_MULTILAYER_BLOCK_ENABLED);
+
+        String driverClass = L2EveGeoDataDriverConfig.DRIVER_CLASS;
+        try {
+            LOGGER.info(getClass().getSimpleName() + ": Load L2Eve driver " + driverClass);
+            if (driverClass.equals(GeoDriver.class.getCanonicalName())) {
+                GeoDriver geoDriverT = new GeoDriver(geoConfig);
+                for (int regionX = World.TILE_X_MIN; regionX <= World.TILE_X_MAX; regionX++) {
+                    for (int regionY = World.TILE_Y_MIN; regionY <= World.TILE_Y_MAX; regionY++) {
+                        final Path geoFilePath = GeoEngineConfig.GEODATA_PATH.resolve(String.format(FILE_NAME_FORMAT, regionX, regionY));
+                        if (Files.exists(geoFilePath)) {
+                            try {
+                                geoDriverT.loadRegion(geoFilePath, regionX, regionY);
+                            } catch (Exception e) {
+                                LOGGER.log(Level.WARNING, getClass().getSimpleName() + ": Failed to load " + geoFilePath.getFileName() + "!", e);
+                            }
+                        }
+                    }
+                }
+                return geoDriverT;
+            } else if (driverClass.equals(GeoDriverBytes.class.getCanonicalName())) {
+                GeoDriverBytes geoDriverBytes = new GeoDriverBytes(geoConfig);
+                if (L2EveGeoDataDriverConfig.LOAD_BYTES_FROM_L2J) {
+                    geoDriverBytes.loadL2J(GeoEngineConfig.GEODATA_PATH);
+                    if (L2EveGeoDataDriverConfig.GENERATE_BIN_FROM_L2J) {
+                        geoDriverBytes.writeToFiles(L2EveGeoDataDriverConfig.GEODATA_BIN_PATH);
+                    }
+                } else {
+                    geoDriverBytes.loadBin(L2EveGeoDataDriverConfig.GEODATA_BIN_PATH);
+                }
+                geoDriverBytes.printStats();
+                return geoDriverBytes;
+            } else if (driverClass.equals(GeoDriverBytesMmap.class.getCanonicalName())) {
+                GeoDriverBytesMmap geoDriverBytesMmap = new GeoDriverBytesMmap();
+                geoDriverBytesMmap.loadBin(L2EveGeoDataDriverConfig.GEODATA_BIN_PATH);
+                return geoDriverBytesMmap;
+            } else {
+                throw new RuntimeException("Unknown Geodata driver class ' " + driverClass + "'");
+            }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, getClass().getSimpleName() + ": Failed to load geodata driver!", ex);
+            System.exit(1);
+            return null;
         }
     }
 
@@ -142,6 +219,11 @@ public class GeoEngine {
      * @return true if reloaded successfully, false otherwise
      */
     public boolean reloadRegion(int regionX, int regionY) {
+        if (Objects.nonNull(geoDriver)) {
+            LOGGER.warning(getClass().getSimpleName() + ": Cannot reload for L2EveGeoDataDriver");
+            return false;
+        }
+
         final int regionOffset = (regionX * GEO_REGIONS_Y) + regionY;
         final Path geoFilePath = GeoEngineConfig.GEODATA_PATH.resolve(String.format(FILE_NAME_FORMAT, regionX, regionY));
         if (!Files.exists(geoFilePath)) {
@@ -176,6 +258,11 @@ public class GeoEngine {
      * @param region  The geodata region to set
      */
     public void setRegion(int regionX, int regionY, Region region) {
+        if (Objects.nonNull(geoDriver)) {
+            LOGGER.warning(getClass().getSimpleName() + ": Cannot setRegion for L2EveGeoDataDriver");
+            return;
+        }
+
         final int regionOffset = (regionX * GEO_REGIONS_Y) + regionY;
         REGIONS.set(regionOffset, region);
     }
@@ -188,6 +275,11 @@ public class GeoEngine {
      * @return the geodata region
      */
     public IRegion getRegion(int geoX, int geoY) {
+        if (Objects.nonNull(geoDriver)) {
+            LOGGER.warning(getClass().getSimpleName() + ": Cannot getRegion for L2EveGeoDataDriver");
+            return null;
+        }
+
         return REGIONS.get(((geoX / IRegion.REGION_CELLS_X) * GEO_REGIONS_Y) + (geoY / IRegion.REGION_CELLS_Y));
     }
 
@@ -199,6 +291,9 @@ public class GeoEngine {
      * @return {@code true} if geodata is available, {@code false} otherwise
      */
     public boolean hasGeoPos(int geoX, int geoY) {
+        if (Objects.nonNull(geoDriver)) {
+            return geoDriver.hasGeoPos(geoX, geoY);
+        }
         return getRegion(geoX, geoY).hasGeo();
     }
 
@@ -212,6 +307,9 @@ public class GeoEngine {
      * @return {@code true} if movement is possible, {@code false} otherwise
      */
     public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe) {
+        if (Objects.nonNull(geoDriver)) {
+            return geoDriver.checkNearestNSWE(geoX, geoY, worldZ, (byte) nswe);
+        }
         return getRegion(geoX, geoY).checkNearestNswe(geoX, geoY, worldZ, nswe);
     }
 
@@ -226,6 +324,26 @@ public class GeoEngine {
      */
     public boolean checkNearestNsweAntiCornerCut(int geoX, int geoY, int worldZ, int nswe) {
         boolean canMove = true;
+
+        if (Objects.nonNull(geoDriver)) {
+            if ((nswe & Cell.NSWE_NORTH_EAST) == Cell.NSWE_NORTH_EAST) {
+                canMove = geoDriver.checkNearestNSWE(geoX, geoY - 1, worldZ, Cell.NSWE_EAST) && geoDriver.checkNearestNSWE(geoX + 1, geoY, worldZ, Cell.NSWE_NORTH);
+            }
+
+            if (canMove && ((nswe & Cell.NSWE_NORTH_WEST) == Cell.NSWE_NORTH_WEST)) {
+                canMove = geoDriver.checkNearestNSWE(geoX, geoY - 1, worldZ, Cell.NSWE_WEST) && geoDriver.checkNearestNSWE(geoX - 1, geoY, worldZ, Cell.NSWE_NORTH);
+            }
+
+            if (canMove && ((nswe & Cell.NSWE_SOUTH_EAST) == Cell.NSWE_SOUTH_EAST)) {
+                canMove = geoDriver.checkNearestNSWE(geoX, geoY + 1, worldZ, Cell.NSWE_EAST) && geoDriver.checkNearestNSWE(geoX + 1, geoY, worldZ, Cell.NSWE_SOUTH);
+            }
+
+            if (canMove && ((nswe & Cell.NSWE_SOUTH_WEST) == Cell.NSWE_SOUTH_WEST)) {
+                canMove = geoDriver.checkNearestNSWE(geoX, geoY + 1, worldZ, Cell.NSWE_WEST) && geoDriver.checkNearestNSWE(geoX - 1, geoY, worldZ, Cell.NSWE_SOUTH);
+            }
+
+            return canMove && geoDriver.checkNearestNSWE(geoX, geoY, worldZ, (byte) nswe);
+        }
 
         final IRegion region = getRegion(geoX, geoY);
         if ((nswe & Cell.NSWE_NORTH_EAST) == Cell.NSWE_NORTH_EAST) {
@@ -256,6 +374,11 @@ public class GeoEngine {
      * @param nswe   The direction data to set
      */
     public void setNearestNswe(int geoX, int geoY, int worldZ, byte nswe) {
+        if (Objects.nonNull(geoDriver)) {
+            LOGGER.warning(getClass().getSimpleName() + ": Cannot setNearestNswe for L2EveGeoDataDriver");
+            return;
+        }
+
         getRegion(geoX, geoY).setNearestNswe(geoX, geoY, worldZ, nswe);
     }
 
@@ -268,6 +391,11 @@ public class GeoEngine {
      * @param nswe   The direction data to remove
      */
     public void unsetNearestNswe(int geoX, int geoY, int worldZ, byte nswe) {
+        if (Objects.nonNull(geoDriver)) {
+            LOGGER.warning(getClass().getSimpleName() + ": Cannot unsetNearestNswe for L2EveGeoDataDriver");
+            return;
+        }
+
         getRegion(geoX, geoY).unsetNearestNswe(geoX, geoY, worldZ, nswe);
     }
 
@@ -280,6 +408,10 @@ public class GeoEngine {
      * @return the nearest Z coordinate
      */
     public int getNearestZ(int geoX, int geoY, int worldZ) {
+        if (Objects.nonNull(geoDriver)) {
+            return geoDriver.getNearestZ(geoX, geoY, worldZ);
+        }
+
         return getRegion(geoX, geoY).getNearestZ(geoX, geoY, worldZ);
     }
 
@@ -292,6 +424,10 @@ public class GeoEngine {
      * @return the next lower Z coordinate
      */
     public int getNextLowerZ(int geoX, int geoY, int worldZ) {
+        if (Objects.nonNull(geoDriver)) {
+            return geoDriver.getNextLowerZ(geoX, geoY, worldZ);
+        }
+
         return getRegion(geoX, geoY).getNextLowerZ(geoX, geoY, worldZ);
     }
 
@@ -304,6 +440,10 @@ public class GeoEngine {
      * @return the next higher Z coordinate
      */
     public int getNextHigherZ(int geoX, int geoY, int worldZ) {
+        if (Objects.nonNull(geoDriver)) {
+            return geoDriver.getNextHigherZ(geoX, geoY, worldZ);
+        }
+
         return getRegion(geoX, geoY).getNextHigherZ(geoX, geoY, worldZ);
     }
 

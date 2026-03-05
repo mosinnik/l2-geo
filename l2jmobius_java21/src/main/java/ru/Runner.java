@@ -23,13 +23,31 @@
 package ru;
 
 import org.l2jmobius.gameserver.config.GeoEngineConfig;
+import org.l2jmobius.gameserver.config.L2EveGeoDataDriverConfig;
 import org.l2jmobius.gameserver.geoengine.GeoEngine;
+import org.openjdk.jol.info.GraphLayout;
 
 public class Runner {
     public static void main(String[] args) {
         GeoEngineConfig.load();
+        L2EveGeoDataDriverConfig.load();
 
         GeoEngine e = GeoEngine.getInstance();
 
+        GraphLayout graphLayout = GraphLayout.parseInstance(e);
+
+        System.out.println("footprint = " + graphLayout.toFootprint());
+        System.out.println("totalCount = " + graphLayout.totalCount());
+        System.out.println("totalSize = " + graphLayout.totalSize());
+
+        int geoX = GeoEngine.getGeoX(0);
+        int geoY = GeoEngine.getGeoY(0);
+        int nextLowerZ = e.getNextLowerZ(geoX, geoY, 0);
+        int nearestZ = e.getNearestZ(geoX, geoY, 0);
+        int nextHigherZ = e.getNextHigherZ(geoX, geoY, 0);
+        System.out.println("----------------------------------------");
+        System.out.println("nextLowerZ  = " + nextLowerZ); // for default: -4672
+        System.out.println("nearestZ    = " + nearestZ); // for default: -4672
+        System.out.println("nextHigherZ = " + nextHigherZ); // for default: 0
     }
 }
