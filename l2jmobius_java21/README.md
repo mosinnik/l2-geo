@@ -6,6 +6,13 @@ Copy from this repo into sources:
 1. `org.l2jmobius.gameserver.config.L2EveGeoDataDriverConfig` class to `org.l2jmobius.gameserver.config` package
 2. `ru.mosinnik.l2eve.geodriver` package as is
 3. `org.l2jmobius.gameserver.geoengine.GeoEngine` class
+4. add `L2EveGeoDataDriverConfig.load()` to `rg.l2jmobius.gameserver.config.ConfigLoader`
+  after `GeoEngineConfig.load()`:
+```
+        GeoEngineConfig.load();
+        L2EveGeoDataDriverConfig.load(); // <<< 
+        GrandBossConfig.load();
+```
 
 Copy into datapack:
 1. `L2EveGeoDataDriver.ini` config file to data/config dir
