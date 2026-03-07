@@ -90,7 +90,7 @@ public class GeoEngine {
     // Region Management.
     private static final AtomicReferenceArray<IRegion> REGIONS = new AtomicReferenceArray<>(GEO_REGIONS);
 
-    private IGeoDriver geoDriver;
+    private final IGeoDriver geoDriver;
 
     protected GeoEngine() {
         // Initially set all regions to NullRegion.
@@ -104,6 +104,7 @@ public class GeoEngine {
             // just to pass PATHFINDING check
             loadedRegions = 1;
         } else {
+            geoDriver = null;
             loadedRegions = loadRegionsDefault(loadedRegions);
         }
 
