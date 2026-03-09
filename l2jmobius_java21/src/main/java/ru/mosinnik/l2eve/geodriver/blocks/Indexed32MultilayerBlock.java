@@ -140,7 +140,7 @@ public class Indexed32MultilayerBlock implements IBlock {
 
     private short getNearestLayer(int geoX, int geoY, int worldZ) {
         int cellDataOffset = getCellDataOffset(geoX, geoY);
-        int startOffset = cellDataOffset & 0x01FF;
+        int startOffset = cellDataOffset & 0x07FF;
         int nLayers = (cellDataOffset >> 11) & 0x01F;
         if (nLayers == 1) {
             return data[startOffset];
@@ -207,7 +207,7 @@ public class Indexed32MultilayerBlock implements IBlock {
     @Override
     public int getNextLowerZ(int geoX, int geoY, int worldZ) {
         int cellDataOffset = getCellDataOffset(geoX, geoY);
-        int startOffset = cellDataOffset & 0x01FF;
+        int startOffset = cellDataOffset & 0x07FF;
         int nLayers = (cellDataOffset >> 11) & 0x01F;
         int endOffset = startOffset + nLayers;
         for (int offset = startOffset; offset < endOffset; offset++) {
@@ -223,7 +223,7 @@ public class Indexed32MultilayerBlock implements IBlock {
     @Override
     public int getNextHigherZ(int geoX, int geoY, int worldZ) {
         int cellDataOffset = getCellDataOffset(geoX, geoY);
-        int startOffset = cellDataOffset & 0x01FF;
+        int startOffset = cellDataOffset & 0x07FF;
         int nLayers = (cellDataOffset >> 11) & 0x01F;
         int endOffset = startOffset + nLayers;
         int prevLayerZ = worldZ;

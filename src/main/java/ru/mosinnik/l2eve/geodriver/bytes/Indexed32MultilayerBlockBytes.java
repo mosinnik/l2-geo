@@ -93,7 +93,7 @@ public class Indexed32MultilayerBlockBytes {
 
     private static short getNearestLayer(int geoX, int geoY, int worldZ, int blockDataOffset, ByteBuffer data) {
         int cellDataOffset = getCellDataOffset(geoX, geoY, blockDataOffset, data);
-        int startOffset = (cellDataOffset & 0x01FF) << 1;
+        int startOffset = (cellDataOffset & 0x07FF) << 1;
         int nLayers = (cellDataOffset >> 11) & 0x01F;
         if (nLayers == 1) {
             return data.getShort(blockDataOffset + INNER_DATA_OFFSET + startOffset);
@@ -165,7 +165,7 @@ public class Indexed32MultilayerBlockBytes {
 
     public static int getNextLowerZ(int geoX, int geoY, int worldZ, int blockDataOffset, ByteBuffer data) {
         int cellDataOffset = getCellDataOffset(geoX, geoY, blockDataOffset, data);
-        int startOffset = (cellDataOffset & 0x01FF) << 1;
+        int startOffset = (cellDataOffset & 0x07FF) << 1;
         int nLayers = (cellDataOffset >> 11) & 0x01F;
         int endOffset = startOffset + 2 * nLayers;
         for (int offset = startOffset; offset < endOffset; offset += 2) {
@@ -181,7 +181,7 @@ public class Indexed32MultilayerBlockBytes {
 
     public static int getNextHigherZ(int geoX, int geoY, int worldZ, int blockDataOffset, ByteBuffer data) {
         int cellDataOffset = getCellDataOffset(geoX, geoY, blockDataOffset, data);
-        int startOffset = (cellDataOffset & 0x01FF) << 1;
+        int startOffset = (cellDataOffset & 0x07FF) << 1;
         int nLayers = (cellDataOffset >> 11) & 0x01F;
         int prevLayerZ = worldZ;
         int endOffset = startOffset + 2 * nLayers;
