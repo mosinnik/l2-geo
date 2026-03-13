@@ -103,11 +103,35 @@ GeoDriverBenchParams.getNextLowerZ_old               INDEXED_32_MULTILAYER_BLOCK
 
 
 ```
-Benchmark                                        (blockType)   Mode  Cnt      Score      Error  Units
-GeoDriverBenchParams.checkNearestNSWEBytes        FLAT_BLOCK  thrpt    5  21484,150 ± 1509,074  ops/s
-GeoDriverBenchParams.checkNearestNSWEBytes     COMPLEX_BLOCK  thrpt    5   8492,241 ±  232,362  ops/s
-GeoDriverBenchParams.checkNearestNSWEBytes  MULTILAYER_BLOCK  thrpt    5    946,260 ±    7,681  ops/s
-GeoDriverBenchParams.checkNearestNSWEFFM          FLAT_BLOCK  thrpt    5  19829,149 ± 1166,574  ops/s
-GeoDriverBenchParams.checkNearestNSWEFFM       COMPLEX_BLOCK  thrpt    5   8720,500 ±  391,328  ops/s
-GeoDriverBenchParams.checkNearestNSWEFFM    MULTILAYER_BLOCK  thrpt    5   1010,222 ±   14,366  ops/s
+Benchmark                                            (blockType)   Mode  Cnt      Score      Error  Units
+GeoDriverBenchParams.checkNearestNSWE                 FLAT_BLOCK  thrpt    5  15399,249 ±  803,896  ops/s
+GeoDriverBenchParams.checkNearestNSWE              COMPLEX_BLOCK  thrpt    5   4650,188 ±  232,112  ops/s
+GeoDriverBenchParams.checkNearestNSWE           MULTILAYER_BLOCK  thrpt    5   1032,253 ±   28,799  ops/s
+GeoDriverBenchParams.checkNearestNSWEBytes            FLAT_BLOCK  thrpt    5  21577,039 ± 2411,938  ops/s
+GeoDriverBenchParams.checkNearestNSWEBytes         COMPLEX_BLOCK  thrpt    5   8524,220 ± 1016,401  ops/s
+GeoDriverBenchParams.checkNearestNSWEBytes      MULTILAYER_BLOCK  thrpt    5    943,466 ±   16,935  ops/s
+GeoDriverBenchParams.checkNearestNSWEBytesMmap        FLAT_BLOCK  thrpt    5  21359,384 ± 1772,533  ops/s
+GeoDriverBenchParams.checkNearestNSWEBytesMmap     COMPLEX_BLOCK  thrpt    5   8234,757 ± 1838,845  ops/s
+GeoDriverBenchParams.checkNearestNSWEBytesMmap  MULTILAYER_BLOCK  thrpt    5   1057,785 ±   38,982  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM              FLAT_BLOCK  thrpt    5  17668,395 ± 1488,395  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM           COMPLEX_BLOCK  thrpt    5   8562,177 ±  717,017  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM        MULTILAYER_BLOCK  thrpt    5   1021,939 ±    5,967  ops/s
+GeoDriverBenchParams.checkNearestNSWE_old             FLAT_BLOCK  thrpt    5  15273,046 ± 1413,988  ops/s
+GeoDriverBenchParams.checkNearestNSWE_old          COMPLEX_BLOCK  thrpt    5   4755,936 ±  268,029  ops/s
+GeoDriverBenchParams.checkNearestNSWE_old       MULTILAYER_BLOCK  thrpt    5   1025,961 ±   20,929  ops/s
+GeoDriverBenchParams.getNearestZ                      FLAT_BLOCK  thrpt    5  15027,738 ± 1232,469  ops/s
+GeoDriverBenchParams.getNearestZ                   COMPLEX_BLOCK  thrpt    5   5147,684 ±  316,948  ops/s
+GeoDriverBenchParams.getNearestZ                MULTILAYER_BLOCK  thrpt    5   1040,829 ±   20,791  ops/s
+GeoDriverBenchParams.getNearestZBytes                 FLAT_BLOCK  thrpt    5  19244,359 ± 3690,115  ops/s
+GeoDriverBenchParams.getNearestZBytes              COMPLEX_BLOCK  thrpt    5   8941,228 ±  641,977  ops/s
+GeoDriverBenchParams.getNearestZBytes           MULTILAYER_BLOCK  thrpt    5    959,433 ±   12,003  ops/s
+GeoDriverBenchParams.getNearestZBytesMmap             FLAT_BLOCK  thrpt    5  19190,157 ± 4133,709  ops/s
+GeoDriverBenchParams.getNearestZBytesMmap          COMPLEX_BLOCK  thrpt    5   8935,880 ±  719,351  ops/s
+GeoDriverBenchParams.getNearestZBytesMmap       MULTILAYER_BLOCK  thrpt    5   1070,402 ±   39,325  ops/s
+GeoDriverBenchParams.getNearestZFFM                   FLAT_BLOCK  thrpt    5  18158,729 ± 1335,463  ops/s
+GeoDriverBenchParams.getNearestZFFM                COMPLEX_BLOCK  thrpt    5   8989,788 ±  518,230  ops/s
+GeoDriverBenchParams.getNearestZFFM             MULTILAYER_BLOCK  thrpt    5   1026,223 ±   15,552  ops/s
+GeoDriverBenchParams.getNearestZ_old                  FLAT_BLOCK  thrpt    5  11630,322 ± 1177,997  ops/s
+GeoDriverBenchParams.getNearestZ_old               COMPLEX_BLOCK  thrpt    5   5729,636 ±  358,850  ops/s
+GeoDriverBenchParams.getNearestZ_old            MULTILAYER_BLOCK  thrpt    5   1059,718 ±   23,956  ops/s
 ```

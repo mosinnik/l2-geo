@@ -24,11 +24,17 @@ package ru.mosinnik.l2eve.geodriver.ffm;
 
 
 import java.lang.foreign.MemorySegment;
-
-import static java.lang.foreign.ValueLayout.JAVA_SHORT_UNALIGNED;
+import java.lang.foreign.ValueLayout;
+import java.nio.ByteOrder;
 
 public final class ComplexBlockFFM {
 
+
+//    public static final ValueLayout.OfShort SHORT_LAYOUT = ValueLayout.JAVA_SHORT_UNALIGNED
+//            .withOrder(ByteOrder.BIG_ENDIAN);
+
+    public static final ValueLayout.OfShort SHORT_LAYOUT = ValueLayout.JAVA_SHORT
+            .withOrder(ByteOrder.nativeOrder());
 
     /**
      * readable:
@@ -36,7 +42,7 @@ public final class ComplexBlockFFM {
      */
     private static int getCellNSWE(int geoX, int geoY, int blockDataOffset, MemorySegment data) {
         int cellOffset = ((geoX & 0x07) << 3) + (geoY & 0x07);
-        return data.get(JAVA_SHORT_UNALIGNED, blockDataOffset + 2 * cellOffset) & 0x0F;
+        return data.get(SHORT_LAYOUT, blockDataOffset + 2 * cellOffset) & 0x0F;
 //        return data.getShort(blockDataOffset + 2 * cellOffset) & 0x0F;
     }
 
@@ -44,7 +50,7 @@ public final class ComplexBlockFFM {
     private static int getCellHeight(int geoX, int geoY, int blockDataOffset, MemorySegment data) {
         int cellOffset = ((geoX & 0x07) << 3) + (geoY & 0x07);
 //        int height = data.getShort(blockDataOffset + 2 * cellOffset) & 0xFFFFFFF0;
-        int height = data.get(JAVA_SHORT_UNALIGNED, blockDataOffset + 2 * cellOffset) & 0xFFFFFFF0;
+        int height = data.get(SHORT_LAYOUT, blockDataOffset + 2 * cellOffset) & 0xFFFFFFF0;
         return height >> 1;
     }
 

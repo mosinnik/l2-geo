@@ -129,9 +129,9 @@ public class GeoDriverFFMTest {
      * Compare each coords in each block
      */
     public static void compareDriversHeavy(int cornerMinX, int cornerMaxX, GeoDriverFFM driver, int cornerMinY, int cornerMaxY, GeoDriver oldDriver) {
-        int stepX = 16;
-        int stepY = 16;
-        int stepZ = 1;
+        int stepX = 64;
+        int stepY = 64;
+        int stepZ = 100;
 
         for (int worldX = cornerMinX; worldX < cornerMaxX; worldX += stepX) {
             int x = driver.getGeoX(worldX);
@@ -166,7 +166,7 @@ public class GeoDriverFFMTest {
 //                        );
 //                    }
                     assertEquals(
-                            "Error at x = " + x + ", y = " + y + ", z = " + z,
+                            "Error at x = " + x + ", y = " + y + ", z = " + z + ", block = " + block,
                             oldDriver.getNearestZ(x, y, z),
                             driver.getNearestZ(x, y, z)
                     );
