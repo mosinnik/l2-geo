@@ -131,8 +131,8 @@ public final class GeoDriverBytes implements IGeoDriver {
     public void loadFromL2JDir(Path geoDataDir) {
         try (Stream<Path> pathStream = Files.list(geoDataDir)) {
             List<Path> paths = pathStream
-                .filter(path -> path.getFileName().toString().endsWith(".l2j"))
-                .toList();
+                    .filter(path -> path.getFileName().toString().endsWith(".l2j"))
+                    .toList();
             loadFromL2J(paths);
         }
     }
@@ -150,8 +150,8 @@ public final class GeoDriverBytes implements IGeoDriver {
 
             try (RandomAccessFile raf = new RandomAccessFile(path.toFile(), "r")) {
                 Region region = new Region(
-                    raf.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, raf.length()).order(ByteOrder.LITTLE_ENDIAN),
-                    config
+                        raf.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, raf.length()).order(ByteOrder.LITTLE_ENDIAN),
+                        config
                 );
                 regions.add(new RegionCoordinated(region, regionX, regionY));
             }
@@ -235,15 +235,15 @@ public final class GeoDriverBytes implements IGeoDriver {
             int size = typesSizes.get(entry.getKey()).get();
             int blockCount = entry.getValue().get();
             log.info("-- Block type: {} -> {}, in data {} bytes ({})  -- {}",
-                entry.getKey(), blockCount, size, (double) size / blockCount,
-                GeoDriverBytesConstants.blockTypeToName(entry.getKey())
+                    entry.getKey(), blockCount, size, (double) size / blockCount,
+                    GeoDriverBytesConstants.blockTypeToName(entry.getKey())
             );
         }
         log.info("Multilayer data sizes count: {}", multilayerSizes.size());
         for (Map.Entry<Integer, AtomicInteger> entry : multilayerSizes.entrySet()) {
             int blockCount = entry.getValue().get();
             log.info("-- Multilayer size: {} -> {}",
-                entry.getKey(), blockCount
+                    entry.getKey(), blockCount
             );
         }
     }
@@ -320,7 +320,7 @@ public final class GeoDriverBytes implements IGeoDriver {
         throw new RuntimeException("Unknown block class: " + blockClass.getName());
     }
 
-    private static byte[] toBytes(IBlock block) {
+    public static byte[] toBytes(IBlock block) {
         Class<? extends IBlock> blockClass = block.getClass();
         if (blockClass.equals(FlatBlock.class)) {
             return FlatBlockFromOffsetBytes.toBytes((FlatBlock) block);
@@ -349,7 +349,7 @@ public final class GeoDriverBytes implements IGeoDriver {
         throw new RuntimeException("Unknown block class: " + blockClass.getName());
     }
 
-    private static void appendBytes(IBlock block, ByteBuffer data) {
+    public static void appendBytes(IBlock block, ByteBuffer data) {
         Class<? extends IBlock> blockClass = block.getClass();
         if (blockClass.equals(FlatBlock.class)) {
             FlatBlockFromOffsetBytes.appendBytes((FlatBlock) block, data);
@@ -378,7 +378,7 @@ public final class GeoDriverBytes implements IGeoDriver {
         }
     }
 
-    private static int getBytesCount(IBlock block) {
+    public static int getBytesCount(IBlock block) {
         Class<? extends IBlock> blockClass = block.getClass();
         if (blockClass.equals(FlatBlock.class)) {
             return FlatBlockFromOffsetBytes.calcBytesCount((FlatBlock) block);

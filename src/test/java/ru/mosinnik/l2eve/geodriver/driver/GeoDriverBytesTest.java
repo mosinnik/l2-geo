@@ -262,7 +262,7 @@ public class GeoDriverBytesTest {
     /**
      * Compare each coords in each block
      */
-    private static void compareDriversHeavy(int cornerMinX, int cornerMaxX, GeoDriverBytes driver, int cornerMinY, int cornerMaxY, GeoDriver oldDriver) {
+    public static void compareDriversHeavy(int cornerMinX, int cornerMaxX, GeoDriverBytes driver, int cornerMinY, int cornerMaxY, GeoDriver oldDriver) {
         int stepX = 16;
         int stepY = 16;
         int stepZ = 1;

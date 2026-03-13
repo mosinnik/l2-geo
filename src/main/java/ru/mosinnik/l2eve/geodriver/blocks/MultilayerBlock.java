@@ -97,22 +97,32 @@ public class MultilayerBlock implements IBlock {
         byte nLayers = data[startOffset];
         int endOffset = startOffset + 1 + (nLayers * 2);
 
+//        System.out.println("------- OLD getNearestLayer");
+//        System.out.println("startOffset = " + startOffset);
+//        System.out.println("nLayers = " + nLayers);
+//        System.out.println("endOffset = " + endOffset);
+
         // 1 layer at least was required on loading so this is set at least once on the loop below
         int nearestDZ = 0;
         short nearestData = 0;
         for (int offset = startOffset + 1; offset < endOffset; offset += 2) {
             short layerData = extractLayerData(offset);
             int layerZ = extractLayerHeight(layerData);
+//            System.out.println("layerData = " + layerData);
+//            System.out.println("layerZ = " + layerZ);
             if (layerZ == worldZ) {
+//                System.out.println(" return in loop: " + layerData);
                 return layerData; // exact z
             }
 
             int layerDZ = Math.abs(layerZ - worldZ);
+//            System.out.println("layerDZ = " + layerDZ);
             if ((offset == (startOffset + 1)) || (layerDZ < nearestDZ)) {
                 nearestDZ = layerDZ;
                 nearestData = layerData;
             }
         }
+//        System.out.println(" return after loop: " + nearestData);
         return nearestData;
     }
 

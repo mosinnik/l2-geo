@@ -99,3 +99,15 @@ GeoDriverBenchParams.getNextLowerZ_old                 FEW_HEIGHTS_COMPLEX_BLOCK
 GeoDriverBenchParams.getNextLowerZ_old                 NO_HOLES_MULTILAYER_BLOCK  thrpt   10   1188,380 ±   10,976  ops/s
 GeoDriverBenchParams.getNextLowerZ_old               INDEXED_32_MULTILAYER_BLOCK  thrpt   10   1095,584 ±   12,967  ops/s
 ```
+
+
+
+```
+Benchmark                                        (blockType)   Mode  Cnt      Score      Error  Units
+GeoDriverBenchParams.checkNearestNSWEBytes        FLAT_BLOCK  thrpt    5  21484,150 ± 1509,074  ops/s
+GeoDriverBenchParams.checkNearestNSWEBytes     COMPLEX_BLOCK  thrpt    5   8492,241 ±  232,362  ops/s
+GeoDriverBenchParams.checkNearestNSWEBytes  MULTILAYER_BLOCK  thrpt    5    946,260 ±    7,681  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM          FLAT_BLOCK  thrpt    5  19829,149 ± 1166,574  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM       COMPLEX_BLOCK  thrpt    5   8720,500 ±  391,328  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM    MULTILAYER_BLOCK  thrpt    5   1010,222 ±   14,366  ops/s
+```
