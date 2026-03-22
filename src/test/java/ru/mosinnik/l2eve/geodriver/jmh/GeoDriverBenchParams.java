@@ -25,7 +25,6 @@ package ru.mosinnik.l2eve.geodriver.jmh;
 import lombok.SneakyThrows;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
-import org.openjdk.jmh.profile.WinPerfAsmProfiler;
 import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -64,6 +63,7 @@ public class GeoDriverBenchParams {
     private static final int regionY = 12;
 
     public static void main(String[] args) throws RunnerException {
+//        generateRandomPoints();
 //        generatePoints();
 
         new Runner(new OptionsBuilder()
@@ -94,30 +94,44 @@ public class GeoDriverBenchParams {
 //    }
 
 
-    // generate files with points
-    static void generatePoints() {
-        for (GeoDriverBytesConstants.E type : GeoDriverBytesConstants.E.values()) {
-            if (type == GeoDriverBytesConstants.E.NO_DATA_BLOCK
-                    || type == GeoDriverBytesConstants.E.MULTILAYER_BLOCK
-                    || type == GeoDriverBytesConstants.E.FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK
-                    || type == GeoDriverBytesConstants.E.INDEXED_MULTILAYER_BLOCK
-            ) {
-                continue;
-            }
-
-            MyState state = new MyState();
-
-            state.loadFromFile = false;
-            state.saveToFile = true;
-            state.blockType = type;
-
-            state.setup();
-
-            // NOTE: need to clear mmaped file before next iteration
-            state.driverBytesMmap = null;
-            System.gc();
-        }
-    }
+//    // generate files with points
+//    static void generatePoints() {
+//        for (GeoDriverBytesConstants.E type : GeoDriverBytesConstants.E.values()) {
+//            if (type == GeoDriverBytesConstants.E.NO_DATA_BLOCK
+//                    || type == GeoDriverBytesConstants.E.MULTILAYER_BLOCK
+//                    || type == GeoDriverBytesConstants.E.FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK
+//                    || type == GeoDriverBytesConstants.E.INDEXED_MULTILAYER_BLOCK
+//            ) {
+//                continue;
+//            }
+//
+//            MyState state = new MyState();
+//
+//            state.loadFromFile = false;
+//            state.saveToFile = true;
+//            state.blockType = type;
+//
+//            state.setup();
+//
+//            // NOTE: need to clear mmaped file before next iteration
+//            state.driverBytesMmap = null;
+//            System.gc();
+//        }
+//    }
+//    // generate files with points
+//    static void generateRandomPoints() {
+//
+//        MyState state = new MyState();
+//
+//        state.loadFromFile = false;
+//        state.saveToFile = true;
+//
+//        state.setup();
+//
+//        // NOTE: need to clear mmaped file before next iteration
+//        state.driverBytesMmap = null;
+//        System.gc();
+//    }
 
 
     @State(Scope.Benchmark)
@@ -128,26 +142,27 @@ public class GeoDriverBenchParams {
         GeoDriverBytes driverBytes;
         GeoDriverBytesMmap driverBytesMmap;
         GeoDriverFFM driverFFM;
+        GeoDriverFFMT driverFFMT;
         List<Point> checkPoints = new ArrayList<>();
 
-        @Param({
-                "FLAT_BLOCK",
-//                "COMPLEX_BLOCK",
-//                "MULTILAYER_BLOCK",
-//                "ONE_HEIGHT_COMPLEX_BLOCK",
-//                "BASE_HEIGHT_COMPLEX_BLOCK",
-//                "BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK",
-//                "FEW_HEIGHTS_COMPLEX_BLOCK",
-////            "FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK",
-//                "NO_HOLES_MULTILAYER_BLOCK",
-////            "INDEXED_MULTILAYER_BLOCK",
-//                "INDEXED_32_MULTILAYER_BLOCK",
-        })
+//        @Param({
+////                        "FLAT_BLOCK",
+////                        "COMPLEX_BLOCK",
+//                        "MULTILAYER_BLOCK",
+//        //                "ONE_HEIGHT_COMPLEX_BLOCK",
+//        //                "BASE_HEIGHT_COMPLEX_BLOCK",
+//        //                "BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK",
+//        //                "FEW_HEIGHTS_COMPLEX_BLOCK",
+//        // //            "FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK",
+//        //                "NO_HOLES_MULTILAYER_BLOCK",
+//        // //            "INDEXED_MULTILAYER_BLOCK",
+////                "INDEXED_32_MULTILAYER_BLOCK",
+//        })
         GeoDriverBytesConstants.E blockType;
         boolean loadFromFile = true;
         boolean saveToFile = false;
 
-        @SneakyThrows
+//        @SneakyThrows
         @Setup(Level.Trial)
         public void setup() {
             GeoConfig geoConfigOld = new GeoConfig();
@@ -178,10 +193,15 @@ public class GeoDriverBenchParams {
             driverBytes.loadFromL2J(List.of(resource.toPath()));
 
             driverFFM = new GeoDriverFFM(geoConfig, List.of(resource.toPath()));
+            driverFFMT = new GeoDriverFFMT(geoConfig, List.of(resource.toPath()));
 //            driverFFM.loadFromL2J(List.of(resource.toPath()));
 
             Path binGeoData = Path.of(GEODATA_BIN_DIR);
-            Files.createDirectories(binGeoData);
+            try {
+                Files.createDirectories(binGeoData);
+            }catch (IOException e) {
+                e.printStackTrace();
+            }
             driverBytes.writeToFiles(binGeoData);
 
             driverBytesMmap = new GeoDriverBytesMmap();
@@ -190,7 +210,7 @@ public class GeoDriverBenchParams {
             generateCheckPoints();
         }
 
-        @SneakyThrows
+//        @SneakyThrows
         public void generateCheckPoints() {
             int cornerMinWorldX = regionX * 32768 + GeoConstants.WORLD_MIN_X;
             int cornerMinWorldY = regionY * 32768 + GeoConstants.WORLD_MIN_Y;
@@ -199,9 +219,20 @@ public class GeoDriverBenchParams {
 
             checkPoints.clear();
 
-            if (loadFromFile && blockType != null) {
+            if (loadFromFile) {
+                String filePrefix;
+                if (blockType != null) {
+                    filePrefix = blockType.name();
+                } else {
+                    filePrefix = "RANDOM";
+                }
                 Path dir = Path.of(DIR_WITH_POINTS);
-                List<String> pointsStrs = Files.readAllLines(dir.resolve(blockType.name() + "_points.txt"));
+                List<String> pointsStrs = null;
+                try {
+                    pointsStrs = Files.readAllLines(dir.resolve(filePrefix + "_points.txt"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 pointsStrs.forEach(pointStr -> {
                     String[] split = pointStr.split(";");
                     checkPoints.add(new Point(
@@ -256,15 +287,30 @@ public class GeoDriverBenchParams {
                 System.out.println("----------------------------------------------");
             }
 
-            if (saveToFile && blockType != null) {
+            if (saveToFile) {
                 String pointsString = checkPoints.stream()
-                        .map(p -> p.x() + ";" + p.y() + ";" + p.geoX() + ";" + p.geoY() + ";" + p.nswe())
+                        .map(p -> p.x() + ";" + p.y() + ";" + p.geoX() + ";" + p.geoY() + ";" + p.nswe() + ";" + p.type)
                         .collect(Collectors.joining("\n"));
 
                 Path dir = Path.of(DIR_WITH_POINTS);
-                Files.createDirectories(dir);
-                Files.writeString(dir.resolve(blockType.name() + "_points.txt"), pointsString);
-                System.out.println("Points saved at " + blockType.name() + "_points.txt");
+                try {
+                    Files.createDirectories(dir);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                String filePrefix;
+                if (blockType != null) {
+                    filePrefix = blockType.name();
+                } else {
+                    filePrefix = "RANDOM";
+                }
+                try {
+                    Files.writeString(dir.resolve(filePrefix + "_points.txt"), pointsString);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Points saved at " + filePrefix + "_points.txt");
             }
         }
     }
@@ -308,13 +354,13 @@ public class GeoDriverBenchParams {
 //    }
 //
 //
-    @Benchmark
-    public void checkNearestNSWE_old(Blackhole blackhole, MyState state) {
-        GeoDriver driver = state.driver;
-        for (Point checkPoint : state.checkPoints) {
-            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
-        }
-    }
+//    @Benchmark
+//    public void checkNearestNSWE_old(Blackhole blackhole, MyState state) {
+//        GeoDriver driver = state.driver;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
+//        }
+//    }
 
     //----  geo with config
 
@@ -351,13 +397,13 @@ public class GeoDriverBenchParams {
 //    }
 //
 //
-    @Benchmark
-    public void checkNearestNSWE(Blackhole blackhole, MyState state) {
-        GeoDriver driver = state.driver;
-        for (Point checkPoint : state.checkPoints) {
-            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
-        }
-    }
+//    @Benchmark
+//    public void checkNearestNSWE(Blackhole blackhole, MyState state) {
+//        GeoDriver driver = state.driver;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
+//        }
+//    }
 
     //----  geo bytes
 
@@ -393,13 +439,13 @@ public class GeoDriverBenchParams {
 //        }
 //    }
 //
-    @Benchmark
-    public void checkNearestNSWEBytes(Blackhole blackhole, MyState state) {
-        GeoDriverBytes driver = state.driverBytes;
-        for (Point checkPoint : state.checkPoints) {
-            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
-        }
-    }
+//    @Benchmark
+//    public void checkNearestNSWEBytes(Blackhole blackhole, MyState state) {
+//        GeoDriverBytes driver = state.driverBytes;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
+//        }
+//    }
 
     //----  geo bytes mmap
 
@@ -410,7 +456,7 @@ public class GeoDriverBenchParams {
 //            blackhole.consume(driver.hasGeoPos(checkPoint.geoX(), checkPoint.geoY()));
 //        }
 //    }
-
+//
     @Benchmark
     public void getNearestZBytesMmap(Blackhole blackhole, MyState state) {
         GeoDriverBytesMmap driver = state.driverBytesMmap;
@@ -435,13 +481,13 @@ public class GeoDriverBenchParams {
 //        }
 //    }
 //
-    @Benchmark
-    public void checkNearestNSWEBytesMmap(Blackhole blackhole, MyState state) {
-        GeoDriverBytesMmap driver = state.driverBytesMmap;
-        for (Point checkPoint : state.checkPoints) {
-            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
-        }
-    }
+//    @Benchmark
+//    public void checkNearestNSWEBytesMmap(Blackhole blackhole, MyState state) {
+//        GeoDriverBytesMmap driver = state.driverBytesMmap;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
+//        }
+//    }
 
     //----  geo ffm
 
@@ -477,13 +523,55 @@ public class GeoDriverBenchParams {
 //        }
 //    }
 //
-    @Benchmark
-    public void checkNearestNSWEFFM(Blackhole blackhole, MyState state) {
-        GeoDriverFFM driver = state.driverFFM;
-        for (Point checkPoint : state.checkPoints) {
-            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
-        }
-    }
+//    @Benchmark
+//    public void checkNearestNSWEFFM(Blackhole blackhole, MyState state) {
+//        GeoDriverFFM driver = state.driverFFM;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
+//        }
+//    }
+
+    //----  geo ffm t
+
+//    @Benchmark
+//    public void hasGeoPosFFM_T(Blackhole blackhole, MyState state) {
+//        GeoDriverFFMT driver = state.driverFFMT;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.hasGeoPos(checkPoint.geoX(), checkPoint.geoY()));
+//        }
+//    }
+
+//        @Benchmark
+//    public void getNearestZFFM_T(Blackhole blackhole, MyState state) {
+//        GeoDriverFFMT driver = state.driverFFMT;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.getNearestZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
+//        }
+//    }
+//
+//    @Benchmark
+//    public void getNextLowerZFFM_T(Blackhole blackhole, MyState state) {
+//        GeoDriverFFMT driver = state.driverFFMT;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.getNextLowerZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
+//        }
+//    }
+//
+//    @Benchmark
+//    public void getNextHigherZFFM_T(Blackhole blackhole, MyState state) {
+//        GeoDriverFFMT driver = state.driverFFMT;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.getNextHigherZ(checkPoint.geoX(), checkPoint.geoY(), -3000));
+//        }
+//    }
+//
+//    @Benchmark
+//    public void checkNearestNSWEFFM_T(Blackhole blackhole, MyState state) {
+//        GeoDriverFFMT driver = state.driverFFMT;
+//        for (Point checkPoint : state.checkPoints) {
+//            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
+//        }
+//    }
 
 
 }

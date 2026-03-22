@@ -36,21 +36,25 @@ public class Cmp {
 //                    System.out.println(i + " : " + j + " : " + k);
                     for (int l = 0; l < 16; l++) {
                         assertEquals(
-                            block1.checkNearestNSWE(i, j, k, (byte) l),
-                            block2.checkNearestNSWE(i, j, k, (byte) l)
+                                "Error at x = " + i + ", y = " + j + ", z = " + k + ", l = " + l + ", block = " + block2,
+                                block1.checkNearestNSWE(i, j, k, (byte) l),
+                                block2.checkNearestNSWE(i, j, k, (byte) l)
                         );
                     }
                     assertEquals(
-                        block1.getNearestZ(i, j, k),
-                        block2.getNearestZ(i, j, k)
+                            "Error at x = " + i + ", y = " + j + ", z = " + k + ", block = " + block2,
+                            block1.getNearestZ(i, j, k),
+                            block2.getNearestZ(i, j, k)
                     );
                     assertEquals(
-                        block1.getNextLowerZ(i, j, k),
-                        block2.getNextLowerZ(i, j, k)
+                            "Error at x = " + i + ", y = " + j + ", z = " + k + ", block = " + block2,
+                            block1.getNextLowerZ(i, j, k),
+                            block2.getNextLowerZ(i, j, k)
                     );
                     assertEquals(
-                        block1.getNextHigherZ(i, j, k),
-                        block2.getNextHigherZ(i, j, k)
+                            "Error at x = " + i + ", y = " + j + ", z = " + k + ", block = " + block2,
+                            block1.getNextHigherZ(i, j, k),
+                            block2.getNextHigherZ(i, j, k)
                     );
                 }
 
@@ -65,21 +69,25 @@ public class Cmp {
 //                    System.out.println(i + " : " + j + " : " + k);
                     for (int l = 0; l < 16; l++) {
                         assertEquals(
-                            block1.checkNearestNSWE(i, j, k, (byte) l),
-                            block2.checkNearestNSWE(i, j, k, (byte) l)
+                                "Error at x = " + i + ", y = " + j + ", z = " + k + ", l = " + l + ", block = " + block2,
+                                block1.checkNearestNSWE(i, j, k, (byte) l),
+                                block2.checkNearestNSWE(i, j, k, (byte) l)
                         );
                     }
                     assertEquals(
-                        block1.getNearestZ(i, j, k),
-                        block2.getNearestZ(i, j, k)
+                            "Error at x = " + i + ", y = " + j + ", z = " + k + ", block = " + block2,
+                            block1.getNearestZ(i, j, k),
+                            block2.getNearestZ(i, j, k)
                     );
                     assertEquals(
-                        block1.getNextLowerZ(i, j, k),
-                        block2.getNextLowerZ(i, j, k)
+                            "Error at x = " + i + ", y = " + j + ", z = " + k + ", block = " + block2,
+                            block1.getNextLowerZ(i, j, k),
+                            block2.getNextLowerZ(i, j, k)
                     );
                     assertEquals(
-                        block1.getNextHigherZ(i, j, k),
-                        block2.getNextHigherZ(i, j, k)
+                            "Error at x = " + i + ", y = " + j + ", z = " + k + ", block = " + block2,
+                            block1.getNextHigherZ(i, j, k),
+                            block2.getNextHigherZ(i, j, k)
                     );
                 }
 
@@ -94,21 +102,25 @@ public class Cmp {
 //                    System.out.println(i + " : " + j + " : " + k);
                     for (int l = 0; l < 16; l++) {
                         assertEquals(
-                            block1.checkNearestNSWE(i, j, k, (byte) l),
-                            block2.checkNearestNSWE(i, j, k, (byte) l)
+                                "Error at x = " + i + ", y = " + j + ", z = " + k + ", l = " + l + ", block = " + block2,
+                                block1.checkNearestNSWE(i, j, k, (byte) l),
+                                block2.checkNearestNSWE(i, j, k, (byte) l)
                         );
                     }
                     assertEquals(
-                        block1.getNearestZ(i, j, k),
-                        block2.getNearestZ(i, j, k)
+                            "Error at x = " + i + ", y = " + j + ", z = " + k + ", block = " + block2,
+                            block1.getNearestZ(i, j, k),
+                            block2.getNearestZ(i, j, k)
                     );
                     assertEquals(
-                        block1.getNextLowerZ(i, j, k),
-                        block2.getNextLowerZ(i, j, k)
+                            "Error at x = " + i + ", y = " + j + ", z = " + k + ", block = " + block2,
+                            block1.getNextLowerZ(i, j, k),
+                            block2.getNextLowerZ(i, j, k)
                     );
                     assertEquals(
-                        block1.getNextHigherZ(i, j, k),
-                        block2.getNextHigherZ(i, j, k)
+                            "Error at x = " + i + ", y = " + j + ", z = " + k + ", block = " + block2,
+                            block1.getNextHigherZ(i, j, k),
+                            block2.getNextHigherZ(i, j, k)
                     );
                 }
 
@@ -131,25 +143,25 @@ public class Cmp {
                 for (int z = -16000; z < 16000; z += stepZ) {
                     for (int l = 0; l < 16; l++) {
                         assertEquals(
-                            driver2.checkNearestNSWE(x, y, z, (byte) l),
-                            driver1.checkNearestNSWE(x, y, z, (byte) l)
+                                driver2.checkNearestNSWE(x, y, z, (byte) l),
+                                driver1.checkNearestNSWE(x, y, z, (byte) l)
                         );
                     }
                     assertEquals(
-                        driver2.getNearestZ(x, y, z),
-                        driver1.getNearestZ(x, y, z)
+                            driver2.getNearestZ(x, y, z),
+                            driver1.getNearestZ(x, y, z)
                     );
                     assertEquals(
-                        driver2.getNextLowerZ(x, y, z),
-                        driver1.getNextLowerZ(x, y, z)
+                            driver2.getNextLowerZ(x, y, z),
+                            driver1.getNextLowerZ(x, y, z)
                     );
                     assertEquals(
-                        driver2.getNextHigherZ(x, y, z),
-                        driver1.getNextHigherZ(x, y, z)
+                            driver2.getNextHigherZ(x, y, z),
+                            driver1.getNextHigherZ(x, y, z)
                     );
                     assertEquals(
-                        driver2.hasGeoPos(x, y),
-                        driver1.hasGeoPos(x, y)
+                            driver2.hasGeoPos(x, y),
+                            driver1.hasGeoPos(x, y)
                     );
                 }
             }

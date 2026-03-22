@@ -38,8 +38,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.GEODATA_DIR;
-import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.TST_BLOCK_RESOURCE_BIGGEST;
+import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.*;
 
 public class GeoDriverFFMTest {
 
@@ -81,7 +80,10 @@ public class GeoDriverFFMTest {
     public void shouldHaveSameToOldDriver() throws IOException {
         int regionX = 12;
         int regionY = 24;
-        String tstRegion = TST_BLOCK_RESOURCE_BIGGEST;
+//        String tstRegion = TST_BLOCK_RESOURCE_BIGGEST;
+        String tstRegion = TST_BLOCK_RESOURCE_MOST_COMPLEX;
+
+
         File resource = new File(GeoDriverBytesTest.class.getClassLoader().getResource(tstRegion).getFile());
 
         GeoConfig geoConfig = new GeoConfig();
@@ -111,17 +113,17 @@ public class GeoDriverFFMTest {
         System.out.println("cornerMaxY = " + cornerMaxY);
         System.out.println("--------------------------");
 
-//        int x = 24576, y = 49152, z = -4304;
-//        int nearestZOld = oldDriver.getNearestZ(x, y, z);
-//        int nearestZFFM = driver.getNearestZ(x, y, z);
-//        System.out.println("nearestZOld = " + nearestZOld);
-//        System.out.println("nearestZFFM = " + nearestZFFM);
+        int x = 24576, y = 49152, z = -4304;
+        int nearestZOld = oldDriver.getNearestZ(x, y, z);
+        int nearestZFFM = driver.getNearestZ(x, y, z);
+        System.out.println("nearestZOld = " + nearestZOld);
+        System.out.println("nearestZFFM = " + nearestZFFM);
 
 
-        Instant t1 = Instant.now();
-        compareDriversHeavy(cornerMinX, cornerMaxX, driver, cornerMinY, cornerMaxY, oldDriver);
-        Instant t2 = Instant.now();
-        System.out.println("Comparison time: " + t1.until(t2, ChronoUnit.MILLIS) / 1000.0 + " seconds");
+//        Instant t1 = Instant.now();
+//        compareDriversHeavy(cornerMinX, cornerMaxX, driver, cornerMinY, cornerMaxY, oldDriver);
+//        Instant t2 = Instant.now();
+//        System.out.println("Comparison time: " + t1.until(t2, ChronoUnit.MILLIS) / 1000.0 + " seconds");
     }
 
 
@@ -153,18 +155,18 @@ public class GeoDriverFFMTest {
                     maxZ = cb.getMaxHeight() + 100;
                 }
                 for (int z = minZ; z < maxZ; z += stepZ) {
-//                    for (int l = 0; l < 16; l++) {
-//                        boolean expected = oldDriver.checkNearestNSWE(x, y, z, (byte) l);
-//                        boolean actual = driver.checkNearestNSWE(x, y, z, (byte) l);
-//                        if (expected != actual) {
-//                            System.out.println("block = " + block);
-//                            throw new AssertionError("Nearest NSWE did not match: expected=" + expected + ", actual=" + actual);
-//                        }
-//                        assertEquals(
-//                                expected,
-//                                actual
-//                        );
-//                    }
+                    for (int l = 0; l < 16; l++) {
+                        boolean expected = oldDriver.checkNearestNSWE(x, y, z, (byte) l);
+                        boolean actual = driver.checkNearestNSWE(x, y, z, (byte) l);
+                        if (expected != actual) {
+                            System.out.println("block = " + block);
+                            throw new AssertionError("Nearest NSWE did not match: expected=" + expected + ", actual=" + actual);
+                        }
+                        assertEquals(
+                                expected,
+                                actual
+                        );
+                    }
                     assertEquals(
                             "Error at x = " + x + ", y = " + y + ", z = " + z + ", block = " + block,
                             oldDriver.getNearestZ(x, y, z),
