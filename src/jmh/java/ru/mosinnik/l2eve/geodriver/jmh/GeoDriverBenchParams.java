@@ -22,7 +22,6 @@
 
 package ru.mosinnik.l2eve.geodriver.jmh;
 
-import lombok.SneakyThrows;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.results.format.ResultFormatType;
@@ -41,14 +40,14 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.*;
+import static ru.mosinnik.l2eve.geodriver.jmh.GeoDriverTestConstants.*;
 
 
-@Threads(1)
+@Threads(4)
 @Fork(1)
 @Warmup(iterations = 5, time = 2)
 @Measurement(iterations = 5, time = 2)
-@Timeout(time = 10)
+@Timeout(time = 100)
 public class GeoDriverBenchParams {
     private static final int checkPointCount = 10000;
 
@@ -565,13 +564,13 @@ public class GeoDriverBenchParams {
 //        }
 //    }
 //
-//    @Benchmark
-//    public void checkNearestNSWEFFM_T(Blackhole blackhole, MyState state) {
-//        GeoDriverFFMT driver = state.driverFFMT;
-//        for (Point checkPoint : state.checkPoints) {
-//            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
-//        }
-//    }
+    @Benchmark
+    public void checkNearestNSWEFFM_T(Blackhole blackhole, MyState state) {
+        GeoDriverFFMT driver = state.driverFFMT;
+        for (Point checkPoint : state.checkPoints) {
+            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
+        }
+    }
 
 
 }
