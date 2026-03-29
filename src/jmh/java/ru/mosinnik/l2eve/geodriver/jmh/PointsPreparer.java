@@ -49,8 +49,8 @@ public class PointsPreparer {
         generateRandomPoints();
 //        generatePoints();
 
-        GeoDriverBenchParams.MyState state = new GeoDriverBenchParams.MyState();
-        state.setup();
+//        GeoDriverBenchParams.MyState state = new GeoDriverBenchParams.MyState();
+//        state.setup();
 
 //        Blackhole blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
 //        GeoDriverBenchParams params = new GeoDriverBenchParams();
@@ -72,11 +72,16 @@ public class PointsPreparer {
                 continue;
             }
 
+//            if (type != GeoDriverBytesConstants.E.ONE_HEIGHT_COMPLEX_BLOCK
+//            ) {
+//                continue;
+//            }
+
             GeoDriverBenchParams.MyState state = new GeoDriverBenchParams.MyState();
 
             state.loadFromFile = false;
             state.saveToFile = true;
-            state.blockType = type;
+            state.blockTypeStr = type.toString();
 
             state.setup();
 
