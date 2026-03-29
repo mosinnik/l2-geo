@@ -29,6 +29,7 @@ import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.ComplexBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.FlatBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.MultilayerBlock;
+import ru.mosinnik.l2eve.geodriver.util.RegionCoords;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +39,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.*;
+import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.GEODATA_DIR;
+import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.TST_BLOCK_RESOURCE_MOST_COMPLEX;
 
 public class GeoDriverFFMTest {
 
@@ -56,7 +58,6 @@ public class GeoDriverFFMTest {
 //        geoConfig.setNoHolesMultilayerBlockEnabled(true);
 //        geoConfig.setIndexedMultilayerBlockEnabled(true);
 //        geoConfig.setIndexed32MultilayerBlockEnabled(true);
-
 
 
         GeoDriverFFM driver = new GeoDriverFFM(geoConfig, Path.of(geodataDir));
@@ -102,8 +103,10 @@ public class GeoDriverFFMTest {
         GeoDriverFFM driver = new GeoDriverFFM(geoConfig, List.of(resource.toPath()));
 //        driver.loadFromL2J(List.of(resource.toPath()));
 
-        int cornerMinX = regionX * 32768 + GeoConstants.WORLD_MIN_X;
-        int cornerMinY = regionY * 32768 + GeoConstants.WORLD_MIN_Y;
+        RegionCoords regionCoords = RegionCoords.extract(resource.toPath());
+
+        int cornerMinX = regionCoords.regionX() * 32768 + GeoConstants.WORLD_MIN_X;
+        int cornerMinY = regionCoords.regionY() * 32768 + GeoConstants.WORLD_MIN_Y;
         int cornerMaxX = cornerMinX + 32768 - 1;
         int cornerMaxY = cornerMinY + 32768 - 1;
 
@@ -113,17 +116,25 @@ public class GeoDriverFFMTest {
         System.out.println("cornerMaxY = " + cornerMaxY);
         System.out.println("--------------------------");
 
-        int x = 24576, y = 49152, z = -4304;
-        int nearestZOld = oldDriver.getNearestZ(x, y, z);
-        int nearestZFFM = driver.getNearestZ(x, y, z);
-        System.out.println("nearestZOld = " + nearestZOld);
-        System.out.println("nearestZFFM = " + nearestZFFM);
+        System.out.println("geo(cornerMinX) = " + oldDriver.getGeoX(cornerMinX));
+        System.out.println("geo(cornerMinY) = " + oldDriver.getGeoY(cornerMinY));
+        System.out.println("geo(cornerMaxX) = " + oldDriver.getGeoX(cornerMaxX));
+        System.out.println("geo(cornerMaxY) = " + oldDriver.getGeoY(cornerMaxY));
+        System.out.println("--------------------------");
 
 
-//        Instant t1 = Instant.now();
-//        compareDriversHeavy(cornerMinX, cornerMaxX, driver, cornerMinY, cornerMaxY, oldDriver);
-//        Instant t2 = Instant.now();
-//        System.out.println("Comparison time: " + t1.until(t2, ChronoUnit.MILLIS) / 1000.0 + " seconds");
+////        int x = 24576, y = 49152, z = -4304;
+//        int x = 47104, y = 24576, z = -4304;
+//        int nearestZOld = oldDriver.getNearestZ(x, y, z);
+//        int nearestZFFM = driver.getNearestZ(x, y, z);
+//        System.out.println("nearestZOld = " + nearestZOld);
+//        System.out.println("nearestZFFM = " + nearestZFFM);
+
+
+        Instant t1 = Instant.now();
+        compareDriversHeavy(cornerMinX, cornerMaxX, driver, cornerMinY, cornerMaxY, oldDriver);
+        Instant t2 = Instant.now();
+        System.out.println("Comparison time: " + t1.until(t2, ChronoUnit.MILLIS) / 1000.0 + " seconds");
     }
 
 

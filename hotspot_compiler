@@ -1,0 +1,52 @@
+quiet
+
+
+#option java.nio.HeapByteBuffer::get,PrintInlining
+#option  ru.l2eve.geodriver.bytes.MultilayerBlockBytes::getAByte,PrintInlining
+#option  ru.l2eve.geodriver.bytes.MultilayerBlockBytes::getCellDataOffset,PrintInlining
+#option  ru.l2eve.geodriver.bytes.MultilayerBlockBytes::*,PrintInlining
+
+#dontinline ru.l2eve.geodriver.bytes.MultilayerBlockBytes::checkNearestNSWE
+#dontinline ru.l2eve.geodriver.bytes.MultilayerBlockBytes::getNearestNSWE
+#dontinline ru.l2eve.geodriver.bytes.MultilayerBlockBytes::extractLayerNswe
+#dontinline ru.l2eve.geodriver.bytes.MultilayerBlockBytes::getNearestLayer
+#dontinline ru.l2eve.geodriver.bytes.MultilayerBlockBytes::extractLayerHeight
+#dontinline ru.l2eve.geodriver.bytes.MultilayerBlockBytes::extractLayerData
+
+#dontinline ru.l2eve.geodriver.bytes.MultilayerBlockBytes::getAByte
+#dontinline java.nio.HeapByteBuffer::get
+#inline java.nio.HeapByteBuffer::get
+#print java.nio.HeapByteBuffer::get
+
+#print ru.l2eve.geodriver.bytes.MultilayerBlockBytes::*
+#print ru.mosinnik.l2eve.geodriver.driver.GeoDriverBytes::*
+#print ru.mosinnik.l2eve.geodriver.driver.GeoDriverBytes2::*
+
+######################################################################################
+#print ru.l2eve.geodriver.bytes.MultilayerBlockBytes::checkNearestNSWE
+#print ru.l2eve.geodriver.ffm.MultilayerBlockFFM::checkNearestNSWE
+######################################################################################
+#print ru.mosinnik.l2eve.geodriver.driver.GeoDriverBytes::checkNearestNSWE
+#print ru.mosinnik.l2eve.geodriver.driver.GeoDriverBytes2::checkNearestNSWE
+#print ru.mosinnik.l2eve.geodriver.driver.GeoDriverFFM::checkNearestNSWE
+######################################################################################
+option ru.l2eve.geodriver.bytes.MultilayerBlockBytes::checkNearestNSWE,PrintInlining
+option ru.l2eve.geodriver.ffm.MultilayerBlockFFM::checkNearestNSWE,PrintInlining
+######################################################################################
+option ru.mosinnik.l2eve.geodriver.driver.GeoDriverBytes::checkNearestNSWE,PrintInlining
+option ru.mosinnik.l2eve.geodriver.driver.GeoDriverBytes2::checkNearestNSWE,PrintInlining
+option ru.mosinnik.l2eve.geodriver.driver.GeoDriverFFM::checkNearestNSWE,PrintInlining
+
+
+#inline ru.l2eve.geodriver.bytes.MultilayerBlockBytes::extractLayerNswe
+#inline ru.l2eve.geodriver.bytes.MultilayerBlockBytes::getNearestNSWE
+#inline ru.l2eve.geodriver.bytes.MultilayerBlockBytes::checkNearestNSWE
+
+
+
+
+#inline org/openjdk/jmh/infra/Blackhole.consume bool inline = true
+#inline ru/mosinnik/l2eve/geodriver/jmh/GeoDriverBenchParams$MyState.setup bool inline = true
+#inline ru/mosinnik/l2eve/geodriver/jmh/GeoDriverBenchParams.checkNearestNSWEBytes bool inline = true
+#inline ru/mosinnik/l2eve/geodriver/jmh/GeoDriverBenchParams.checkNearestNSWEBytes2 bool inline = true
+#inline ru/mosinnik/l2eve/geodriver/jmh/GeoDriverBenchParams.checkNearestNSWEBytes3 bool inline = true

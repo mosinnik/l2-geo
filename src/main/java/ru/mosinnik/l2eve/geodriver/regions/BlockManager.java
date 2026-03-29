@@ -184,7 +184,7 @@ public class BlockManager {
         } else if (blockStat.layers.stream().max(Byte::compareTo).orElseThrow() < 32 && indexed32MultilayerBlockEnabled) {
             result = new Indexed32MultilayerBlock(data);
 //            result = new Indexed32NearMultilayerBlock(data);
-//            saveBlockForMemoryStat(allIndexed32MultilayerBlocks, (Indexed32MultilayerBlock) result);
+            saveBlockForMemoryStat(allIndexed32MultilayerBlocks, (Indexed32MultilayerBlock) result);
         } else if (indexedMultilayerBlockEnabled) {
             result = new IndexedMultilayerBlock(data);
             saveBlockForMemoryStat(allIndexedMultilayerBlocks, (IndexedMultilayerBlock) result);

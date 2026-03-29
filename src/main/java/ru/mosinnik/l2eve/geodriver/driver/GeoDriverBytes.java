@@ -24,6 +24,7 @@ package ru.mosinnik.l2eve.geodriver.driver;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.openjdk.jmh.annotations.CompilerControl;
 import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 import ru.mosinnik.l2eve.geodriver.abstraction.IGeoDriver;
 import ru.mosinnik.l2eve.geodriver.abstraction.IRegion;
@@ -441,6 +442,7 @@ public final class GeoDriverBytes implements IGeoDriver {
 //    public static Map<Integer, AtomicInteger> blockTypesCount = new HashMap<>();
 
     @Override
+    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
     public boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe) {
         // 1. get block type by geo x/y
         // 2. get block offset by geo x/y

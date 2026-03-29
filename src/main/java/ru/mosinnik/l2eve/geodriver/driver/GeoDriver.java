@@ -27,6 +27,7 @@ import ru.mosinnik.l2eve.geodriver.abstraction.IGeoDriver;
 import ru.mosinnik.l2eve.geodriver.abstraction.IRegion;
 import ru.mosinnik.l2eve.geodriver.regions.NullRegion;
 import ru.mosinnik.l2eve.geodriver.regions.Region;
+import ru.mosinnik.l2eve.geodriver.util.RegionCoords;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -69,12 +70,14 @@ public final class GeoDriver implements IGeoDriver {
 
     @Override
     public void loadRegion(Path filePath, int regionX, int regionY) throws IOException {
-        final int regionOffset = (regionX * GEO_REGIONS_Y) + regionY;
+
+        RegionCoords result = RegionCoords.extract(filePath);
+        final int regionOffset = (result.regionX() * GEO_REGIONS_Y) + result.regionY();
 
         try (RandomAccessFile raf = new RandomAccessFile(filePath.toFile(), "r")) {
             regions[regionOffset] = new Region(
-                raf.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, raf.length()).order(ByteOrder.LITTLE_ENDIAN),
-                config
+                    raf.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, raf.length()).order(ByteOrder.LITTLE_ENDIAN),
+                    config
             );
         }
     }

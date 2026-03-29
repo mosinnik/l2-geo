@@ -24,6 +24,7 @@ package ru.mosinnik.l2eve.geodriver.driver;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.openjdk.jmh.annotations.CompilerControl;
 import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 import ru.mosinnik.l2eve.geodriver.abstraction.IGeoDriver;
 import ru.mosinnik.l2eve.geodriver.abstraction.IRegion;
@@ -480,6 +481,10 @@ public final class GeoDriverBytes2 implements IGeoDriver {
 
         int blockDatum = blockDataI[regionFirstBlockIndex + blockIndexInRegion];
         byte blockType = (byte) (blockDatum & 0x3F);
+        if (blockType == FLAT_BLOCK) {
+            return FlatBlockFromOffsetBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);
+        }
+
         int blockDataOffset = blockDatum & 0xFFFFFFC0;
 
 //        byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
@@ -487,9 +492,9 @@ public final class GeoDriverBytes2 implements IGeoDriver {
 //
 //        int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
         switch (blockType) {
-            case FLAT_BLOCK -> {
-                return FlatBlockFromOffsetBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);
-            }
+//            case FLAT_BLOCK -> {
+//                return FlatBlockFromOffsetBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);
+//            }
             case COMPLEX_BLOCK -> {
                 return ComplexBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
             }
