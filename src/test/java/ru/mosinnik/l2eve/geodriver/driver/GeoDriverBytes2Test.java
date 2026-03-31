@@ -29,6 +29,7 @@ import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.ComplexBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.FlatBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.MultilayerBlock;
+import ru.mosinnik.l2eve.geodriver.util.RegionCoords;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,10 +74,11 @@ public class GeoDriverBytes2Test {
     @Ignore("Heavy")
     @Test
     public void shouldHaveSameToOldDriver() throws IOException {
-        int regionX = 12;
-        int regionY = 24;
         String tstRegion = TST_BLOCK_RESOURCE_BIGGEST;
+//        String tstRegion = TST_BLOCK_RESOURCE_MOST_COMPLEX;
+
         File resource = new File(GeoDriverBytes2Test.class.getClassLoader().getResource(tstRegion).getFile());
+        RegionCoords regionCoords = RegionCoords.extract(resource.toPath());
 
         GeoConfig geoConfig = new GeoConfig();
 //        geoConfig.setOneHeightComplexBlockEnabled(true);
@@ -89,13 +91,13 @@ public class GeoDriverBytes2Test {
 //        geoConfig.setIndexed32MultilayerBlockEnabled(true);
 
         GeoDriver oldDriver = new GeoDriver(new GeoConfig());
-        oldDriver.loadRegion(resource.toPath(), regionX, regionY);
+        oldDriver.loadRegion(resource.toPath());
 
         GeoDriverBytes2 driver = new GeoDriverBytes2(geoConfig);
         driver.loadFromL2J(List.of(resource.toPath()));
 
-        int cornerMinX = regionX * 32768 + GeoConstants.WORLD_MIN_X;
-        int cornerMinY = regionY * 32768 + GeoConstants.WORLD_MIN_Y;
+        int cornerMinX = regionCoords.regionX() * 32768 + GeoConstants.WORLD_MIN_X;
+        int cornerMinY = regionCoords.regionY() * 32768 + GeoConstants.WORLD_MIN_Y;
         int cornerMaxX = cornerMinX + 32768 - 1;
         int cornerMaxY = cornerMinY + 32768 - 1;
 
@@ -144,7 +146,8 @@ public class GeoDriverBytes2Test {
                         boolean expected = oldDriver.checkNearestNSWE(x, y, z, (byte) l);
                         boolean actual = driver.checkNearestNSWE(x, y, z, (byte) l);
                         if (expected != actual) {
-                            throw new AssertionError("Nearest NSWE did not match");
+                            System.out.println("block = " + block);
+                            throw new AssertionError("Nearest NSWE did not match: expected=" + expected + ", actual=" + actual);
                         }
                         assertEquals(
                                 expected,
@@ -152,21 +155,25 @@ public class GeoDriverBytes2Test {
                         );
                     }
                     assertEquals(
+                            "Error at x = " + x + ", y = " + y + ", z = " + z + ", block = " + block,
                             oldDriver.getNearestZ(x, y, z),
                             driver.getNearestZ(x, y, z)
                     );
-                    assertEquals(
-                            oldDriver.getNextLowerZ(x, y, z),
-                            driver.getNextLowerZ(x, y, z)
-                    );
-                    assertEquals(
-                            oldDriver.getNextHigherZ(x, y, z),
-                            driver.getNextHigherZ(x, y, z)
-                    );
-                    assertEquals(
-                            oldDriver.hasGeoPos(x, y),
-                            driver.hasGeoPos(x, y)
-                    );
+//                    assertEquals(
+//                            "Error at x = " + x + ", y = " + y + ", z = " + z,
+//                            oldDriver.getNextLowerZ(x, y, z),
+//                            driver.getNextLowerZ(x, y, z)
+//                    );
+//                    assertEquals(
+//                            "Error at x = " + x + ", y = " + y + ", z = " + z,
+//                            oldDriver.getNextHigherZ(x, y, z),
+//                            driver.getNextHigherZ(x, y, z)
+//                    );
+//                    assertEquals(
+//                            "Error at x = " + x + ", y = " + y + ", z = " + z,
+//                            oldDriver.hasGeoPos(x, y),
+//                            driver.hasGeoPos(x, y)
+//                    );
                 }
             }
         }

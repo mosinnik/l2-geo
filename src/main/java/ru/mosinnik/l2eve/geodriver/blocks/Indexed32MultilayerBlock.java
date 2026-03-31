@@ -72,7 +72,7 @@ public class Indexed32MultilayerBlock implements IBlock {
 
         for (int i = 0; i < IBlock.BLOCK_CELLS; i++) {
             byte nLayers = bb.get();
-            if ((nLayers <= 0) || (nLayers > 32)) {
+            if ((nLayers <= 0) || (nLayers >= 32)) {
                 throw new RuntimeException("Unexpected layer count: " + nLayers);
             }
             index[i] = (short) ((nLayers << 11) | ((layersCountBefore) & 0x07FF));

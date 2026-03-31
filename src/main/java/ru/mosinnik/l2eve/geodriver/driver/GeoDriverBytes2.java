@@ -430,7 +430,7 @@ public final class GeoDriverBytes2 implements IGeoDriver {
     }
 
     @Override
-    public void loadRegion(Path filePath, int regionX, int regionY) {
+    public void loadRegion(Path filePath) {
         throw new RuntimeException("Not implemented");
     }
 

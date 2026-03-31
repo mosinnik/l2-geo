@@ -47,7 +47,7 @@ public class Indexed32MultilayerBlockTest {
 
         String tstRegion = TST_BLOCK_RESOURCE_BIGGEST;
         File resource = new File(GeoDriverTest.class.getClassLoader().getResource(tstRegion).getFile());
-        driver.loadRegion(resource.toPath(), 1, 1);
+        driver.loadRegion(resource.toPath());
 
         List<BlockStat> blockStats = BlockManager.stats.values().stream()
                 .filter(stat -> stat.block instanceof MultilayerBlock)

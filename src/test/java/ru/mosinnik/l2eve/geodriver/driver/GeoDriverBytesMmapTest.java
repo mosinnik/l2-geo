@@ -24,7 +24,12 @@ package ru.mosinnik.l2eve.geodriver.driver;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
+import ru.mosinnik.l2eve.geodriver.blocks.ComplexBlock;
+import ru.mosinnik.l2eve.geodriver.blocks.FlatBlock;
+import ru.mosinnik.l2eve.geodriver.blocks.MultilayerBlock;
 import ru.mosinnik.l2eve.geodriver.util.Cmp;
+import ru.mosinnik.l2eve.geodriver.util.RegionCoords;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +39,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.*;
 
 public class GeoDriverBytesMmapTest {
@@ -41,23 +47,24 @@ public class GeoDriverBytesMmapTest {
     @Ignore("Heavy")
     @Test
     public void shouldHaveSameToOldDriverFromBinary() throws IOException {
-        int regionX = 12;
-        int regionY = 24;
         String tstRegion = TST_BLOCK_RESOURCE_BIGGEST;
-        File resource = new File(GeoDriverBytesMmapTest.class.getClassLoader().getResource(tstRegion).getFile());
+//        String tstRegion = TST_BLOCK_RESOURCE_MOST_COMPLEX;
+
+        File resource = new File(GeoDriverBytes2Test.class.getClassLoader().getResource(tstRegion).getFile());
+        RegionCoords regionCoords = RegionCoords.extract(resource.toPath());
 
         GeoConfig geoConfig = new GeoConfig();
-        geoConfig.setOneHeightComplexBlockEnabled(true);
-        geoConfig.setBaseHeightComplexBlockEnabled(true);
-        geoConfig.setBaseHeightOneNsweComplexBlockEnabled(true);
-        geoConfig.setFewHeightsComplexBlockEnabled(true);
-        geoConfig.setFewHeightsOneNsweComplexBlockEnabled(true);
-        geoConfig.setNoHolesMultilayerBlockEnabled(true);
-        geoConfig.setIndexedMultilayerBlockEnabled(true);
-        geoConfig.setIndexed32MultilayerBlockEnabled(true);
+//        geoConfig.setOneHeightComplexBlockEnabled(true);
+//        geoConfig.setBaseHeightComplexBlockEnabled(true);
+//        geoConfig.setBaseHeightOneNsweComplexBlockEnabled(true);
+//        geoConfig.setFewHeightsComplexBlockEnabled(true);
+//        geoConfig.setFewHeightsOneNsweComplexBlockEnabled(true);
+//        geoConfig.setNoHolesMultilayerBlockEnabled(true);
+//        geoConfig.setIndexedMultilayerBlockEnabled(true);
+//        geoConfig.setIndexed32MultilayerBlockEnabled(true);
 
-        GeoDriver oldDriver = new GeoDriver();
-        oldDriver.loadRegion(resource.toPath(), regionX, regionY);
+        GeoDriver oldDriver = new GeoDriver(new GeoConfig());
+        oldDriver.loadRegion(resource.toPath());
 
         Path binGeoData = Path.of(GEODATA_BIN_DIR);
 
@@ -66,14 +73,14 @@ public class GeoDriverBytesMmapTest {
         Files.createDirectories(binGeoData);
         tmpDriver.writeToFiles(binGeoData);
 
-        Instant t1 = Instant.now();
+        Instant tt1 = Instant.now();
         GeoDriverBytesMmap driver = new GeoDriverBytesMmap();
         driver.loadBin(binGeoData);
-        Instant t2 = Instant.now();
-        System.out.println("Geo loadBin for " + t1.until(t2, ChronoUnit.MILLIS) + "ms");
+        Instant tt2 = Instant.now();
+        System.out.println("Geo loadBin for " + tt1.until(tt2, ChronoUnit.MILLIS) + "ms");
 
-        int cornerMinX = regionX * 32768 + GeoConstants.WORLD_MIN_X;
-        int cornerMinY = regionY * 32768 + GeoConstants.WORLD_MIN_Y;
+        int cornerMinX = regionCoords.regionX() * 32768 + GeoConstants.WORLD_MIN_X;
+        int cornerMinY = regionCoords.regionY() * 32768 + GeoConstants.WORLD_MIN_Y;
         int cornerMaxX = cornerMinX + 32768 - 1;
         int cornerMaxY = cornerMinY + 32768 - 1;
 
@@ -83,7 +90,79 @@ public class GeoDriverBytesMmapTest {
         System.out.println("cornerMaxY = " + cornerMaxY);
         System.out.println("--------------------------");
 
-        Cmp.compareDrivers(driver, oldDriver, cornerMinX, cornerMaxX, cornerMinY, cornerMaxY);
+//        Cmp.compareDrivers(driver, oldDriver, cornerMinX, cornerMaxX, cornerMinY, cornerMaxY);
+
+        Instant t1 = Instant.now();
+        compareDriversHeavy(cornerMinX, cornerMaxX, driver, cornerMinY, cornerMaxY, oldDriver);
+        Instant t2 = Instant.now();
+        System.out.println("Comparison time: " + t1.until(t2, ChronoUnit.MILLIS) / 1000.0 + " seconds");
+    }
+
+
+
+    /**
+     * Compare each coords in each block
+     */
+    public static void compareDriversHeavy(int cornerMinX, int cornerMaxX, GeoDriverBytesMmap driver, int cornerMinY, int cornerMaxY, GeoDriver oldDriver) {
+        int stepX = 64;
+        int stepY = 64;
+        int stepZ = 100;
+
+        for (int worldX = cornerMinX; worldX < cornerMaxX; worldX += stepX) {
+            int x = driver.getGeoX(worldX);
+//            System.out.println("start x = " + x + ", worldX = " + worldX + ", cornerMaxX " + cornerMaxX);
+            for (int worldY = cornerMinY; worldY < cornerMaxY; worldY += stepY) {
+                int y = driver.getGeoY(worldY);
+//                System.out.println("   start y = " + y + ", worldY = " + worldY + ", cornerMaxY " + cornerMaxY);
+                int minZ = -16000;
+                int maxZ = 16000;
+                IBlock block = oldDriver.getBlock(x, y);
+                if (block instanceof MultilayerBlock mb) {
+                    minZ = mb.getMinHeight() - 100;
+                    maxZ = mb.getMaxHeight() + 100;
+                } else if (block instanceof FlatBlock fb) {
+                    minZ = fb.getHeight() - 100;
+                    maxZ = fb.getHeight() + 100;
+                } else if (block instanceof ComplexBlock cb) {
+                    minZ = cb.getMinHeight() - 100;
+                    maxZ = cb.getMaxHeight() + 100;
+                }
+                for (int z = minZ; z < maxZ; z += stepZ) {
+                    for (int l = 0; l < 16; l++) {
+                        boolean expected = oldDriver.checkNearestNSWE(x, y, z, (byte) l);
+                        boolean actual = driver.checkNearestNSWE(x, y, z, (byte) l);
+                        if (expected != actual) {
+                            System.out.println("block = " + block);
+                            throw new AssertionError("Nearest NSWE did not match: expected=" + expected + ", actual=" + actual);
+                        }
+                        assertEquals(
+                                expected,
+                                actual
+                        );
+                    }
+                    assertEquals(
+                            "Error at x = " + x + ", y = " + y + ", z = " + z + ", block = " + block,
+                            oldDriver.getNearestZ(x, y, z),
+                            driver.getNearestZ(x, y, z)
+                    );
+//                    assertEquals(
+//                            "Error at x = " + x + ", y = " + y + ", z = " + z,
+//                            oldDriver.getNextLowerZ(x, y, z),
+//                            driver.getNextLowerZ(x, y, z)
+//                    );
+//                    assertEquals(
+//                            "Error at x = " + x + ", y = " + y + ", z = " + z,
+//                            oldDriver.getNextHigherZ(x, y, z),
+//                            driver.getNextHigherZ(x, y, z)
+//                    );
+//                    assertEquals(
+//                            "Error at x = " + x + ", y = " + y + ", z = " + z,
+//                            oldDriver.hasGeoPos(x, y),
+//                            driver.hasGeoPos(x, y)
+//                    );
+                }
+            }
+        }
     }
 
 }

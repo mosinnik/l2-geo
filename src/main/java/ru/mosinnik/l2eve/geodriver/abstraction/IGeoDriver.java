@@ -69,7 +69,7 @@ public interface IGeoDriver {
     }
 
 
-    void loadRegion(Path filePath, int regionX, int regionY) throws IOException;
+    void loadRegion(Path filePath) throws IOException;
 
 
     /**

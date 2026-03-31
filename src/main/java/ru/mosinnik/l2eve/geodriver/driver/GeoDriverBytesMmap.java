@@ -93,7 +93,7 @@ public final class GeoDriverBytesMmap implements IGeoDriver {
 
 
     @Override
-    public void loadRegion(Path filePath, int regionX, int regionY) {
+    public void loadRegion(Path filePath) {
         throw new RuntimeException("Not implemented");
     }
 

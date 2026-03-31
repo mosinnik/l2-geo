@@ -39,8 +39,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.GEODATA_DIR;
-import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.TST_BLOCK_RESOURCE_MOST_COMPLEX;
+import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.*;
 
 public class GeoDriverFFMStructTest {
 
@@ -79,13 +78,11 @@ public class GeoDriverFFMStructTest {
     @Ignore("Heavy")
     @Test
     public void shouldHaveSameToOldDriver() throws IOException {
-        int regionX = 12;
-        int regionY = 24;
-//        String tstRegion = TST_BLOCK_RESOURCE_BIGGEST;
-        String tstRegion = TST_BLOCK_RESOURCE_MOST_COMPLEX;
+        String tstRegion = TST_BLOCK_RESOURCE_BIGGEST;
+//        String tstRegion = TST_BLOCK_RESOURCE_MOST_COMPLEX;
 
-
-        File resource = new File(GeoDriverBytesTest.class.getClassLoader().getResource(tstRegion).getFile());
+        File resource = new File(GeoDriverBytes2Test.class.getClassLoader().getResource(tstRegion).getFile());
+        RegionCoords regionCoords = RegionCoords.extract(resource.toPath());
 
         GeoConfig geoConfig = new GeoConfig();
 //        geoConfig.setOneHeightComplexBlockEnabled(true);
@@ -98,12 +95,9 @@ public class GeoDriverFFMStructTest {
 //        geoConfig.setIndexed32MultilayerBlockEnabled(true);
 
         GeoDriver oldDriver = new GeoDriver(new GeoConfig());
-        oldDriver.loadRegion(resource.toPath(), regionX, regionY);
+        oldDriver.loadRegion(resource.toPath());
 
         GeoDriverFFMStruct driver = new GeoDriverFFMStruct(geoConfig, List.of(resource.toPath()));
-//        driver.loadFromL2J(List.of(resource.toPath()));
-
-        RegionCoords regionCoords = RegionCoords.extract(resource.toPath());
 
         int cornerMinX = regionCoords.regionX() * 32768 + GeoConstants.WORLD_MIN_X;
         int cornerMinY = regionCoords.regionY() * 32768 + GeoConstants.WORLD_MIN_Y;
@@ -148,7 +142,7 @@ public class GeoDriverFFMStructTest {
 
         for (int worldX = cornerMinX; worldX < cornerMaxX; worldX += stepX) {
             int x = driver.getGeoX(worldX);
-            System.out.println("start x = " + x + ", worldX = " + worldX + ", cornerMaxX " + cornerMaxX);
+//            System.out.println("start x = " + x + ", worldX = " + worldX + ", cornerMaxX " + cornerMaxX);
             for (int worldY = cornerMinY; worldY < cornerMaxY; worldY += stepY) {
                 int y = driver.getGeoY(worldY);
 //                System.out.println("   start y = " + y + ", worldY = " + worldY + ", cornerMaxY " + cornerMaxY);

@@ -41,7 +41,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.*;
 
-public class GeoDriverFFMTest {
+public class GeoDriverFFMTTest {
 
     @Ignore("Print memory layout and write bins")
     @Test
@@ -59,7 +59,7 @@ public class GeoDriverFFMTest {
 //        geoConfig.setIndexed32MultilayerBlockEnabled(true);
 
 
-        GeoDriverFFM driver = new GeoDriverFFM(geoConfig, Path.of(geodataDir));
+        GeoDriverFFMT driver = new GeoDriverFFMT(geoConfig, Path.of(geodataDir));
 
 //        driver.loadL2J(Path.of(geodataDir));
 
@@ -97,7 +97,7 @@ public class GeoDriverFFMTest {
         GeoDriver oldDriver = new GeoDriver(new GeoConfig());
         oldDriver.loadRegion(resource.toPath());
 
-        GeoDriverFFM driver = new GeoDriverFFM(geoConfig, List.of(resource.toPath()));
+        GeoDriverFFMT driver = new GeoDriverFFMT(geoConfig, List.of(resource.toPath()));
 
         int cornerMinX = regionCoords.regionX() * 32768 + GeoConstants.WORLD_MIN_X;
         int cornerMinY = regionCoords.regionY() * 32768 + GeoConstants.WORLD_MIN_Y;
@@ -135,7 +135,7 @@ public class GeoDriverFFMTest {
     /**
      * Compare each coords in each block
      */
-    public static void compareDriversHeavy(int cornerMinX, int cornerMaxX, GeoDriverFFM driver, int cornerMinY, int cornerMaxY, GeoDriver oldDriver) {
+    public static void compareDriversHeavy(int cornerMinX, int cornerMaxX, GeoDriverFFMT driver, int cornerMinY, int cornerMaxY, GeoDriver oldDriver) {
         int stepX = 64;
         int stepY = 64;
         int stepZ = 100;

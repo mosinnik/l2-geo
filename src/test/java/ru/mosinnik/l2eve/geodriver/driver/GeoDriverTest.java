@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.openjdk.jol.info.GraphLayout;
 import ru.mosinnik.l2eve.geodriver.Cell;
 import ru.mosinnik.l2eve.geodriver.regions.BlockManager;
+import ru.mosinnik.l2eve.geodriver.util.RegionCoords;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +46,7 @@ public class GeoDriverTest {
         GeoDriver driver = new GeoDriver();
         String tstRegion = TST_BLOCK_RESOURCE_ALMOST_EMPTY;
         File resource = new File(GeoDriverTest.class.getClassLoader().getResource(tstRegion).getFile());
-        driver.loadRegion(resource.toPath(), 1, 1);
+        driver.loadRegion(resource.toPath());
 
         GraphLayout graphLayout = GraphLayout.parseInstance(driver);
 
@@ -65,7 +66,7 @@ public class GeoDriverTest {
         GeoDriver driver = new GeoDriver(geoConfig);
         String tstRegion = TST_BLOCK_RESOURCE_MOST_COMPLEX;
         File resource = new File(GeoDriverTest.class.getClassLoader().getResource(tstRegion).getFile());
-        driver.loadRegion(resource.toPath(), 1, 1);
+        driver.loadRegion(resource.toPath());
 
         GraphLayout graphLayout = GraphLayout.parseInstance(driver);
 
@@ -80,7 +81,7 @@ public class GeoDriverTest {
         GeoDriver driver = new GeoDriver();
         String tstRegion = TST_BLOCK_RESOURCE_BIGGEST;
         File resource = new File(GeoDriverTest.class.getClassLoader().getResource(tstRegion).getFile());
-        driver.loadRegion(resource.toPath(), 1, 1);
+        driver.loadRegion(resource.toPath());
 
         GraphLayout graphLayout = GraphLayout.parseInstance(driver);
 
@@ -112,12 +113,8 @@ public class GeoDriverTest {
                     .filter(path -> path.getFileName().toString().endsWith(".l2j"))
                     .toList();
             for (Path path : paths) {
-                String fileName = path.getFileName().toString();
-                String[] split = fileName.split("[_.]");
-                int regionX = Integer.parseInt(split[0]);
-                int regionY = Integer.parseInt(split[1]);
                 try {
-                    driver.loadRegion(path, regionX, regionY);
+                    driver.loadRegion(path);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -185,10 +182,17 @@ public class GeoDriverTest {
 
     @Test
     public void testPos() throws IOException {
-        GeoDriver driver = new GeoDriver();
         String tstRegion = TST_BLOCK_RESOURCE_ALMOST_EMPTY;
+
         File resource = new File(GeoDriverTest.class.getClassLoader().getResource(tstRegion).getFile());
-        driver.loadRegion(resource.toPath(), 25, 22);
+        RegionCoords regionCoords = RegionCoords.extract(resource.toPath());
+
+
+        GeoDriver oldDriver = new GeoDriver(new GeoConfig());
+        oldDriver.loadRegion(resource.toPath());
+
+        GeoDriver driver = new GeoDriver();
+        driver.loadRegion(resource.toPath());
 
         //mid of 25_22
         int geoX = driver.getGeoX(180224);
@@ -206,8 +210,8 @@ public class GeoDriverTest {
         System.out.println("World.WORLD_Y_MIN = " + GeoConstants.WORLD_MIN_Y);
         System.out.println("World.WORLD_Y_MAX = " + GeoConstants.WORLD_MAX_Y);
 
-        int cornerMinX = 25 * 32768 + GeoConstants.WORLD_MIN_X;
-        int cornerMinY = 22 * 32768 + GeoConstants.WORLD_MIN_Y;
+        int cornerMinX = regionCoords.regionX() * 32768 + GeoConstants.WORLD_MIN_X;
+        int cornerMinY = regionCoords.regionY() * 32768 + GeoConstants.WORLD_MIN_Y;
         int cornerMaxX = cornerMinX + 32768 - 1;
         int cornerMaxY = cornerMinY + 32768 - 1;
 

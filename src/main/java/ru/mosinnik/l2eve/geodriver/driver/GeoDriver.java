@@ -68,8 +68,7 @@ public final class GeoDriver implements IGeoDriver {
         return regions[regionOffset];
     }
 
-    @Override
-    public void loadRegion(Path filePath, int regionX, int regionY) throws IOException {
+    public void loadRegion(Path filePath) throws IOException {
 
         RegionCoords result = RegionCoords.extract(filePath);
         final int regionOffset = (result.regionX() * GEO_REGIONS_Y) + result.regionY();

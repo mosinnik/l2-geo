@@ -26,7 +26,9 @@ import lombok.SneakyThrows;
 import org.openjdk.jmh.runner.RunnerException;
 import ru.mosinnik.l2eve.geodriver.driver.GeoConstants;
 import ru.mosinnik.l2eve.geodriver.driver.GeoDriverBytesConstants;
+import ru.mosinnik.l2eve.geodriver.util.RegionCoords;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -39,10 +41,19 @@ public class PointsPreparer {
 
     public static final String POINTS_SUFFIX = "_points.txt";
 
-    private static final int cornerMinWorldX = REGION_X * 32768 + GeoConstants.WORLD_MIN_X;
-    private static final int cornerMinWorldY = REGION_Y * 32768 + GeoConstants.WORLD_MIN_Y;
-    private static final int cornerMaxWorldX = cornerMinWorldX + 32768 - 1;
-    private static final int cornerMaxWorldY = cornerMinWorldY + 32768 - 1;
+    private static final int cornerMinWorldX;
+    private static final int cornerMinWorldY;
+    private static final int cornerMaxWorldX;
+    private static final int cornerMaxWorldY;
+
+    static {
+        File resource = new File(GeoDriverBenchParams.class.getClassLoader().getResource(TST_REGION).getFile());
+        RegionCoords coords = RegionCoords.extract(resource.toPath());
+        cornerMinWorldX = coords.regionX() * 32768 + GeoConstants.WORLD_MIN_X;
+        cornerMinWorldY = coords.regionY() * 32768 + GeoConstants.WORLD_MIN_Y;
+        cornerMaxWorldX = cornerMinWorldX + 32768 - 1;
+        cornerMaxWorldY = cornerMinWorldY + 32768 - 1;
+    }
 
 
     public static void main(String[] args) throws RunnerException {

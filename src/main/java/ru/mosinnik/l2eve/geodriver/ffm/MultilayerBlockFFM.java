@@ -46,22 +46,22 @@ public class MultilayerBlockFFM {
 
         // move index to cell, we need to parse on each request, OR we parse on creation and save indexes
         for (int i = 0; i < cellLocalOffset; i++) {
-            cellDataOffset += 1 + (data.getAtIndex(JAVA_BYTE, blockDataOffset + cellDataOffset) * 2);
-//            cellDataOffset += 1 + ((byte) BYTE_HANDLE.get(data, blockDataOffset + cellDataOffset) * 2);
+//            cellDataOffset += 1 + (data.getAtIndex(JAVA_BYTE, blockDataOffset + cellDataOffset) * 2);
+            cellDataOffset += 1 + ((byte) BYTE_HANDLE.get(data, (long)(blockDataOffset + cellDataOffset)) * 2);
         }
         // now the index points to the cell we need
         return cellDataOffset;
     }
 
-//    private static short extractLayerData(int dataOffset, int blockDataOffset, MemorySegment data) {
-//        return (short) (((byte) BYTE_HANDLE.get(data, blockDataOffset + dataOffset) & 0xFF) |
-//                ((byte) BYTE_HANDLE.get(data, blockDataOffset + dataOffset + 1) << 8));
-//    }
-
     private static short extractLayerData(int dataOffset, int blockDataOffset, MemorySegment data) {
-        return (short) ((data.getAtIndex(JAVA_BYTE, blockDataOffset + dataOffset) & 0xFF) |
-                (data.getAtIndex(JAVA_BYTE, blockDataOffset + dataOffset + 1) << 8));
+        return (short) (((byte) BYTE_HANDLE.get(data, (long)(blockDataOffset + dataOffset)) & 0xFF) |
+                ((byte) BYTE_HANDLE.get(data, (long)(blockDataOffset + dataOffset + 1)) << 8));
     }
+
+//    private static short extractLayerData(int dataOffset, int blockDataOffset, MemorySegment data) {
+//        return (short) ((data.getAtIndex(JAVA_BYTE, blockDataOffset + dataOffset) & 0xFF) |
+//                (data.getAtIndex(JAVA_BYTE, blockDataOffset + dataOffset + 1) << 8));
+//    }
 
     private static int extractLayerHeight(short layer) {
         layer = (short) (layer & 0x0fff0);
@@ -73,7 +73,8 @@ public class MultilayerBlockFFM {
 
         // локальный оффсет
         int startOffset = getCellDataOffset(geoX, geoY, blockDataOffset, data);
-        byte nLayers = data.getAtIndex(JAVA_BYTE, blockDataOffset + startOffset);
+//        byte nLayers = data.getAtIndex(JAVA_BYTE, blockDataOffset + startOffset);
+        byte nLayers = (byte) BYTE_HANDLE.get(data, (long)(blockDataOffset + startOffset));
         int endOffset = startOffset + 1 + (nLayers * 2);
 
 //        System.out.println("------- FFM getNearestLayer");
