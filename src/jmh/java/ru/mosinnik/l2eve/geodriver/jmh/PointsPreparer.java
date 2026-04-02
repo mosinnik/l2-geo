@@ -119,7 +119,7 @@ public class PointsPreparer {
 
 
     @SneakyThrows
-    public static void loadPoints(GeoDriverBenchParams.MyState myState) {
+    public static List<Point> loadPoints(GeoDriverBenchParams.MyState myState) {
 
         final List<Point> points = new ArrayList<>();
 
@@ -182,9 +182,9 @@ public class PointsPreparer {
             System.out.println("Points saved at " + pointsFileName);
         }
 
-        myState.checkPoints = Collections.unmodifiableList(points);
-        printPointsStat(myState);
+        printPointsStat(points, myState.blockTypeStr);
 
+        return Collections.unmodifiableList(points);
     }
 
     private static void ensureBlocksExists(MyState myState, int filteredBlockType) {
@@ -215,9 +215,9 @@ public class PointsPreparer {
         return filePrefix + POINTS_SUFFIX;
     }
 
-    private static void printPointsStat(MyState myState) {
-        System.out.println("----- points counts per block type for " + myState.blockTypeStr + ": ");
-        myState.checkPoints.stream()
+    private static void printPointsStat(List<Point> points, String blockTypeStr) {
+        System.out.println("----- points counts per block type for " + blockTypeStr + ": ");
+        points.stream()
                 .collect(Collectors.groupingBy(
                         Point::type,
                         Collectors.counting()

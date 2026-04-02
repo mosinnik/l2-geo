@@ -26,7 +26,6 @@ import lombok.SneakyThrows;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.profile.LinuxPerfAsmProfiler;
-import org.openjdk.jmh.profile.LinuxPerfNormProfiler;
 import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.ChainedOptionsBuilder;
@@ -129,7 +128,6 @@ public class GeoDriverBenchParams {
         GeoDriverFFMStruct driverFFMStruct;
         GeoDriverFFMLong driverFFMLong;
         GeoDriverFFMT driverFFMT;
-        List<Point> checkPoints;
         Point[] checkPointsArr;
 
         @Param({
@@ -201,8 +199,7 @@ public class GeoDriverBenchParams {
             driverBytesMmap = new GeoDriverBytesMmap();
             driverBytesMmap.loadBin(binGeoData);
 
-            loadPoints(this);
-
+            List<Point> checkPoints = loadPoints(this);
             checkPointsArr = checkPoints.toArray(Point[]::new);
         }
 
