@@ -22,6 +22,7 @@
 
 package ru.mosinnik.l2eve.geodriver.driver;
 
+import org.openjdk.jmh.annotations.CompilerControl;
 import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 import ru.mosinnik.l2eve.geodriver.abstraction.IGeoDriver;
 import ru.mosinnik.l2eve.geodriver.abstraction.IRegion;
@@ -91,6 +92,12 @@ public final class GeoDriver implements IGeoDriver {
     public boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe) {
         return getRegion(geoX, geoY).checkNearestNSWE(geoX, geoY, worldZ, nswe);
     }
+
+    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
+    public boolean checkNearestNSWE_base(int geoX, int geoY, int worldZ, byte nswe) {
+        return true;
+    }
+
 
     @Override
     public int getNearestZ(int geoX, int geoY, int worldZ) {

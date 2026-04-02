@@ -79,25 +79,6 @@ public final class GeoDriverBytes implements IGeoDriver {
     }
 
     @SneakyThrows
-    public void load(Path geoDataDir, boolean l2j) {
-        if (l2j) {
-            loadL2J(geoDataDir);
-        } else {
-            loadBin(geoDataDir);
-        }
-    }
-
-    @SneakyThrows
-    public void loadL2J(Path geoDataDir) {
-        loadFromL2JDir(geoDataDir);
-    }
-
-    @SneakyThrows
-    public void loadBin(Path geoDataDir) {
-        readFromFiles(geoDataDir);
-    }
-
-    @SneakyThrows
     public void writeToFiles(Path dataDir) {
         Files.write(dataDir.resolve(DATA_FILE_NAME), data.array());
         log.info("Updated data file: {}", DATA_FILE_NAME);
@@ -125,6 +106,25 @@ public final class GeoDriverBytes implements IGeoDriver {
 
         blockDataOffsets = asInts(Files.readAllBytes(dataDir.resolve(BLOCK_DATA_OFFSETS_FILE_NAME)));
         log.info("Read {} ints from data file: {}", blockDataOffsets.length, BLOCK_DATA_OFFSETS_FILE_NAME);
+    }
+
+    @SneakyThrows
+    public void load(Path geoDataDir, boolean l2j) {
+        if (l2j) {
+            loadL2J(geoDataDir);
+        } else {
+            loadBin(geoDataDir);
+        }
+    }
+
+    @SneakyThrows
+    public void loadL2J(Path geoDataDir) {
+        loadFromL2JDir(geoDataDir);
+    }
+
+    @SneakyThrows
+    public void loadBin(Path geoDataDir) {
+        readFromFiles(geoDataDir);
     }
 
 

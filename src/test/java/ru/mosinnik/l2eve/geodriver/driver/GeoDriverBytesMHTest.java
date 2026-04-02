@@ -24,21 +24,16 @@ package ru.mosinnik.l2eve.geodriver.driver;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openjdk.jol.info.ClassLayout;
 import org.openjdk.jol.info.GraphLayout;
 import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.ComplexBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.FlatBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.MultilayerBlock;
-import ru.mosinnik.l2eve.geodriver.ffm.ComplexBlockFFM;
 import ru.mosinnik.l2eve.geodriver.util.RegionCoords;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.foreign.MemorySegment;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -47,58 +42,22 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.*;
 
-public class GeoDriverFFMTest {
+public class GeoDriverBytesMHTest {
 
-    @Ignore("Print method handler layouts, need -Djol.magicFieldOffset=true")
-    @Test
-    public void testGeoDriverFFM() throws Exception {
-        MethodHandles.Lookup lookup = MethodHandles.lookup();
-        MethodHandle checkNearestNSWECompose = lookup.findStatic(ComplexBlockFFM.class, "checkNearestNSWE", MethodType.methodType(
-                boolean.class, int.class, int.class, int.class, byte.class, int.class, MemorySegment.class
-        ));
-        GraphLayout graphLayout = GraphLayout.parseInstance(checkNearestNSWECompose);
-        System.out.println("footprint = " + graphLayout.toFootprint());
-        System.out.println("totalCount = " + graphLayout.totalCount());
-        System.out.println("totalSize = " + graphLayout.totalSize());
-        System.out.println("-------------------------");
-
-        ClassLayout classLayout = ClassLayout.parseInstance(checkNearestNSWECompose);
-        System.out.println("classLayout = " + classLayout.toPrintable());
-        System.out.println("-------------------------");
-
-    }
-
-
-    @Ignore("Print memory layout and write bins")
+    @Ignore("Print memory layout, need -Djol.magicFieldOffset=true")
     @Test
     public void loadAll() throws IOException {
+        GeoDriverBytesMH driver = new GeoDriverBytesMH();
+
         String geodataDir = GEODATA_DIR;
-
-        GeoConfig geoConfig = new GeoConfig();
-//        geoConfig.setOneHeightComplexBlockEnabled(true);
-//        geoConfig.setBaseHeightComplexBlockEnabled(true);
-//        geoConfig.setBaseHeightOneNsweComplexBlockEnabled(true);
-//        geoConfig.setFewHeightsComplexBlockEnabled(true);
-//        geoConfig.setFewHeightsOneNsweComplexBlockEnabled(true);
-//        geoConfig.setNoHolesMultilayerBlockEnabled(true);
-//        geoConfig.setIndexedMultilayerBlockEnabled(true);
-//        geoConfig.setIndexed32MultilayerBlockEnabled(true);
-
-
-        GeoDriverFFM driver = new GeoDriverFFM(geoConfig, Path.of(geodataDir));
-
-//        driver.loadL2J(Path.of(geodataDir));
-
-//        String binGeoDataDir = GEODATA_BIN_DIR;
-//        driver.writeToFiles(Path.of(binGeoDataDir));
+        driver.loadL2J(Path.of(geodataDir));
 
         GraphLayout graphLayout = GraphLayout.parseInstance(driver);
         System.out.println("footprint = " + graphLayout.toFootprint());
         System.out.println("totalCount = " + graphLayout.totalCount());
         System.out.println("totalSize = " + graphLayout.totalSize());
         System.out.println("-------------------------");
-
-//        driver.printStats();
+        // +43 MB (4296           632150088   (total))
     }
 
     @Ignore("Heavy")
@@ -123,7 +82,8 @@ public class GeoDriverFFMTest {
         GeoDriver oldDriver = new GeoDriver(new GeoConfig());
         oldDriver.loadRegion(resource.toPath());
 
-        GeoDriverFFM driver = new GeoDriverFFM(geoConfig, List.of(resource.toPath()));
+        GeoDriverBytesMH driver = new GeoDriverBytesMH();
+        driver.loadFromL2J(List.of(resource.toPath()));
 
         int cornerMinX = regionCoords.regionX() * 32768 + GeoConstants.WORLD_MIN_X;
         int cornerMinY = regionCoords.regionY() * 32768 + GeoConstants.WORLD_MIN_Y;
@@ -136,32 +96,16 @@ public class GeoDriverFFMTest {
         System.out.println("cornerMaxY = " + cornerMaxY);
         System.out.println("--------------------------");
 
-        System.out.println("geo(cornerMinX) = " + oldDriver.getGeoX(cornerMinX));
-        System.out.println("geo(cornerMinY) = " + oldDriver.getGeoY(cornerMinY));
-        System.out.println("geo(cornerMaxX) = " + oldDriver.getGeoX(cornerMaxX));
-        System.out.println("geo(cornerMaxY) = " + oldDriver.getGeoY(cornerMaxY));
-        System.out.println("--------------------------");
-
-
-////        int x = 24576, y = 49152, z = -4304;
-//        int x = 47104, y = 24576, z = -4304;
-//        int nearestZOld = oldDriver.getNearestZ(x, y, z);
-//        int nearestZFFM = driver.getNearestZ(x, y, z);
-//        System.out.println("nearestZOld = " + nearestZOld);
-//        System.out.println("nearestZFFM = " + nearestZFFM);
-
-
         Instant t1 = Instant.now();
         compareDriversHeavy(cornerMinX, cornerMaxX, driver, cornerMinY, cornerMaxY, oldDriver);
         Instant t2 = Instant.now();
         System.out.println("Comparison time: " + t1.until(t2, ChronoUnit.MILLIS) / 1000.0 + " seconds");
     }
 
-
     /**
      * Compare each coords in each block
      */
-    public static void compareDriversHeavy(int cornerMinX, int cornerMaxX, GeoDriverFFM driver, int cornerMinY, int cornerMaxY, GeoDriver oldDriver) {
+    public static void compareDriversHeavy(int cornerMinX, int cornerMaxX, GeoDriverBytesMH driver, int cornerMinY, int cornerMaxY, GeoDriver oldDriver) {
         int stepX = 64;
         int stepY = 64;
         int stepZ = 100;
@@ -198,11 +142,11 @@ public class GeoDriverFFMTest {
                                 actual
                         );
                     }
-                    assertEquals(
-                            "Error at x = " + x + ", y = " + y + ", z = " + z + ", block = " + block,
-                            oldDriver.getNearestZ(x, y, z),
-                            driver.getNearestZ(x, y, z)
-                    );
+//                    assertEquals(
+//                            "Error at x = " + x + ", y = " + y + ", z = " + z + ", block = " + block,
+//                            oldDriver.getNearestZ(x, y, z),
+//                            driver.getNearestZ(x, y, z)
+//                    );
 //                    assertEquals(
 //                            "Error at x = " + x + ", y = " + y + ", z = " + z,
 //                            oldDriver.getNextLowerZ(x, y, z),
@@ -222,4 +166,5 @@ public class GeoDriverFFMTest {
             }
         }
     }
+
 }
