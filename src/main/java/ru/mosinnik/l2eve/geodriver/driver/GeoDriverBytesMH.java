@@ -337,7 +337,7 @@ public final class GeoDriverBytesMH {
         int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
 
         MethodHandle methodHandle = blockTypesMh[regionFirstBlockIndex + blockIndexInRegion];
-        return (boolean) methodHandle.invoke(geoX, geoY, worldZ, nswe, blockDataOffset, data);
+        return (boolean) methodHandle.invokeExact(geoX, geoY, worldZ, nswe, blockDataOffset, data);
     }
 
 }
