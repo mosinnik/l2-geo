@@ -24,7 +24,6 @@ package ru.mosinnik.l2eve.geodriver.driver;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.openjdk.jmh.annotations.CompilerControl;
 import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 import ru.mosinnik.l2eve.geodriver.abstraction.IGeoDriver;
 import ru.mosinnik.l2eve.geodriver.abstraction.IRegion;
@@ -54,7 +53,7 @@ import static ru.mosinnik.l2eve.geodriver.util.Converter.asInts;
  * хранимого в индексе регионов.
  */
 @Slf4j
-public final class GeoDriverBytes implements IGeoDriver {
+public final class GeoDriverBytesDirectIfCmp implements IGeoDriver {
 
     private final GeoConfig config;
 
@@ -70,42 +69,12 @@ public final class GeoDriverBytes implements IGeoDriver {
     // оффсет начала блока в data
     private int[] blockDataOffsets;
 
-    public GeoDriverBytes() {
+    public GeoDriverBytesDirectIfCmp() {
         config = new GeoConfig();
     }
 
-    public GeoDriverBytes(GeoConfig config) {
+    public GeoDriverBytesDirectIfCmp(GeoConfig config) {
         this.config = config;
-    }
-
-    @SneakyThrows
-    public void writeToFiles(Path dataDir) {
-        Files.write(dataDir.resolve(DATA_FILE_NAME), data.array());
-        log.info("Updated data file: {}", DATA_FILE_NAME);
-
-        Files.write(dataDir.resolve(REGION_FIRST_BLOCK_INDEXES_FILE_NAME), asBytes(regionFirstBlockIndexes));
-        log.info("Updated regionFirstBlockIndexes file: {}", REGION_FIRST_BLOCK_INDEXES_FILE_NAME);
-
-        Files.write(dataDir.resolve(BLOCK_TYPES_FILE_NAME), blockTypes);
-        log.info("Updated blockTypes file: {}", BLOCK_TYPES_FILE_NAME);
-
-        Files.write(dataDir.resolve(BLOCK_DATA_OFFSETS_FILE_NAME), asBytes(blockDataOffsets));
-        log.info("Updated blockDataOffsets file: {}", BLOCK_DATA_OFFSETS_FILE_NAME);
-    }
-
-    @SneakyThrows
-    public void readFromFiles(Path dataDir) {
-        data = ByteBuffer.wrap(Files.readAllBytes(dataDir.resolve(DATA_FILE_NAME)));
-        log.info("Read {} bytes from data file: {}", data.capacity(), DATA_FILE_NAME);
-
-        asInts(Files.readAllBytes(dataDir.resolve(REGION_FIRST_BLOCK_INDEXES_FILE_NAME)), regionFirstBlockIndexes);
-        log.info("Read {} ints from data file: {}", regionFirstBlockIndexes.length, REGION_FIRST_BLOCK_INDEXES_FILE_NAME);
-
-        blockTypes = Files.readAllBytes(dataDir.resolve(BLOCK_TYPES_FILE_NAME));
-        log.info("Read {} bytes from data file: {}", blockTypes.length, BLOCK_TYPES_FILE_NAME);
-
-        blockDataOffsets = asInts(Files.readAllBytes(dataDir.resolve(BLOCK_DATA_OFFSETS_FILE_NAME)));
-        log.info("Read {} ints from data file: {}", blockDataOffsets.length, BLOCK_DATA_OFFSETS_FILE_NAME);
     }
 
     @SneakyThrows
@@ -125,6 +94,38 @@ public final class GeoDriverBytes implements IGeoDriver {
     @SneakyThrows
     public void loadBin(Path geoDataDir) {
         readFromFiles(geoDataDir);
+    }
+
+    @SneakyThrows
+    public void writeToFiles(Path dataDir) {
+        Files.write(dataDir.resolve(DATA_FILE_NAME), data.array());
+        log.info("Updated data file: {}", DATA_FILE_NAME);
+
+        Files.write(dataDir.resolve(REGION_FIRST_BLOCK_INDEXES_FILE_NAME), asBytes(regionFirstBlockIndexes));
+        log.info("Updated regionFirstBlockIndexes file: {}", REGION_FIRST_BLOCK_INDEXES_FILE_NAME);
+
+        Files.write(dataDir.resolve(BLOCK_TYPES_FILE_NAME), blockTypes);
+        log.info("Updated blockTypes file: {}", BLOCK_TYPES_FILE_NAME);
+
+        Files.write(dataDir.resolve(BLOCK_DATA_OFFSETS_FILE_NAME), asBytes(blockDataOffsets));
+        log.info("Updated blockDataOffsets file: {}", BLOCK_DATA_OFFSETS_FILE_NAME);
+    }
+
+    @SneakyThrows
+    public void readFromFiles(Path dataDir) {
+        byte[] bytes = Files.readAllBytes(dataDir.resolve(DATA_FILE_NAME));
+        data = ByteBuffer.allocateDirect(bytes.length);
+        data.put(bytes);
+        log.info("Read {} bytes from data file: {}", data.capacity(), DATA_FILE_NAME);
+
+        asInts(Files.readAllBytes(dataDir.resolve(REGION_FIRST_BLOCK_INDEXES_FILE_NAME)), regionFirstBlockIndexes);
+        log.info("Read {} ints from data file: {}", regionFirstBlockIndexes.length, REGION_FIRST_BLOCK_INDEXES_FILE_NAME);
+
+        blockTypes = Files.readAllBytes(dataDir.resolve(BLOCK_TYPES_FILE_NAME));
+        log.info("Read {} bytes from data file: {}", blockTypes.length, BLOCK_TYPES_FILE_NAME);
+
+        blockDataOffsets = asInts(Files.readAllBytes(dataDir.resolve(BLOCK_DATA_OFFSETS_FILE_NAME)));
+        log.info("Read {} ints from data file: {}", blockDataOffsets.length, BLOCK_DATA_OFFSETS_FILE_NAME);
     }
 
 
@@ -169,7 +170,7 @@ public final class GeoDriverBytes implements IGeoDriver {
         }
         assert totalBlockCount == regions.size() * IRegion.REGION_BLOCKS;
 
-        data = ByteBuffer.allocate(dataSize);
+        data = ByteBuffer.allocateDirect(dataSize);
 
         blockTypes = new byte[totalBlockCount];
         blockDataOffsets = new int[totalBlockCount];
@@ -439,16 +440,8 @@ public final class GeoDriverBytes implements IGeoDriver {
         return blockTypes[regionFirstBlockIndex + blockIndexInRegion];
     }
 
-//    public static Map<Integer, AtomicInteger> blockTypesCount = new HashMap<>();
-
     @Override
     public boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe) {
-        // 1. get block type by geo x/y
-        // 2. get block offset by geo x/y
-        // 2.1 get region offset of first region block
-        // 2.2 calc
-        // 3. call block logic with offset
-
         int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {
@@ -456,10 +449,7 @@ public final class GeoDriverBytes implements IGeoDriver {
         }
 
         int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
-
         byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
-//        blockTypesCount.computeIfAbsent((int) blockType, k -> new AtomicInteger()).incrementAndGet();
-
         int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
         switch (blockType) {
             case FLAT_BLOCK -> {
@@ -470,30 +460,6 @@ public final class GeoDriverBytes implements IGeoDriver {
             }
             case MULTILAYER_BLOCK -> {
                 return MultilayerBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
-            }
-            case ONE_HEIGHT_COMPLEX_BLOCK -> {
-                return OneHeightComplexBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
-            }
-            case BASE_HEIGHT_COMPLEX_BLOCK -> {
-                return BaseHeightComplexBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
-            }
-            case BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK -> {
-                return BaseHeightOneNsweComplexBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
-            }
-            case FEW_HEIGHTS_COMPLEX_BLOCK -> {
-                return FewHeightsComplexBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
-            }
-            case FEW_HEIGHTS_ONE_NSWE_COMPLEX_BLOCK -> {
-                return FewHeightsOneNsweComplexBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
-            }
-            case NO_HOLES_MULTILAYER_BLOCK -> {
-                return NoHolesMultilayerBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
-            }
-            case INDEXED_MULTILAYER_BLOCK -> {
-                return IndexedMultilayerBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
-            }
-            case INDEXED_32_MULTILAYER_BLOCK -> {
-                return Indexed32MultilayerBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
             }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }

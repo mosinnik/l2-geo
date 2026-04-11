@@ -301,8 +301,9 @@ public final class GeoDriverFFMLong {
 
         int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
 
-        byte blockType = (byte) BYTE_HANDLE.get(blockTypesRO, (long) (regionFirstBlockIndex + blockIndexInRegion));
-        int blockDataOffset = (int) INT_HANDLE.get(blockDataOffsetsRO, 4L * (regionFirstBlockIndex + blockIndexInRegion));
+        long index = regionFirstBlockIndex + blockIndexInRegion;
+        byte blockType = (byte) BYTE_HANDLE.get(blockTypesRO, index);
+        int blockDataOffset = (int) INT_HANDLE.get(blockDataOffsetsRO, 4L * index);
         switch (blockType) {
             case FLAT_BLOCK -> {
                 return FlatBlockFromOffsetFFM.checkNearestNSWE(geoX, geoY, worldZ, nswe);

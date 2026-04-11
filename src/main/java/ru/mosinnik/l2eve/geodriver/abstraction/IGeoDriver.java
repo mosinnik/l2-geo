@@ -16,6 +16,10 @@ public interface IGeoDriver {
      * Translates world x into geo x.
      * readable:
      * (worldX - WORLD_MIN_X) / 16;
+     * <p>
+     * result in [0, (WORLD_MAX_X-WORLD_MIN_X) >> 4]
+     * = [0, (2^20) >> 4)
+     * = [0, 2^16)
      *
      * @param worldX world x
      * @return geo x
@@ -31,6 +35,10 @@ public interface IGeoDriver {
      * Translates world y into geo y.
      * readable:
      * (worldY - WORLD_MIN_Y) / 16;
+     * <p>
+     * result in [0, (WORLD_MAX_Y-WORLD_MIN_Y) >> 4]
+     * = [0, (2^20) >> 4)
+     * = [0, 2^16)
      *
      * @param worldY world y
      * @return geo y
