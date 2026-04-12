@@ -438,8 +438,6 @@ public final class GeoDriverBytesDirectIR implements IGeoDriver {
         return blockTypes[regionFirstBlockIndex + blockIndexInRegion];
     }
 
-//    public static Map<Integer, AtomicInteger> blockTypesCount = new HashMap<>();
-
     @Override
     public boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe) {
         // 1. get block type by geo x/y
@@ -455,11 +453,10 @@ public final class GeoDriverBytesDirectIR implements IGeoDriver {
         }
 
         int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
+        int blockIndex = regionFirstBlockIndex + blockIndexInRegion;
 
-        byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
-//        blockTypesCount.computeIfAbsent((int) blockType, k -> new AtomicInteger()).incrementAndGet();
-
-        int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
+        byte blockType = blockTypes[blockIndex];
+        int blockDataOffset = blockDataOffsets[blockIndex];
         switch (blockType) {
             case FLAT_BLOCK -> {
                 return FlatBlockFromOffsetBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);

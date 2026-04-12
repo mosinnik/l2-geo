@@ -50,7 +50,7 @@ import static ru.mosinnik.l2eve.geodriver.jmh.PointsPreparer.loadPoints;
 @Threads(4)
 @Fork(1)
 @Warmup(iterations = 5, time = 2)
-@Measurement(iterations = 5, time = 2)
+@Measurement(iterations = 5, time = 10)
 @Timeout(time = 100)
 //@BenchmarkMode(Mode.AverageTime)
 //@OutputTimeUnit(TimeUnit.MICROSECONDS)
