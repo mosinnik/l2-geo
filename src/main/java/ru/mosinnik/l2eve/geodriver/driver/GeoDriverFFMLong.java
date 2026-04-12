@@ -292,14 +292,14 @@ public final class GeoDriverFFMLong {
         // 2.2 calc
         // 3. call block logic with offset
 
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
 
         int regionFirstBlockIndex = (int) INT_HANDLE.get(regionFirstBlockIndexes, 4L * regionIndex);
         if (regionFirstBlockIndex == NO_INDEX) {
             return NullRegionBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);
         }
 
-        int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
+        int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
 
         long index = regionFirstBlockIndex + blockIndexInRegion;
         byte blockType = (byte) BYTE_HANDLE.get(blockTypesRO, index);
@@ -345,14 +345,14 @@ public final class GeoDriverFFMLong {
 
     //    @Override
     public int getNearestZ(int geoX, int geoY, int worldZ) {
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
 
         int regionFirstBlockIndex = (int) INT_HANDLE.get(regionFirstBlockIndexes, 4L * regionIndex);
         if (regionFirstBlockIndex == NO_INDEX) {
             return NullRegionBytes.getNearestZ(geoX, geoY, worldZ);
         }
 
-        int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
+        int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
 
         byte blockType = (byte) BYTE_HANDLE.get(blockTypesRO, (long) (regionFirstBlockIndex + blockIndexInRegion));
         int blockDataOffset = (int) INT_HANDLE.get(blockDataOffsetsRO, 4L * (regionFirstBlockIndex + blockIndexInRegion));

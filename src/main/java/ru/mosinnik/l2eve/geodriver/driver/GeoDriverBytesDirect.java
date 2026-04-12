@@ -420,7 +420,7 @@ public final class GeoDriverBytesDirect implements IGeoDriver {
 
     @Override
     public boolean hasGeoPos(int geoX, int geoY) {
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {
             return false;
@@ -429,25 +429,19 @@ public final class GeoDriverBytesDirect implements IGeoDriver {
     }
 
     public int getBlockType(int geoX, int geoY) {
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {
             return -1;
         }
 
-        int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
+        int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
 
         return blockTypes[regionFirstBlockIndex + blockIndexInRegion];
     }
 
     @Override
     public boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe) {
-        // 1. get block type by geo x/y
-        // 2. get block offset by geo x/y
-        // 2.1 get region offset of first region block
-        // 2.2 calc
-        // 3. call block logic with offset
-
         int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {

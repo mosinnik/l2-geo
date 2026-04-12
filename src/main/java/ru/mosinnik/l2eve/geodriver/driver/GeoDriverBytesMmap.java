@@ -100,7 +100,7 @@ public final class GeoDriverBytesMmap implements IGeoDriver {
 
     @Override
     public boolean hasGeoPos(int geoX, int geoY) {
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {
             return false;

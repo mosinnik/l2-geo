@@ -24,7 +24,6 @@ package ru.mosinnik.l2eve.geodriver.driver;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.openjdk.jmh.annotations.CompilerControl;
 import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 import ru.mosinnik.l2eve.geodriver.abstraction.IGeoDriver;
 import ru.mosinnik.l2eve.geodriver.abstraction.IRegion;
@@ -437,7 +436,7 @@ public final class GeoDriverBytes2 implements IGeoDriver {
 
     @Override
     public boolean hasGeoPos(int geoX, int geoY) {
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {
             return false;
@@ -446,13 +445,13 @@ public final class GeoDriverBytes2 implements IGeoDriver {
     }
 
     public int getBlockType(int geoX, int geoY) {
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {
             return -1;
         }
 
-        int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
+        int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
 
         return blockTypes[regionFirstBlockIndex + blockIndexInRegion];
     }
@@ -467,13 +466,13 @@ public final class GeoDriverBytes2 implements IGeoDriver {
         // 2.2 calc
         // 3. call block logic with offset
 
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {
             return NullRegionBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);
         }
 
-        int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
+        int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
 
 //        long blockDatum = blockData[regionFirstBlockIndex + blockIndexInRegion];
 //        byte blockType = (byte) ((blockDatum >> 32) & 0xFF);
@@ -532,13 +531,13 @@ public final class GeoDriverBytes2 implements IGeoDriver {
 
     @Override
     public int getNearestZ(int geoX, int geoY, int worldZ) {
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {
             return NullRegionBytes.getNearestZ(geoX, geoY, worldZ);
         }
 
-        int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
+        int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
 
 //        byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
 //        int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
@@ -592,13 +591,13 @@ public final class GeoDriverBytes2 implements IGeoDriver {
 
     @Override
     public int getNextLowerZ(int geoX, int geoY, int worldZ) {
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {
             return NullRegionBytes.getNextLowerZ(geoX, geoY, worldZ);
         }
 
-        int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
+        int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
 
 //        byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
 //        int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
@@ -652,13 +651,13 @@ public final class GeoDriverBytes2 implements IGeoDriver {
 
     @Override
     public int getNextHigherZ(int geoX, int geoY, int worldZ) {
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {
             return NullRegionBytes.getNextHigherZ(geoX, geoY, worldZ);
         }
 
-        int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
+        int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
 
 //        byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
 //        int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];

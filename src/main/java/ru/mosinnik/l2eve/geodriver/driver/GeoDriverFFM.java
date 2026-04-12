@@ -292,7 +292,7 @@ public final class GeoDriverFFM {
         // 2.2 calc
         // 3. call block logic with offset
 
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
 
 //        int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
 //        int regionFirstBlockIndex = regionFirstBlockIndexesRO.getAtIndex(JAVA_INT, regionIndex);
@@ -310,7 +310,7 @@ public final class GeoDriverFFM {
             return NullRegionBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);
         }
 
-        int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
+        int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
 
 //        byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
 //        byte blockType = blockTypesRO.getAtIndex(JAVA_BYTE, regionFirstBlockIndex + blockIndexInRegion);
@@ -371,14 +371,14 @@ public final class GeoDriverFFM {
 
     //    @Override
     public int getNearestZ(int geoX, int geoY, int worldZ) {
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
 //        int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         int regionFirstBlockIndex = regionFirstBlockIndexes.getAtIndex(JAVA_INT, regionIndex);
         if (regionFirstBlockIndex == NO_INDEX) {
             return NullRegionBytes.getNearestZ(geoX, geoY, worldZ);
         }
 
-        int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
+        int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
 
 //        byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
 //        int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];

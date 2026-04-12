@@ -24,7 +24,6 @@ package ru.mosinnik.l2eve.geodriver.driver;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.openjdk.jmh.annotations.CompilerControl;
 import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 import ru.mosinnik.l2eve.geodriver.abstraction.IGeoDriver;
 import ru.mosinnik.l2eve.geodriver.abstraction.IRegion;
@@ -419,7 +418,7 @@ public final class GeoDriverBytes implements IGeoDriver {
 
     @Override
     public boolean hasGeoPos(int geoX, int geoY) {
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {
             return false;
@@ -428,39 +427,30 @@ public final class GeoDriverBytes implements IGeoDriver {
     }
 
     public int getBlockType(int geoX, int geoY) {
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {
             return -1;
         }
 
-        int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
+        int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
 
         return blockTypes[regionFirstBlockIndex + blockIndexInRegion];
     }
 
-//    public static Map<Integer, AtomicInteger> blockTypesCount = new HashMap<>();
-
     @Override
     public boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe) {
-        // 1. get block type by geo x/y
-        // 2. get block offset by geo x/y
-        // 2.1 get region offset of first region block
-        // 2.2 calc
-        // 3. call block logic with offset
-
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {
             return NullRegionBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);
         }
 
-        int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
+        int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
+        int blockIndex = regionFirstBlockIndex + blockIndexInRegion;
 
-        byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
-//        blockTypesCount.computeIfAbsent((int) blockType, k -> new AtomicInteger()).incrementAndGet();
-
-        int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
+        byte blockType = blockTypes[blockIndex];
+        int blockDataOffset = blockDataOffsets[blockIndex];
         switch (blockType) {
             case FLAT_BLOCK -> {
                 return FlatBlockFromOffsetBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);
@@ -502,16 +492,17 @@ public final class GeoDriverBytes implements IGeoDriver {
 
     @Override
     public int getNearestZ(int geoX, int geoY, int worldZ) {
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {
             return NullRegionBytes.getNearestZ(geoX, geoY, worldZ);
         }
 
-        int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
+        int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
+        int blockIndex = regionFirstBlockIndex + blockIndexInRegion;
 
-        byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
-        int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
+        byte blockType = blockTypes[blockIndex];
+        int blockDataOffset = blockDataOffsets[blockIndex];
         switch (blockType) {
             case FLAT_BLOCK -> {
                 return FlatBlockFromOffsetBytes.getNearestZ(geoX, geoY, worldZ, blockDataOffset, data);
@@ -552,16 +543,17 @@ public final class GeoDriverBytes implements IGeoDriver {
 
     @Override
     public int getNextLowerZ(int geoX, int geoY, int worldZ) {
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {
             return NullRegionBytes.getNextLowerZ(geoX, geoY, worldZ);
         }
 
-        int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
+        int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
+        int blockIndex = regionFirstBlockIndex + blockIndexInRegion;
 
-        byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
-        int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
+        byte blockType = blockTypes[blockIndex];
+        int blockDataOffset = blockDataOffsets[blockIndex];
         switch (blockType) {
             case FLAT_BLOCK -> {
                 return FlatBlockFromOffsetBytes.getNextLowerZ(geoX, geoY, worldZ, blockDataOffset, data);
@@ -602,16 +594,17 @@ public final class GeoDriverBytes implements IGeoDriver {
 
     @Override
     public int getNextHigherZ(int geoX, int geoY, int worldZ) {
-        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {
             return NullRegionBytes.getNextHigherZ(geoX, geoY, worldZ);
         }
 
-        int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
+        int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
+        int blockIndex = regionFirstBlockIndex + blockIndexInRegion;
 
-        byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
-        int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
+        byte blockType = blockTypes[blockIndex];
+        int blockDataOffset = blockDataOffsets[blockIndex];
         switch (blockType) {
             case FLAT_BLOCK -> {
                 return FlatBlockFromOffsetBytes.getNextHigherZ(geoX, geoY, worldZ, blockDataOffset, data);
