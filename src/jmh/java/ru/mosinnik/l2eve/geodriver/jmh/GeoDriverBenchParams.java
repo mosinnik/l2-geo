@@ -25,6 +25,8 @@ package ru.mosinnik.l2eve.geodriver.jmh;
 import lombok.SneakyThrows;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
+import org.openjdk.jmh.profile.LinuxPerfAsmProfiler;
+import org.openjdk.jmh.profile.LinuxPerfNormProfiler;
 import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.ChainedOptionsBuilder;
@@ -96,7 +98,7 @@ public class GeoDriverBenchParams {
 //                .addProfiler(Prof.class)
 //                .addProfiler(LinuxPerfAsmProfiler.class)
 //                .addProfiler(LinuxPerfProfiler.class)
-//                .addProfiler(LinuxPerfNormProfiler.class)
+                .addProfiler(LinuxPerfNormProfiler.class)
 //                .addProfiler(AsyncProfiler.class, "output=flamegraph")
 //                .resultFormat(ResultFormatType.JSON)
                 ;
@@ -136,10 +138,10 @@ public class GeoDriverBenchParams {
         Point[] checkPointsArr;
 
         @Param({
-                "RANDOM",
+//                "RANDOM",
                 "FLAT_BLOCK",
-                "COMPLEX_BLOCK",
-                "MULTILAYER_BLOCK",
+//                "COMPLEX_BLOCK",
+//                "MULTILAYER_BLOCK",
 //                "ONE_HEIGHT_COMPLEX_BLOCK",
 //                "BASE_HEIGHT_COMPLEX_BLOCK",
 //                "BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK",

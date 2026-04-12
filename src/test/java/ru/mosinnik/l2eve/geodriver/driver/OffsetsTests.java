@@ -109,6 +109,34 @@ public class OffsetsTests {
     }
 
 
+    @Ignore("Just info")
+    @Test
+    public void regionIndexInfo() {
+
+        // WORLD_MIN_X <= worldX <= WORLD_MAX_X
+        int worldX = -12314;
+        // WORLD_MIN_Y <= worldY <= WORLD_MAX_Y
+        int worldY = 42141;
+
+        // [0, 2^16)
+        int geoX = getGeoX(worldX);
+        // [0, 2^16)
+        int geoY = getGeoY(worldY);
+
+        // [0, 2^5)
+        int tX = geoX >> 11;
+        // [2^5, 2^10)
+        int tX2 = tX << 5;
+        // [0, 2^5)
+        int tY = geoY >> 11;
+        // [0, 2^10)
+        int regionIndex = tX2 + tY;
+
+//        int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+
+    }
+
+
     /**
      * result in [0, (WORLD_MAX_X-WORLD_MIN_X) >> 4]
      * = [0, (2^20) >> 4)
