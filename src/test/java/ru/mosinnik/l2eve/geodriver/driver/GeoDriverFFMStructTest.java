@@ -39,7 +39,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.*;
+import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.GEODATA_DIR;
+import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.TST_BLOCK_RESOURCE_BIGGEST;
 
 public class GeoDriverFFMStructTest {
 
@@ -92,7 +93,7 @@ public class GeoDriverFFMStructTest {
 //        geoConfig.setFewHeightsOneNsweComplexBlockEnabled(true);
 //        geoConfig.setNoHolesMultilayerBlockEnabled(true);
 //        geoConfig.setIndexedMultilayerBlockEnabled(true);
-//        geoConfig.setIndexed32MultilayerBlockEnabled(true);
+        geoConfig.setIndexed32MultilayerBlockEnabled(true);
 
         GeoDriver oldDriver = new GeoDriver(new GeoConfig());
         oldDriver.loadRegion(resource.toPath());
@@ -168,12 +169,13 @@ public class GeoDriverFFMStructTest {
                             throw new AssertionError("Nearest NSWE did not match: expected=" + expected + ", actual=" + actual);
                         }
                         assertEquals(
+//                                "Error at x = " + x + ", y = " + y + ", z = " + z + ", l = " + l + ", block = " + block,
                                 expected,
                                 actual
                         );
                     }
                     assertEquals(
-                            "Error at x = " + x + ", y = " + y + ", z = " + z + ", block = " + block,
+//                            "Error at x = " + x + ", y = " + y + ", z = " + z + ", block = " + block,
                             oldDriver.getNearestZ(x, y, z),
                             driver.getNearestZ(x, y, z)
                     );

@@ -32,6 +32,7 @@ import ru.mosinnik.l2eve.geodriver.bytes.FlatBlockFromOffsetBytes;
 import ru.mosinnik.l2eve.geodriver.bytes.NullRegionBytes;
 import ru.mosinnik.l2eve.geodriver.ffm.ComplexBlockFFM;
 import ru.mosinnik.l2eve.geodriver.ffm.FlatBlockFromOffsetFFM;
+import ru.mosinnik.l2eve.geodriver.ffm.Indexed32MultilayerBlockFFM;
 import ru.mosinnik.l2eve.geodriver.ffm.MultilayerBlockFFM;
 import ru.mosinnik.l2eve.geodriver.regions.Region;
 import ru.mosinnik.l2eve.geodriver.util.RegionCoords;
@@ -56,7 +57,10 @@ import static ru.mosinnik.l2eve.geodriver.ffm.MultilayerBlockFFM.BYTE_HANDLE;
 import static ru.mosinnik.l2eve.geodriver.ffm.MultilayerBlockFFM.INT_HANDLE;
 
 /**
- * FFM
+ * FFM.
+ * Починенная реализация GeoDriverFFM с указанием оффсета как long и явного указания типа возврата, чтобы
+ * сработал корректный выбор native реализации по сигнатуре.
+ *
  */
 @Slf4j
 public final class GeoDriverFFMLong {
@@ -64,23 +68,11 @@ public final class GeoDriverFFMLong {
     public static final int REGIONS_INDEXES_SIZE = GeoConstants.GEO_REGIONS_X * GeoConstants.GEO_REGIONS_Y;
     private final GeoConfig config;
 
-    //    // гео данные
-//    private ByteBuffer data;
-//
-    // по индексу содержится оффсет первого блока региона в blockTypes и blockDataOffsets
-    // offset at `blockDataOffsets` array of first region block
-//    private final int[] regionFirstBlockIndexes = new int[GEO_REGIONS_X * GEO_REGIONS_Y]; //1024
-
-//    private byte[] blockTypes;
-
-    // оффсет начала блока в data
-//    private int[] blockDataOffsets;
-
-    MemorySegment regionFirstBlockIndexes;
-    MemorySegment blockTypes;
-    MemorySegment blockDataOffsets;
-    MemorySegment data;
-    MemorySegment dataShorts;
+    private MemorySegment regionFirstBlockIndexes;
+    private MemorySegment blockTypes;
+    private MemorySegment blockDataOffsets;
+    private MemorySegment data;
+    private MemorySegment dataShorts;
 
 
     private final MemorySegment regionFirstBlockIndexesRO;
@@ -89,13 +81,6 @@ public final class GeoDriverFFMLong {
     private final MemorySegment dataRO;
     private final MemorySegment dataShortsRO;
 
-//    public GeoDriverFFM() {
-//        config = new GeoConfig();
-//    }
-//
-//    public GeoDriverFFM(GeoConfig config) {
-//        this.config = config;
-//    }
 
     public GeoDriverFFMLong(GeoConfig config, Path geoDataDir) {
         this.config = config;
@@ -184,17 +169,12 @@ public final class GeoDriverFFMLong {
 
         regionFirstBlockIndexes = global.allocate(JAVA_INT, REGIONS_INDEXES_SIZE);
 
-//        data = ByteBuffer.allocate(dataSize);
-//        blockTypes = new byte[totalBlockCount];
-//        blockDataOffsets = new int[totalBlockCount];
-
         data = global.allocate(JAVA_BYTE, dataSize);
         dataShorts = global.allocate(ComplexBlockFFM.SHORT_LAYOUT, dataShortSize / 2);
 
         blockTypes = global.allocate(JAVA_BYTE, totalBlockCount);
         blockDataOffsets = global.allocate(JAVA_INT, totalBlockCount);
 
-//        Arrays.fill(regionFirstBlockIndexes, NO_INDEX);
         for (int i = 0; i < REGIONS_INDEXES_SIZE; i++) {
             regionFirstBlockIndexes.setAtIndex(JAVA_INT, i, NO_INDEX);
         }
@@ -207,23 +187,19 @@ public final class GeoDriverFFMLong {
             int regionFirstBlockIndex = blockIndex;
 
             final int regionIndex = (regionCoordinated.regionX() * GEO_REGIONS_Y) + regionCoordinated.regionY();
-//            regionFirstBlockIndexes[regionIndex] = regionFirstBlockIndex;
             regionFirstBlockIndexes.setAtIndex(JAVA_INT, regionIndex, regionFirstBlockIndex);
 
             for (int i = 0; i < IRegion.REGION_BLOCKS; i++) {
                 IBlock block = region.getBlock(i);
 
                 byte blockType = getType(block);
-//                blockTypes[blockIndex] = blockType;
                 blockTypes.set(JAVA_BYTE, blockIndex, blockType);
 
                 switch (blockType) {
                     case FLAT_BLOCK -> {
-//                        blockDataOffsets[blockIndex] = FlatBlockFromOffsetBytes.getHeight((FlatBlock) block);
                         blockDataOffsets.setAtIndex(JAVA_INT, blockIndex, FlatBlockFromOffsetBytes.getHeight((FlatBlock) block));
                     }
                     case COMPLEX_BLOCK -> {
-//                        blockDataOffsets[blockIndex] = blockDataShortOffset;
                         blockDataOffsets.setAtIndex(JAVA_INT, blockIndex, blockDataShortOffset);
 
                         short[] shorts = ((ComplexBlock) block).getData();
@@ -233,11 +209,8 @@ public final class GeoDriverFFMLong {
                         blockDataShortOffset += 2 * shorts.length;
                     }
                     default -> {
-//                                            int blockDataOffset = data.position();
-//                                            blockDataOffsets[blockIndex] = blockDataOffset;
                         blockDataOffsets.setAtIndex(JAVA_INT, blockIndex, blockDataOffset);
 
-                        //                    appendBytes(block, data);
                         byte[] bytes = toBytes(block);
                         MemorySegment.copy(bytes, 0, data, JAVA_BYTE, blockDataOffset, bytes.length);
                         blockDataOffset += bytes.length;
@@ -286,15 +259,9 @@ public final class GeoDriverFFMLong {
 
     //    @Override
     public boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe) {
-        // 1. get block type by geo x/y
-        // 2. get block offset by geo x/y
-        // 2.1 get region offset of first region block
-        // 2.2 calc
-        // 3. call block logic with offset
-
         int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
 
-        int regionFirstBlockIndex = (int) INT_HANDLE.get(regionFirstBlockIndexes, 4L * regionIndex);
+        int regionFirstBlockIndex = (int) INT_HANDLE.get(regionFirstBlockIndexesRO, 4L * regionIndex);
         if (regionFirstBlockIndex == NO_INDEX) {
             return NullRegionBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);
         }
@@ -336,7 +303,8 @@ public final class GeoDriverFFMLong {
                 throw new UnsupportedOperationException("Not supported yet: IndexedMultilayerBlockBytes");
             }
             case INDEXED_32_MULTILAYER_BLOCK -> {
-                throw new UnsupportedOperationException("Not supported yet: Indexed32MultilayerBlockBytes");
+                return Indexed32MultilayerBlockFFM.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, dataRO);
+//                throw new UnsupportedOperationException("Not supported yet: Indexed32MultilayerBlockBytes");
             }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }
@@ -388,9 +356,10 @@ public final class GeoDriverFFMLong {
 //            case INDEXED_MULTILAYER_BLOCK -> {
 //                return IndexedMultilayerBlockBytes.getNearestZ(geoX, geoY, worldZ, blockDataOffset, data);
 //            }
-//            case INDEXED_32_MULTILAYER_BLOCK -> {
-//                return Indexed32MultilayerBlockBytes.getNearestZ(geoX, geoY, worldZ, blockDataOffset, data);
-//            }
+            case INDEXED_32_MULTILAYER_BLOCK -> {
+                return Indexed32MultilayerBlockFFM.getNearestZ(geoX, geoY, worldZ, blockDataOffset, dataRO);
+//                throw new UnsupportedOperationException("Not supported yet: Indexed32MultilayerBlockBytes");
+            }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }
     }
