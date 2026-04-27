@@ -62,7 +62,7 @@ public final class ComplexBlockBytes {
      */
     private static int getCellNSWE(int geoX, int geoY, int blockDataOffset, ByteBuffer data) {
         int cellOffset = ((geoX & 0x07) << 3) + (geoY & 0x07);
-        return data.getShort(blockDataOffset + 2 * cellOffset) & 0x0F;
+        return data.getShort(blockDataOffset + 2 * cellOffset);
     }
 
 
