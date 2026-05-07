@@ -25,6 +25,7 @@ package ru.mosinnik.l2eve.geodriver.jmh;
 import lombok.SneakyThrows;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
+import org.openjdk.jmh.profile.LinuxPerfAsmProfiler;
 import org.openjdk.jmh.profile.LinuxPerfNormProfiler;
 import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
@@ -98,7 +99,6 @@ public class GeoDriverBenchParams {
 //                .addProfiler(LinuxPerfAsmProfiler.class)
 //                .addProfiler(LinuxPerfProfiler.class)
 //                .addProfiler(LinuxPerfNormProfiler.class)
-//                .addProfiler(LinuxPerfNormProfiler.class, "event=instructions,cycles,branches,branch-misses,IPC")
                 .addProfiler(LinuxPerfNormProfiler.class, "event=instructions,cycles,branches,branch-misses")
 //                .addProfiler(AsyncProfiler.class, "output=flamegraph")
 //                .resultFormat(ResultFormatType.JSON)
@@ -125,6 +125,7 @@ public class GeoDriverBenchParams {
         GeoDriverBytes driverBytes;
         GeoDriverBytesDirect driverBytesDirect;
         GeoDriverBytesDirectInl driverBytesDirectInl;
+        GeoDriverBytesDirectInlO driverBytesDirectInlO;
         GeoDriverBytesDirectIR driverBytesDirectIR;
         GeoDriverBytesDirectIf driverBytesDirectIf;
         GeoDriverBytesDirectIfCmp driverBytesDirectIfCmp;
@@ -193,6 +194,8 @@ public class GeoDriverBenchParams {
             driverBytesDirect.loadFromL2J(List.of(resource.toPath()));
             driverBytesDirectInl = new GeoDriverBytesDirectInl(geoConfig);
             driverBytesDirectInl.loadFromL2J(List.of(resource.toPath()));
+            driverBytesDirectInlO = new GeoDriverBytesDirectInlO(geoConfig);
+            driverBytesDirectInlO.loadFromL2J(List.of(resource.toPath()));
 //            driverBytesDirectIR = new GeoDriverBytesDirectIR(geoConfig);
 //            driverBytesDirectIR.loadFromL2J(List.of(resource.toPath()));
 //            driverBytesDirectIf = new GeoDriverBytesDirectIf(geoConfig);
@@ -402,10 +405,19 @@ public class GeoDriverBenchParams {
         }
     }
 
+//    @Benchmark
+//    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
+//    public void checkNearestNSWEBytesDirectInl(Blackhole blackhole, MyState state) {
+//        GeoDriverBytesDirectInl driver = state.driverBytesDirectInl;
+//        for (Point checkPoint : state.checkPointsArr) {
+//            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
+//        }
+//    }
+
     @Benchmark
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)
-    public void checkNearestNSWEBytesDirectInl(Blackhole blackhole, MyState state) {
-        GeoDriverBytesDirectInl driver = state.driverBytesDirectInl;
+    public void checkNearestNSWEBytesDirectInlO(Blackhole blackhole, MyState state) {
+        GeoDriverBytesDirectInlO driver = state.driverBytesDirectInlO;
         for (Point checkPoint : state.checkPointsArr) {
             blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
         }

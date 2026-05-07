@@ -74,7 +74,18 @@ public final class ComplexBlockBytes {
 
 
     public static boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe, int blockDataOffset, ByteBuffer data) {
-        return (getCellNSWE(geoX, geoY, blockDataOffset, data) & nswe) == nswe;
+        int cellOffset = ((geoX & 0x07) << 3) + (geoY & 0x07);
+        return (data.getShort(blockDataOffset + 2 * cellOffset) & nswe) == nswe;
+//        return (getCellNSWE(geoX, geoY, blockDataOffset, data) & nswe) == nswe;
+    }
+
+    /**
+     * убирание worldZ дает буст 4356 -> 4496, и снижение на 2 цикла (71->69)
+     */
+    public static boolean checkNearestNSWE2(int geoX, int geoY, byte nswe, int blockDataOffset, ByteBuffer data) {
+        int cellOffset = ((geoX & 0x07) << 3) + (geoY & 0x07);
+        return (data.getShort(blockDataOffset + 2 * cellOffset) & nswe) == nswe;
+//        return (getCellNSWE(geoX, geoY, blockDataOffset, data) & nswe) == nswe;
     }
 
     public static int getNearestZ(int geoX, int geoY, int worldZ, int blockDataOffset, ByteBuffer data) {
