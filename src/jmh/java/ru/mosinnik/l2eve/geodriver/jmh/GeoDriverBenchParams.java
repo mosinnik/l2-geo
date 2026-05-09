@@ -130,8 +130,6 @@ public class GeoDriverBenchParams {
         GeoDriverBytesDirectIfCmp driverBytesDirectIfCmp;
         GeoDriverBytesGen driverBytesGen;
         GeoDriverBytes2 driverBytes2;
-        GeoDriverBytesMH driverBytesMH;
-        GeoDriverBytesMH_cmp driverBytesMHCmp;
         GeoDriverBytesMmap driverBytesMmap;
         GeoDriverFFM driverFFM;
         GeoDriverFFMStruct driverFFMStruct;
@@ -205,10 +203,6 @@ public class GeoDriverBenchParams {
             driverBytesGen.loadFromL2J(List.of(resource.toPath()));
             driverBytes2 = new GeoDriverBytes2(geoConfig);
             driverBytes2.loadFromL2J(List.of(resource.toPath()));
-            driverBytesMH = new GeoDriverBytesMH();
-            driverBytesMH.loadFromL2J(List.of(resource.toPath()));
-            driverBytesMHCmp = new GeoDriverBytesMH_cmp();
-            driverBytesMHCmp.loadFromL2J(List.of(resource.toPath()));
 
             driverFFM = new GeoDriverFFM(geoConfig, List.of(resource.toPath()));
             driverFFMT = new GeoDriverFFMT(geoConfig, List.of(resource.toPath()));
@@ -458,25 +452,6 @@ public class GeoDriverBenchParams {
             blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
         }
     }
-
-    @Benchmark
-    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
-    public void checkNearestNSWE_MH(Blackhole blackhole, MyState state) {
-        GeoDriverBytesMH driver = state.driverBytesMH;
-        for (Point checkPoint : state.checkPointsArr) {
-            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
-        }
-    }
-
-    @Benchmark
-    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
-    public void checkNearestNSWE_MH_CMP(Blackhole blackhole, MyState state) {
-        GeoDriverBytesMH_cmp driver = state.driverBytesMHCmp;
-        for (Point checkPoint : state.checkPointsArr) {
-            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
-        }
-    }
-
 
     @Benchmark
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)
