@@ -60,7 +60,7 @@ public class GeoDriverFFMLongTest {
 //        geoConfig.setIndexed32MultilayerBlockEnabled(true);
 
 
-        GeoDriverFFM driver = new GeoDriverFFM(geoConfig, Path.of(geodataDir));
+        GeoDriverFFMLong driver = new GeoDriverFFMLong(geoConfig, Path.of(geodataDir));
 
 //        driver.loadL2J(Path.of(geodataDir));
 
