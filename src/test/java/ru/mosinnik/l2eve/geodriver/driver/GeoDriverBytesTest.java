@@ -65,6 +65,7 @@ public class GeoDriverBytesTest {
         String binGeoDataDir = GEODATA_BIN_DIR;
         driver.writeToFiles(Path.of(binGeoDataDir));
 
+        System.setProperty("jol.magicFieldOffset", "true");
         GraphLayout graphLayout = GraphLayout.parseInstance(driver);
         System.out.println("footprint = " + graphLayout.toFootprint());
         System.out.println("totalCount = " + graphLayout.totalCount());
@@ -119,6 +120,7 @@ public class GeoDriverBytesTest {
         Instant t2 = Instant.now();
         System.out.println("Geo loadBin for " + t1.until(t2, ChronoUnit.MILLIS) + "ms");
 
+        System.setProperty("jol.magicFieldOffset", "true");
         GraphLayout graphLayout = GraphLayout.parseInstance(driver);
         System.out.println("footprint = " + graphLayout.toFootprint());
         System.out.println("totalCount = " + graphLayout.totalCount());
