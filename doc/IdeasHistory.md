@@ -147,6 +147,22 @@ data = ByteBuffer.allocateDirect(dataSize);
 
 Результаты показали, что стало заметно хуже (см. коммент в GeoDriverBytesDirectInl) даже с включением более агрессивных С1 опций компиляции.
 
+## GeoDriverBytesDirectIR
+
+Нужен был для переработки вычисления индекса с
+```
+int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
+```
+на
+```
+int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
+int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
+```
+
+Дало небольшой буст (почти 10% на флете).
+
+Переработка уже применена по всем драйверам кроме базового GeoDriver.
 
 
 ## If
