@@ -79,7 +79,10 @@ public final class GeoDriverBytes implements IGeoDriver {
 
     @SneakyThrows
     public void writeToFiles(Path dataDir) {
-        Files.write(dataDir.resolve(DATA_FILE_NAME), data.array());
+        data.rewind();
+        byte[] bytes = new byte[data.remaining()];
+        data.get(bytes);
+        Files.write(dataDir.resolve(DATA_FILE_NAME), bytes);
         log.info("Updated data file: {}", DATA_FILE_NAME);
 
         Files.write(dataDir.resolve(REGION_FIRST_BLOCK_INDEXES_FILE_NAME), asBytes(regionFirstBlockIndexes));
