@@ -97,8 +97,8 @@ public class GeoDriverBenchParams {
 //                .addProfiler(Prof.class)
 //                .addProfiler(LinuxPerfAsmProfiler.class)
 //                .addProfiler(LinuxPerfProfiler.class)
-//                .addProfiler(LinuxPerfNormProfiler.class)
-                .addProfiler(LinuxPerfNormProfiler.class, "event=instructions,cycles,branches,branch-misses")
+                .addProfiler(LinuxPerfNormProfiler.class)
+//                .addProfiler(LinuxPerfNormProfiler.class, "event=instructions,cycles,branches,branch-misses")
 //                .addProfiler(AsyncProfiler.class, "output=flamegraph")
 //                .resultFormat(ResultFormatType.JSON)
                 ;
@@ -242,14 +242,14 @@ public class GeoDriverBenchParams {
 //        }
 //    }
 //
-    @Benchmark
-    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
-    public void checkNearestNSWE_base(Blackhole blackhole, MyState state) {
-        GeoDriver driver = state.driver;
-        for (Point checkPoint : state.checkPointsArr) {
-            blackhole.consume(driver.checkNearestNSWE_base(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
-        }
-    }
+//    @Benchmark
+//    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
+//    public void checkNearestNSWE_base(Blackhole blackhole, MyState state) {
+//        GeoDriver driver = state.driver;
+//        for (Point checkPoint : state.checkPointsArr) {
+//            blackhole.consume(driver.checkNearestNSWE_base(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
+//        }
+//    }
 
 
     //----  geo old driver
