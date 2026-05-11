@@ -85,14 +85,61 @@
 - в таком виде нет, нужно правильно использовать типы, чтобы JVM подставляла вызов уже оптимизированной реализации get
 
 
-### FFM Struct
-//todo
+## GeoDriverBytesDirect
 
-### FFM Long
-//todo
+Нужен был для сравнения с просто Bytes с простой аллокацией
 
-### FFM T
-//todo
+В Bytes:
+```
+data = ByteBuffer.allocate(dataSize);
+```
+
+В BytesDirect:
+```
+data = ByteBuffer.allocateDirect(dataSize);
+```
+
+Тесты:
+```
++------------------------------------------------+-----+-------+-------+------------+-------------------+-----+-------------------+
+|Benchmark                                       |Mode |Threads|Samples|Score       |Score Error (99.9%)|Unit |Param: blockTypeStr|
++------------------------------------------------+-----+-------+-------+------------+-------------------+-----+-------------------+
+|GeoDriverBenchParams.checkNearestNSWEBytes      |thrpt|4      |5      |3072.019839 |17.721235          |ops/s|RANDOM             |
+|GeoDriverBenchParams.checkNearestNSWEBytes      |thrpt|4      |5      |22588.692226|196.367394         |ops/s|FLAT_BLOCK         |
+|GeoDriverBenchParams.checkNearestNSWEBytes      |thrpt|4      |5      |4266.889195 |146.113485         |ops/s|COMPLEX_BLOCK      |
+|GeoDriverBenchParams.checkNearestNSWEBytes      |thrpt|4      |5      |631.006946  |2.588672           |ops/s|MULTILAYER_BLOCK   |
+|GeoDriverBenchParams.checkNearestNSWEBytesDirect|thrpt|4      |5      |3193.721821 |18.856030          |ops/s|RANDOM             |
+|GeoDriverBenchParams.checkNearestNSWEBytesDirect|thrpt|4      |5      |22505.896806|153.397689         |ops/s|FLAT_BLOCK         |
+|GeoDriverBenchParams.checkNearestNSWEBytesDirect|thrpt|4      |5      |4244.745054 |206.961012         |ops/s|COMPLEX_BLOCK      |
+|GeoDriverBenchParams.checkNearestNSWEBytesDirect|thrpt|4      |5      |699.276550  |2.820715           |ops/s|MULTILAYER_BLOCK   |
+|GeoDriverBenchParams.checkNearestNSWEBytesMmap  |thrpt|4      |5      |3166.568647 |14.693397          |ops/s|RANDOM             |
+|GeoDriverBenchParams.checkNearestNSWEBytesMmap  |thrpt|4      |5      |22533.233742|176.378750         |ops/s|FLAT_BLOCK         |
+|GeoDriverBenchParams.checkNearestNSWEBytesMmap  |thrpt|4      |5      |4287.074307 |195.556767         |ops/s|COMPLEX_BLOCK      |
+|GeoDriverBenchParams.checkNearestNSWEBytesMmap  |thrpt|4      |5      |701.594391  |3.710670           |ops/s|MULTILAYER_BLOCK   |
++------------------------------------------------+-----+-------+-------+------------+-------------------+-----+-------------------+
+```
+
+С директ аллокацией как и в mmap. Раньше bytes выделялся на хипе и обращение к нему немного дороже
+
+```
++-------------------------------------------------------------+-----+-------+-------+-------------+-------------------+-----+-------------------+
+|Benchmark                                                    |Mode |Threads|Samples|Score        |Score Error (99.9%)|Unit |Param: blockTypeStr|
++-------------------------------------------------------------+-----+-------+-------+-------------+-------------------+-----+-------------------+
+|GeoDriverBenchParams.checkNearestNSWEBytes                   |thrpt|4      |5      |3072.019839  |17.721235          |ops/s|RANDOM             |
+|GeoDriverBenchParams.checkNearestNSWEBytes:branches          |thrpt|4      |1      |115275.863100|NaN                |#/op |RANDOM             |
+|GeoDriverBenchParams.checkNearestNSWEBytes:instructions      |thrpt|4      |1      |870862.596804|NaN                |#/op |RANDOM             |
+|GeoDriverBenchParams.checkNearestNSWEBytesDirect             |thrpt|4      |5      |3193.721821  |18.856030          |ops/s|RANDOM             |
+|GeoDriverBenchParams.checkNearestNSWEBytesDirect:branches    |thrpt|4      |1      |100021.879711|NaN                |#/op |RANDOM             |
+|GeoDriverBenchParams.checkNearestNSWEBytesDirect:instructions|thrpt|4      |1      |811977.523570|NaN                |#/op |RANDOM             |
+|GeoDriverBenchParams.checkNearestNSWEBytesMmap               |thrpt|4      |5      |3166.568647  |14.693397          |ops/s|RANDOM             |
+|GeoDriverBenchParams.checkNearestNSWEBytesMmap:branches      |thrpt|4      |1      |100120.388986|NaN                |#/op |RANDOM             |
+|GeoDriverBenchParams.checkNearestNSWEBytesMmap:instructions  |thrpt|4      |1      |813113.619221|NaN                |#/op |RANDOM             |
++-------------------------------------------------------------+-----+-------+-------+-------------+-------------------+-----+-------------------+
+```
+
+По бранч и инструкция директ и ммап одинаковы, а bytes на 6 инструкций дороже и на 1 бранч больше.
+
+Потенциал: нужно переносить в Bytes и убирать Direct.  
 
 ## If
 //todo

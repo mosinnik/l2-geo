@@ -94,7 +94,9 @@ public final class GeoDriverBytes implements IGeoDriver {
 
     @SneakyThrows
     public void readFromFiles(Path dataDir) {
-        data = ByteBuffer.wrap(Files.readAllBytes(dataDir.resolve(DATA_FILE_NAME)));
+        byte[] bytes = Files.readAllBytes(dataDir.resolve(DATA_FILE_NAME));
+        data = ByteBuffer.allocateDirect(bytes.length);
+        data.put(bytes);
         log.info("Read {} bytes from data file: {}", data.capacity(), DATA_FILE_NAME);
 
         asInts(Files.readAllBytes(dataDir.resolve(REGION_FIRST_BLOCK_INDEXES_FILE_NAME)), regionFirstBlockIndexes);
@@ -168,7 +170,7 @@ public final class GeoDriverBytes implements IGeoDriver {
         }
         assert totalBlockCount == regions.size() * IRegion.REGION_BLOCKS;
 
-        data = ByteBuffer.allocate(dataSize);
+        data = ByteBuffer.allocateDirect(dataSize);
 
         blockTypes = new byte[totalBlockCount];
         blockDataOffsets = new int[totalBlockCount];
