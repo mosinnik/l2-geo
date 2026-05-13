@@ -27,14 +27,14 @@ import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 import java.nio.ByteOrder;
 
-public final class ComplexBlockFFM {
+public final class ComplexBlockFFM2 {
 
+
+    public static final ValueLayout.OfShort SHORT_LAYOUT = ValueLayout.JAVA_SHORT_UNALIGNED
+            .withOrder(ByteOrder.BIG_ENDIAN);
 
 //    public static final ValueLayout.OfShort SHORT_LAYOUT = ValueLayout.JAVA_SHORT_UNALIGNED
-//            .withOrder(ByteOrder.BIG_ENDIAN);
-
-    public static final ValueLayout.OfShort SHORT_LAYOUT = ValueLayout.JAVA_SHORT
-            .withOrder(ByteOrder.nativeOrder());
+//            .withOrder(ByteOrder.nativeOrder());
 
     /**
      * readable:
