@@ -34,14 +34,10 @@ import ru.mosinnik.l2eve.geodriver.driver.*;
 import ru.mosinnik.l2eve.geodriver.gen.GeoDriverBytesGen;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.InetAddress;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.mosinnik.l2eve.geodriver.jmh.GeoDriverTestConstants.GEODATA_BIN_DIR;
 import static ru.mosinnik.l2eve.geodriver.jmh.GeoDriverTestConstants.TST_BLOCK_RESOURCE_MOST_COMPLEX;
 import static ru.mosinnik.l2eve.geodriver.jmh.PointsPreparer.loadPoints;
 
@@ -49,7 +45,7 @@ import static ru.mosinnik.l2eve.geodriver.jmh.PointsPreparer.loadPoints;
 @Threads(4)
 @Fork(1)
 @Warmup(iterations = 5, time = 2)
-@Measurement(iterations = 5, time = 60)
+@Measurement(iterations = 5, time = 10)
 @Timeout(time = 100)
 //@BenchmarkMode(Mode.AverageTime)
 //@OutputTimeUnit(TimeUnit.MICROSECONDS)
@@ -131,12 +127,13 @@ public class GeoDriverBenchParams {
         GeoDriverFFMStruct driverFFMStruct;
         GeoDriverFFMLong driverFFMLong;
         GeoDriverFFMT driverFFMT;
+        GeoDriverFFMT_MBT driverFFMT_MBT;
         Point[] checkPointsArr;
 
         @Param({
-                "RANDOM",
-                "FLAT_BLOCK",
-                "COMPLEX_BLOCK",
+//                "RANDOM",
+//                "FLAT_BLOCK",
+//                "COMPLEX_BLOCK",
                 "MULTILAYER_BLOCK",
 //                "ONE_HEIGHT_COMPLEX_BLOCK",
 //                "BASE_HEIGHT_COMPLEX_BLOCK",
@@ -195,6 +192,7 @@ public class GeoDriverBenchParams {
 //            driverBytes2.loadFromL2J(List.of(resource.toPath()));
 
             driverFFMT = new GeoDriverFFMT(geoConfig, List.of(resource.toPath()));
+            driverFFMT_MBT = new GeoDriverFFMT_MBT(geoConfig, List.of(resource.toPath()));
 //            driverFFMStruct = new GeoDriverFFMStruct(geoConfig, List.of(resource.toPath()));
 //            driverFFMLong = new GeoDriverFFMLong(geoConfig, List.of(resource.toPath()));
 
@@ -515,6 +513,15 @@ public class GeoDriverBenchParams {
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)
     public void checkNearestNSWEFFM_T(Blackhole blackhole, MyState state) {
         GeoDriverFFMT driver = state.driverFFMT;
+        for (Point checkPoint : state.checkPointsArr) {
+            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
+        }
+    }
+
+    @Benchmark
+    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
+    public void checkNearestNSWEFFM_T_MBT(Blackhole blackhole, MyState state) {
+        GeoDriverFFMT_MBT driver = state.driverFFMT_MBT;
         for (Point checkPoint : state.checkPointsArr) {
             blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
         }

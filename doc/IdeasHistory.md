@@ -173,4 +173,14 @@ int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
 
 В целом имеет смысл в будущем вернуться к этой идее для более плотных тестов, т.к. с точки зрения количества инструкций GeoDriverFFMT2 выигрывает.
 
+## GeoDriverFFMT_MBT
+
+Вместе с MultilayerBlockFFMT нужен был для проверки? дает ли буст уход от лишних конвертаций в short при работе с layerData в Multilayer.
+А также влияние использования withInvokeExactBehavior().
+
+Тесты показали легкое, но заметное, улучшение от ухода от short. А withInvokeExactBehavior влияет на уровне погрешности.
+
+Уход от short в Multilayer уже запланирован, но пока остается базовая реализация L2J. 
+
+
 

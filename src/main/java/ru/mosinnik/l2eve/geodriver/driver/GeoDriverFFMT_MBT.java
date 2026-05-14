@@ -32,8 +32,8 @@ import ru.mosinnik.l2eve.geodriver.bytes.FlatBlockFromOffsetBytes;
 import ru.mosinnik.l2eve.geodriver.bytes.NullRegionBytes;
 import ru.mosinnik.l2eve.geodriver.ffm.ComplexBlockFFM;
 import ru.mosinnik.l2eve.geodriver.ffm.FlatBlockFromOffsetFFM;
-import ru.mosinnik.l2eve.geodriver.ffm.MultilayerBlockFFM;
 import ru.mosinnik.l2eve.geodriver.ffm.MultilayerBlockFFMT;
+import ru.mosinnik.l2eve.geodriver.ffm.MultilayerBlockFFM_IEB;
 import ru.mosinnik.l2eve.geodriver.regions.Region;
 
 import java.io.RandomAccessFile;
@@ -57,7 +57,7 @@ import static ru.mosinnik.l2eve.geodriver.driver.GeoDriverBytesConstants.*;
  * FFM
  */
 @Slf4j
-public final class GeoDriverFFMT {
+public final class GeoDriverFFMT_MBT {
 
     public static final int REGIONS_INDEXES_SIZE = GeoConstants.GEO_REGIONS_X * GeoConstants.GEO_REGIONS_Y;
     private final GeoConfig config;
@@ -95,7 +95,7 @@ public final class GeoDriverFFMT {
 //        this.config = config;
 //    }
 
-    public GeoDriverFFMT(GeoConfig config, Path geoDataDir) {
+    public GeoDriverFFMT_MBT(GeoConfig config, Path geoDataDir) {
         this.config = config;
 
         loadL2J(geoDataDir);
@@ -108,7 +108,7 @@ public final class GeoDriverFFMT {
 
     }
 
-    public GeoDriverFFMT(GeoConfig config, List<Path> paths) {
+    public GeoDriverFFMT_MBT(GeoConfig config, List<Path> paths) {
         this.config = config;
 
         loadFromL2J(paths);
@@ -339,7 +339,8 @@ public final class GeoDriverFFMT {
             }
             case MULTILAYER_BLOCK -> {
 //                System.out.println("MULTILAYER_BLOCK");
-                return MultilayerBlockFFM.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, dataRO);
+//                return MultilayerBlockFFMT.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, dataRO);
+                return MultilayerBlockFFMT.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, dataRO);
             }
             case ONE_HEIGHT_COMPLEX_BLOCK -> {
                 throw new UnsupportedOperationException("Not supported yet: ONE_HEIGHT_COMPLEX_BLOCK");
@@ -395,7 +396,7 @@ public final class GeoDriverFFMT {
 //                return ComplexBlockFFM.getNearestZ(geoX, geoY, worldZ, blockDataOffset, dataRO);
             }
             case MULTILAYER_BLOCK -> {
-                return MultilayerBlockFFM.getNearestZ(geoX, geoY, worldZ, blockDataOffset, dataRO);
+                return MultilayerBlockFFMT.getNearestZ(geoX, geoY, worldZ, blockDataOffset, dataRO);
             }
 //            case ONE_HEIGHT_COMPLEX_BLOCK -> {
 //                return OneHeightComplexBlockBytes.getNearestZ(geoX, geoY, worldZ, blockDataOffset, data);

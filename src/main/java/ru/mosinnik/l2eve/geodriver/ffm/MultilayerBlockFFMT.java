@@ -35,7 +35,7 @@ public class MultilayerBlockFFMT {
 
     private static final VarHandle INT_HANDLE = JAVA_INT.varHandle();
     //    private static final VarHandle BYTE_HANDLE = JAVA_BYTE.varHandle().withInvokeExactBehavior();
-    private static final VarHandle BYTE_HANDLE = JAVA_BYTE.varHandle().withInvokeExactBehavior();
+    private static final VarHandle BYTE_HANDLE = JAVA_BYTE.varHandle();
 
     /**
      * readable:
