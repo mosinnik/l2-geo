@@ -33,7 +33,6 @@ import ru.mosinnik.l2eve.geodriver.bytes.NullRegionBytes;
 import ru.mosinnik.l2eve.geodriver.ffm.ComplexBlockFFM;
 import ru.mosinnik.l2eve.geodriver.ffm.FlatBlockFromOffsetFFM;
 import ru.mosinnik.l2eve.geodriver.ffm.MultilayerBlockFFM;
-import ru.mosinnik.l2eve.geodriver.ffm.MultilayerBlockFFMT;
 import ru.mosinnik.l2eve.geodriver.regions.Region;
 
 import java.io.RandomAccessFile;
