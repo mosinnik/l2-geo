@@ -215,7 +215,7 @@ public final class GeoDriverBytesGen {
                 BaseDriverAgent.initialize();
             }
 
-            MappingHolder mappingHolder = TypeWork.remapTypes(blockTypes);
+            MappingHolder mappingHolder = BlockTypeMapper.remapTypes(blockTypes);
             byte[] transformedBytes = BaseDriverClassGenerator.generateTransformedClass(mappingHolder);
             BaseDriverAgent.redefineBaseDriver(transformedBytes);
 

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TypeWork {
+public class BlockTypeMapper {
 
     public static MappingHolder remapTypes(byte[] srcTypes) {
         MappingHolder holder = getOldToNewMapping(srcTypes);
