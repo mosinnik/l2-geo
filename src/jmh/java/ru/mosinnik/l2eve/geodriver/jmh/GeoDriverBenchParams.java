@@ -45,7 +45,7 @@ import static ru.mosinnik.l2eve.geodriver.jmh.PointsPreparer.loadPoints;
 @Threads(4)
 @Fork(1)
 @Warmup(iterations = 5, time = 2)
-@Measurement(iterations = 5, time = 60)
+@Measurement(iterations = 5, time = 20)
 @Timeout(time = 100)
 //@BenchmarkMode(Mode.AverageTime)
 //@OutputTimeUnit(TimeUnit.MICROSECONDS)
@@ -128,9 +128,9 @@ public class GeoDriverBenchParams {
         Point[] checkPointsArr;
 
         @Param({
-                "RANDOM",
+//                "RANDOM",
 //                "FLAT_BLOCK",
-//                "COMPLEX_BLOCK",
+                "COMPLEX_BLOCK",
 //                "MULTILAYER_BLOCK",
 //                "ONE_HEIGHT_COMPLEX_BLOCK",
 //                "BASE_HEIGHT_COMPLEX_BLOCK",
@@ -177,8 +177,8 @@ public class GeoDriverBenchParams {
 //            }
             driverBytes = new GeoDriverBytes(geoConfig);
             driverBytes.loadFromL2J(List.of(resource.toPath()));
-//            driverBytesDirectInlO = new GeoDriverBytesDirectInlO(geoConfig);
-//            driverBytesDirectInlO.loadFromL2J(List.of(resource.toPath()));
+            driverBytesDirectInlO = new GeoDriverBytesDirectInlO(geoConfig);
+            driverBytesDirectInlO.loadFromL2J(List.of(resource.toPath()));
 //            driverBytesGen = new GeoDriverBytesGen(geoConfig);
 //            driverBytesGen.loadFromL2J(List.of(resource.toPath()));
 //            driverBytes2 = new GeoDriverBytes2(geoConfig);
@@ -368,14 +368,14 @@ public class GeoDriverBenchParams {
         }
     }
 
-//    @Benchmark
-//    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
-//    public void checkNearestNSWEBytesDirectInlO(Blackhole blackhole, MyState state) {
-//        GeoDriverBytesDirectInlO driver = state.driverBytesDirectInlO;
-//        for (Point checkPoint : state.checkPointsArr) {
-//            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
-//        }
-//    }
+    @Benchmark
+    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
+    public void checkNearestNSWEBytesDirectInlO(Blackhole blackhole, MyState state) {
+        GeoDriverBytesDirectInlO driver = state.driverBytesDirectInlO;
+        for (Point checkPoint : state.checkPointsArr) {
+            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
+        }
+    }
 //
 //
 //    @Benchmark
