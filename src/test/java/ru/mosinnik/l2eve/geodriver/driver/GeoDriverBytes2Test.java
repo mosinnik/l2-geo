@@ -124,7 +124,7 @@ public class GeoDriverBytes2Test {
 
         for (int worldX = cornerMinX; worldX < cornerMaxX; worldX += stepX) {
             int x = driver.getGeoX(worldX);
-            System.out.println("start x = " + x + ", worldX = " + worldX + ", cornerMaxX " + cornerMaxX);
+//            System.out.println("start x = " + x + ", worldX = " + worldX + ", cornerMaxX " + cornerMaxX);
             for (int worldY = cornerMinY; worldY < cornerMaxY; worldY += stepY) {
                 int y = driver.getGeoY(worldY);
 //                System.out.println("   start y = " + y + ", worldY = " + worldY + ", cornerMaxY " + cornerMaxY);

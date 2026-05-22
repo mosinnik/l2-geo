@@ -48,9 +48,66 @@ import static ru.mosinnik.l2eve.geodriver.util.Converter.asBytes;
 import static ru.mosinnik.l2eve.geodriver.util.Converter.asInts;
 
 /**
- * Идея заключается в том, чтобы убрать расходы памяти на ссылки объектов регионов и блоков,
- * упаковав их в общий массив байт. Работа над массивом байт осуществляется в зависимости от типа,
- * хранимого в индексе регионов.
+ *
+ *
+ * Benchmark                                                    (blockTypeStr)   Mode  Cnt        Score     Error      Units
+ * GeoDriverBenchParams.checkNearestNSWEBytes                           RANDOM  thrpt    5     3315.979 ±  17.491      ops/s
+ * GeoDriverBenchParams.checkNearestNSWEBytes:CPI                       RANDOM  thrpt             1.163            clks/insn
+ * GeoDriverBenchParams.checkNearestNSWEBytes:IPC                       RANDOM  thrpt             0.860            insns/clk
+ * GeoDriverBenchParams.checkNearestNSWEBytes:branch-misses             RANDOM  thrpt           847.730                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes:branches                  RANDOM  thrpt         99970.084                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes:cycles                    RANDOM  thrpt        944532.684                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes:instructions              RANDOM  thrpt        812065.885                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes                       FLAT_BLOCK  thrpt    5    22320.394 ± 582.434      ops/s
+ * GeoDriverBenchParams.checkNearestNSWEBytes:CPI                   FLAT_BLOCK  thrpt             0.412            clks/insn
+ * GeoDriverBenchParams.checkNearestNSWEBytes:IPC                   FLAT_BLOCK  thrpt             2.426            insns/clk
+ * GeoDriverBenchParams.checkNearestNSWEBytes:branch-misses         FLAT_BLOCK  thrpt            12.925                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes:branches              FLAT_BLOCK  thrpt         60205.271                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes:cycles                FLAT_BLOCK  thrpt        140718.591                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes:instructions          FLAT_BLOCK  thrpt        341356.555                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes                    COMPLEX_BLOCK  thrpt    5     4318.410 ± 183.928      ops/s
+ * GeoDriverBenchParams.checkNearestNSWEBytes:CPI                COMPLEX_BLOCK  thrpt             1.213            clks/insn
+ * GeoDriverBenchParams.checkNearestNSWEBytes:IPC                COMPLEX_BLOCK  thrpt             0.824            insns/clk
+ * GeoDriverBenchParams.checkNearestNSWEBytes:branch-misses      COMPLEX_BLOCK  thrpt            24.080                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes:branches           COMPLEX_BLOCK  thrpt         71213.685                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes:cycles             COMPLEX_BLOCK  thrpt        725388.907                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes:instructions       COMPLEX_BLOCK  thrpt        598025.245                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes                 MULTILAYER_BLOCK  thrpt    5      715.002 ±   3.873      ops/s
+ * GeoDriverBenchParams.checkNearestNSWEBytes:CPI             MULTILAYER_BLOCK  thrpt             0.976            clks/insn
+ * GeoDriverBenchParams.checkNearestNSWEBytes:IPC             MULTILAYER_BLOCK  thrpt             1.024            insns/clk
+ * GeoDriverBenchParams.checkNearestNSWEBytes:branch-misses   MULTILAYER_BLOCK  thrpt         23970.153                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes:branches        MULTILAYER_BLOCK  thrpt        665768.829                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes:cycles          MULTILAYER_BLOCK  thrpt       4400924.218                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes:instructions    MULTILAYER_BLOCK  thrpt       4508662.244                 #/op
+ *
+ * GeoDriverBenchParams.checkNearestNSWEBytes2                          RANDOM  thrpt    5     2764.697 ±  12.075      ops/s
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:CPI                      RANDOM  thrpt             0.898            clks/insn
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:IPC                      RANDOM  thrpt             1.113            insns/clk
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:branch-misses            RANDOM  thrpt          1682.921                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:branches                 RANDOM  thrpt        181400.127                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:cycles                   RANDOM  thrpt       1136258.970                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:instructions             RANDOM  thrpt       1264745.684                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes2                      FLAT_BLOCK  thrpt    5    22356.444 ± 298.725      ops/s
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:CPI                  FLAT_BLOCK  thrpt             0.422            clks/insn
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:IPC                  FLAT_BLOCK  thrpt             2.367            insns/clk
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:branch-misses        FLAT_BLOCK  thrpt            12.936                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:branches             FLAT_BLOCK  thrpt         50240.565                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:cycles               FLAT_BLOCK  thrpt        140063.143                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:instructions         FLAT_BLOCK  thrpt        331595.112                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes2                   COMPLEX_BLOCK  thrpt    5     4442.877 ±  74.090      ops/s
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:CPI               COMPLEX_BLOCK  thrpt             1.201            clks/insn
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:IPC               COMPLEX_BLOCK  thrpt             0.833            insns/clk
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:branch-misses     COMPLEX_BLOCK  thrpt            21.969                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:branches          COMPLEX_BLOCK  thrpt         71000.794                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:cycles            COMPLEX_BLOCK  thrpt        704238.538                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:instructions      COMPLEX_BLOCK  thrpt        586413.402                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes2                MULTILAYER_BLOCK  thrpt    5      645.980 ±   6.895      ops/s
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:CPI            MULTILAYER_BLOCK  thrpt             0.806            clks/insn
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:IPC            MULTILAYER_BLOCK  thrpt             1.241            insns/clk
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:branch-misses  MULTILAYER_BLOCK  thrpt         23913.098                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:branches       MULTILAYER_BLOCK  thrpt       1032539.120                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:cycles         MULTILAYER_BLOCK  thrpt       4883905.261                 #/op
+ * GeoDriverBenchParams.checkNearestNSWEBytes2:instructions   MULTILAYER_BLOCK  thrpt       6061990.199                 #/op
  */
 @Slf4j
 public final class GeoDriverBytes2 implements IGeoDriver {
@@ -340,16 +397,8 @@ public final class GeoDriverBytes2 implements IGeoDriver {
         return blockTypes[regionFirstBlockIndex + blockIndexInRegion];
     }
 
-//    public static Map<Integer, AtomicInteger> blockTypesCount = new HashMap<>();
-
     @Override
     public boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe) {
-        // 1. get block type by geo x/y
-        // 2. get block offset by geo x/y
-        // 2.1 get region offset of first region block
-        // 2.2 calc
-        // 3. call block logic with offset
-
         int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
         if (regionFirstBlockIndex == NO_INDEX) {
@@ -357,27 +406,28 @@ public final class GeoDriverBytes2 implements IGeoDriver {
         }
 
         int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
+        int blockIndex = regionFirstBlockIndex + blockIndexInRegion;
 
-//        long blockDatum = blockData[regionFirstBlockIndex + blockIndexInRegion];
+//        long blockDatum = blockData[blockIndex];
 //        byte blockType = (byte) ((blockDatum >> 32) & 0xFF);
 //        int blockDataOffset = (int) (blockDatum & 0xFFFFFFFFL);
 
-        int blockDatum = blockDataI[regionFirstBlockIndex + blockIndexInRegion];
-        byte blockType = (byte) (blockDatum & 0x3F);
-        if (blockType == FLAT_BLOCK) {
-            return FlatBlockFromOffsetBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);
-        }
+        int blockDatum = blockDataI[blockIndex];
+        int blockType = blockDatum & 0x3F;
+//        if (blockType == FLAT_BLOCK) {
+//            return FlatBlockFromOffsetBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);
+//        }
 
         int blockDataOffset = blockDatum & 0xFFFFFFC0;
 
-//        byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
+//        byte blockType = blockTypes[blockIndex];
 // //        blockTypesCount.computeIfAbsent((int) blockType, k -> new AtomicInteger()).incrementAndGet();
 //
-//        int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
+//        int blockDataOffset = blockDataOffsets[blockIndex];
         switch (blockType) {
-//            case FLAT_BLOCK -> {
-//                return FlatBlockFromOffsetBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);
-//            }
+            case FLAT_BLOCK -> {
+                return FlatBlockFromOffsetBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);
+            }
             case COMPLEX_BLOCK -> {
                 return ComplexBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
             }
