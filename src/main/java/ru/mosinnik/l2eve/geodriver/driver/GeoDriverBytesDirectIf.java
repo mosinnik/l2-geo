@@ -453,10 +453,10 @@ public final class GeoDriverBytesDirectIf implements IGeoDriver {
         byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
         int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
 
-        if (blockType == COMPLEX_BLOCK) {
-            return ComplexBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
-        } else if (blockType == FLAT_BLOCK) {
+        if (blockType == FLAT_BLOCK) {
             return FlatBlockFromOffsetBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);
+        } else if (blockType == COMPLEX_BLOCK) {
+            return ComplexBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
         } else if (blockType == MULTILAYER_BLOCK) {
             return MultilayerBlockBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, data);
         }
