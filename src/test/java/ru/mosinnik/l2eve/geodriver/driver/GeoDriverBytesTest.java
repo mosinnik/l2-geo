@@ -136,7 +136,7 @@ public class GeoDriverBytesTest {
         String tstRegion = TST_BLOCK_RESOURCE_BIGGEST;
 //        String tstRegion = TST_BLOCK_RESOURCE_MOST_COMPLEX;
 
-        File resource = new File(GeoDriverBytes2Test.class.getClassLoader().getResource(tstRegion).getFile());
+        File resource = new File(GeoDriverBytesTest.class.getClassLoader().getResource(tstRegion).getFile());
         RegionCoords regionCoords = RegionCoords.extract(resource.toPath());
 
         GeoConfig geoConfig = new GeoConfig();
