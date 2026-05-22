@@ -199,4 +199,40 @@ GeoDriverBenchParams.checkNearestNSWEBytesDirectIR  MULTILAYER_BLOCK  thrpt    5
 Уход от short в Multilayer уже запланирован, но пока остается базовая реализация L2J. 
 
 
+## GeoDriverBytesDirectIf
+
+Вместе с GeoDriverBytesDirectIfCmp нужен был для проверки, дает ли буст использование if конструкции вместо switch.
+
+Тесты показали плюс-минус одинаковую производительность на однотипных запросах, на рендоме было слегка лучше.
+```
+Benchmark                                                            (blockTypeStr)   Mode  Cnt       Score    Error      Units
+GeoDriverBenchParams.checkNearestNSWEBytes                                   RANDOM  thrpt    5    3361.054 ± 12.054      ops/s
+GeoDriverBenchParams.checkNearestNSWEBytes:CPI                               RANDOM  thrpt            1.149           clks/insn
+GeoDriverBenchParams.checkNearestNSWEBytes:IPC                               RANDOM  thrpt            0.871           insns/clk
+GeoDriverBenchParams.checkNearestNSWEBytes:branch-misses                     RANDOM  thrpt          718.294                #/op
+GeoDriverBenchParams.checkNearestNSWEBytes:branches                          RANDOM  thrpt        99767.058                #/op
+GeoDriverBenchParams.checkNearestNSWEBytes:cycles                            RANDOM  thrpt       931404.372                #/op
+GeoDriverBenchParams.checkNearestNSWEBytes:instructions                      RANDOM  thrpt       810894.099                #/op
+GeoDriverBenchParams.checkNearestNSWEBytesDirectIf                           RANDOM  thrpt    5    3399.126 ± 17.039      ops/s
+GeoDriverBenchParams.checkNearestNSWEBytesDirectIf:CPI                       RANDOM  thrpt            1.160           clks/insn
+GeoDriverBenchParams.checkNearestNSWEBytesDirectIf:IPC                       RANDOM  thrpt            0.862           insns/clk
+GeoDriverBenchParams.checkNearestNSWEBytesDirectIf:branch-misses             RANDOM  thrpt          466.488                #/op
+GeoDriverBenchParams.checkNearestNSWEBytesDirectIf:branches                  RANDOM  thrpt       104449.101                #/op
+GeoDriverBenchParams.checkNearestNSWEBytesDirectIf:cycles                    RANDOM  thrpt       921277.211                #/op
+GeoDriverBenchParams.checkNearestNSWEBytesDirectIf:instructions              RANDOM  thrpt       794202.082                #/op
+GeoDriverBenchParams.checkNearestNSWEBytesDirectIfCmp                        RANDOM  thrpt    5    3355.158 ± 12.521      ops/s
+GeoDriverBenchParams.checkNearestNSWEBytesDirectIfCmp:CPI                    RANDOM  thrpt            1.151           clks/insn
+GeoDriverBenchParams.checkNearestNSWEBytesDirectIfCmp:IPC                    RANDOM  thrpt            0.869           insns/clk
+GeoDriverBenchParams.checkNearestNSWEBytesDirectIfCmp:branch-misses          RANDOM  thrpt          714.787                #/op
+GeoDriverBenchParams.checkNearestNSWEBytesDirectIfCmp:branches               RANDOM  thrpt        99765.991                #/op
+GeoDriverBenchParams.checkNearestNSWEBytesDirectIfCmp:cycles                 RANDOM  thrpt       933356.691                #/op
+GeoDriverBenchParams.checkNearestNSWEBytesDirectIfCmp:instructions           RANDOM  thrpt       810890.770                #/op
+```
+
+IfCmp содержит в себе то же что и просто Bytes, но в свитче только 3 варианта, а не все 11, чтобы ыло столько же как и веток в if.
+
+По cycles и instructions видно, что вариант с if дешевле на 1 цикл и на 2 операции в пересчете на 10к итераций.
+Потенциально можно будет вернуться к этому варианту, но это улучшение на около 1%.
+
+
 

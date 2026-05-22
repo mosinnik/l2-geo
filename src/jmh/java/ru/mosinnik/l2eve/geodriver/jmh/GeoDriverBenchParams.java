@@ -45,7 +45,7 @@ import static ru.mosinnik.l2eve.geodriver.jmh.PointsPreparer.loadPoints;
 @Threads(4)
 @Fork(1)
 @Warmup(iterations = 5, time = 2)
-@Measurement(iterations = 10, time = 30)
+@Measurement(iterations = 5, time = 60)
 @Timeout(time = 100)
 //@BenchmarkMode(Mode.AverageTime)
 //@OutputTimeUnit(TimeUnit.MICROSECONDS)
@@ -131,9 +131,9 @@ public class GeoDriverBenchParams {
 
         @Param({
                 "RANDOM",
-                "FLAT_BLOCK",
-                "COMPLEX_BLOCK",
-                "MULTILAYER_BLOCK",
+//                "FLAT_BLOCK",
+//                "COMPLEX_BLOCK",
+//                "MULTILAYER_BLOCK",
 //                "ONE_HEIGHT_COMPLEX_BLOCK",
 //                "BASE_HEIGHT_COMPLEX_BLOCK",
 //                "BASE_HEIGHT_ONE_NSWE_COMPLEX_BLOCK",
