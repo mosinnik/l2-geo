@@ -324,7 +324,6 @@ public final class GeoDriverBytesDirectIf implements IGeoDriver {
         return blockTypes[regionFirstBlockIndex + blockIndexInRegion];
     }
 
-
     @Override
     public boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe) {
         int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));

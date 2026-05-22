@@ -335,6 +335,7 @@ public final class GeoDriverBytesDirectIfCmp implements IGeoDriver {
         int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
         byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
         int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
+
         switch (blockType) {
             case FLAT_BLOCK -> {
                 return FlatBlockFromOffsetBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);
