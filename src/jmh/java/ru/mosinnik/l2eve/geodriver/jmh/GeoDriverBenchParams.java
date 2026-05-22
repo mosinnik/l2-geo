@@ -118,7 +118,6 @@ public class GeoDriverBenchParams {
         GeoDriver driverOld;
         GeoDriver driver;
         GeoDriverBytes driverBytes;
-        GeoDriverBytesDirectInlO driverBytesDirectInlO;
         GeoDriverBytesGen driverBytesGen;
         GeoDriverBytes2 driverBytes2;
         GeoDriverBytesMmap driverBytesMmap;
@@ -177,8 +176,6 @@ public class GeoDriverBenchParams {
 //            }
             driverBytes = new GeoDriverBytes(geoConfig);
             driverBytes.loadFromL2J(List.of(resource.toPath()));
-            driverBytesDirectInlO = new GeoDriverBytesDirectInlO(geoConfig);
-            driverBytesDirectInlO.loadFromL2J(List.of(resource.toPath()));
 //            driverBytesGen = new GeoDriverBytesGen(geoConfig);
 //            driverBytesGen.loadFromL2J(List.of(resource.toPath()));
 //            driverBytes2 = new GeoDriverBytes2(geoConfig);
@@ -363,15 +360,6 @@ public class GeoDriverBenchParams {
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)
     public void checkNearestNSWEBytes(Blackhole blackhole, MyState state) {
         GeoDriverBytes driver = state.driverBytes;
-        for (Point checkPoint : state.checkPointsArr) {
-            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
-        }
-    }
-
-    @Benchmark
-    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
-    public void checkNearestNSWEBytesDirectInlO(Blackhole blackhole, MyState state) {
-        GeoDriverBytesDirectInlO driver = state.driverBytesDirectInlO;
         for (Point checkPoint : state.checkPointsArr) {
             blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
         }
