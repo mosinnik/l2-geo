@@ -116,7 +116,7 @@ public final class GeoDriver implements IGeoDriver {
 
     public int getBlockType(int geoX, int geoY) {
         IBlock block = getRegion(geoX, geoY).getBlock(geoX, geoY);
-        return GeoDriverBytes.getType(block);
+        return ByteUtil.getType(block);
     }
 
     public IBlock getBlock(int geoX, int geoY) {

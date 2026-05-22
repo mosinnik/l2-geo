@@ -172,8 +172,8 @@ public final class GeoDriverFFMStruct {
             Region region = regionCoordinated.region();
             for (int i = 0; i < IRegion.REGION_BLOCKS; i++) {
                 IBlock block = region.getBlock(i);
-                int bytesCount = getBytesCount(block);
-                byte type = getType(block);
+                int bytesCount = ByteUtil.getBytesCount(block);
+                byte type = ByteUtil.getType(block);
                 switch (type) {
                     case COMPLEX_BLOCK -> {
                         shortBlockCount++;
@@ -213,7 +213,7 @@ public final class GeoDriverFFMStruct {
             for (int i = 0; i < IRegion.REGION_BLOCKS; i++) {
                 IBlock block = region.getBlock(i);
 
-                byte blockType = getType(block);
+                byte blockType = ByteUtil.getType(block);
 
                 int blockOffset;
 
@@ -233,7 +233,7 @@ public final class GeoDriverFFMStruct {
                     default -> {
                         blockOffset = blockDataOffset;
 
-                        byte[] bytes = toBytes(block);
+                        byte[] bytes = ByteUtil.toBytes(block);
                         MemorySegment.copy(bytes, 0, data, JAVA_BYTE, blockDataOffset, bytes.length);
                         blockDataOffset += bytes.length;
                     }
