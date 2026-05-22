@@ -333,9 +333,10 @@ public final class GeoDriverBytesDirectIf implements IGeoDriver {
         }
 
         int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
-        byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
-        int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
+        int blockIndex = regionFirstBlockIndex + blockIndexInRegion;
 
+        byte blockType = blockTypes[blockIndex];
+        int blockDataOffset = blockDataOffsets[blockIndex];
         if (blockType == FLAT_BLOCK) {
             return FlatBlockFromOffsetBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);
         } else if (blockType == COMPLEX_BLOCK) {
@@ -356,9 +357,10 @@ public final class GeoDriverBytesDirectIf implements IGeoDriver {
         }
 
         int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
+        int blockIndex = regionFirstBlockIndex + blockIndexInRegion;
 
-        byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
-        int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
+        byte blockType = blockTypes[blockIndex];
+        int blockDataOffset = blockDataOffsets[blockIndex];
         switch (blockType) {
             case FLAT_BLOCK -> {
                 return FlatBlockFromOffsetBytes.getNearestZ(geoX, geoY, worldZ, blockDataOffset, data);
@@ -406,9 +408,10 @@ public final class GeoDriverBytesDirectIf implements IGeoDriver {
         }
 
         int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
+        int blockIndex = regionFirstBlockIndex + blockIndexInRegion;
 
-        byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
-        int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
+        byte blockType = blockTypes[blockIndex];
+        int blockDataOffset = blockDataOffsets[blockIndex];
         switch (blockType) {
             case FLAT_BLOCK -> {
                 return FlatBlockFromOffsetBytes.getNextLowerZ(geoX, geoY, worldZ, blockDataOffset, data);
@@ -456,9 +459,10 @@ public final class GeoDriverBytesDirectIf implements IGeoDriver {
         }
 
         int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
+        int blockIndex = regionFirstBlockIndex + blockIndexInRegion;
 
-        byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
-        int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
+        byte blockType = blockTypes[blockIndex];
+        int blockDataOffset = blockDataOffsets[blockIndex];
         switch (blockType) {
             case FLAT_BLOCK -> {
                 return FlatBlockFromOffsetBytes.getNextHigherZ(geoX, geoY, worldZ, blockDataOffset, data);
