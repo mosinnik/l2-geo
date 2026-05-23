@@ -87,8 +87,8 @@ public class BaseDriverClassGenerator {
         }
 
         // Генерируем tableswitch по НОВЫМ типам
-        // тип в 8 слоте
-        mv.visitVarInsn(ILOAD, 8);
+        // тип в 9 слоте
+        mv.visitVarInsn(ILOAD, 9);
         mv.visitTableSwitchInsn(0, typesCount - 1, defaultLabel, labels);
 
         // Генерируем ветки switch - порядок не важен для tableswitch (O(1))
@@ -133,17 +133,17 @@ public class BaseDriverClassGenerator {
     private static void addPreSwitch(MethodVisitor mv) {
         Label l0 = new Label();
 
-        // int regionIndex = ((geoX >> 11) << 5) + (geoY >> 11);
+        // int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         // -----------------------------------------------------------
         mv.visitVarInsn(ILOAD, 1); // geoX
-        mv.visitIntInsn(BIPUSH, 11); // сохраняем в local 11
-        mv.visitInsn(ISHR); // geoX >> 11
-        mv.visitInsn(ICONST_5); // сохраняем в local 5
-        mv.visitInsn(ISHL); // (geoX >> 11) << 5
+        mv.visitIntInsn(BIPUSH, 6); // сохраняем в local 6
+        mv.visitInsn(ISHR); // geoX >> 6
+        mv.visitIntInsn(SIPUSH, 0x03E0); // сохраняем в local 0x03E0
+        mv.visitInsn(IAND); // (geoX >> 6) &
         mv.visitVarInsn(ILOAD, 2); // geoY
         mv.visitIntInsn(BIPUSH, 11); // сохраняем в local 11
         mv.visitInsn(ISHR); // geoY >> 11
-        mv.visitInsn(IADD); // +
+        mv.visitInsn(IOR); // |
         mv.visitVarInsn(ISTORE, 5); // сохраняем результат regionIndex в 5 слот
 
         // int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
@@ -169,43 +169,44 @@ public class BaseDriverClassGenerator {
         mv.visitMethodInsn(INVOKESTATIC, slash(NullRegionBytes.class), "checkNearestNSWE", "(IIIB)Z", false);
         mv.visitInsn(IRETURN);
 
-        // int blockIndexInRegion = (((geoX >> 3) & 0xFF) << 8) + ((geoY >> 3) & 0xFF);
+        // int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
         // -----------------------------------------------------------
         mv.visitLabel(l0);
         mv.visitVarInsn(ILOAD, 1);
-        mv.visitInsn(ICONST_3);
-        mv.visitInsn(ISHR);
-        mv.visitIntInsn(SIPUSH, 255);
+        mv.visitIntInsn(SIPUSH, 2040);
         mv.visitInsn(IAND);
-        mv.visitIntInsn(BIPUSH, 8);
+        mv.visitInsn(ICONST_5);
         mv.visitInsn(ISHL);
         mv.visitVarInsn(ILOAD, 2);
         mv.visitInsn(ICONST_3);
         mv.visitInsn(ISHR);
         mv.visitIntInsn(SIPUSH, 255);
         mv.visitInsn(IAND);
-        mv.visitInsn(IADD);
+        mv.visitInsn(IOR);
         mv.visitVarInsn(ISTORE, 7);
 
-        // byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
+        // int blockIndex = regionFirstBlockIndex + blockIndexInRegion;
+        // -----------------------------------------------------------
+        mv.visitVarInsn(ILOAD, 6);
+        mv.visitVarInsn(ILOAD, 7);
+        mv.visitInsn(IADD);
+        mv.visitVarInsn(ISTORE, 8);
+
+        // byte blockType = blockTypes[blockIndex];
         // -----------------------------------------------------------
         mv.visitVarInsn(ALOAD, 0);
         mv.visitFieldInsn(GETFIELD, DRIVER_CLASS_SLASH, "blockTypes", "[B");
-        mv.visitVarInsn(ILOAD, 6);
-        mv.visitVarInsn(ILOAD, 7);
-        mv.visitInsn(IADD);
+        mv.visitVarInsn(ILOAD, 8);
         mv.visitInsn(BALOAD);
-        mv.visitVarInsn(ISTORE, 8);
+        mv.visitVarInsn(ISTORE, 9);
 
-        // int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
+        // int blockDataOffset = blockDataOffsets[blockIndex];
         // -----------------------------------------------------------
         mv.visitVarInsn(ALOAD, 0);
         mv.visitFieldInsn(GETFIELD, DRIVER_CLASS_SLASH, "blockDataOffsets", "[I");
-        mv.visitVarInsn(ILOAD, 6);
-        mv.visitVarInsn(ILOAD, 7);
-        mv.visitInsn(IADD);
+        mv.visitVarInsn(ILOAD, 8);
         mv.visitInsn(IALOAD);
-        mv.visitVarInsn(ISTORE, 9);
+        mv.visitVarInsn(ISTORE, 10);
     }
 
     private static void generateBlockCall(MethodVisitor mv, byte oldType) {
@@ -219,7 +220,7 @@ public class BaseDriverClassGenerator {
         mv.visitVarInsn(ILOAD, 2);
         mv.visitVarInsn(ILOAD, 3);
         mv.visitVarInsn(ILOAD, 4);
-        mv.visitVarInsn(ILOAD, 9);
+        mv.visitVarInsn(ILOAD, 10);
         mv.visitVarInsn(ALOAD, 0);
         mv.visitFieldInsn(GETFIELD, DRIVER_CLASS_SLASH, "data", "Ljava/nio/ByteBuffer;");
 
