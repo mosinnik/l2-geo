@@ -254,3 +254,56 @@ GeoDriverBytes2 нужен был для проверки, будет ли бу�
 Тесты (см. GeoDriverBytes2) показали, что на комплексе лучше, но мульти и рендом сильно хуже.
 
 Потенциально можно вернуться для уменьшения памяти, но скорость сильно хуже.
+
+
+## GeoDriverFFMT
+
+GeoDriverFFMT использовался для проверок всяких вариаций использования MemorySegment для типов блоков, для оффсетов и для основных данных.
+
+Лучший вариант оказался с использованием обычных массивов для типов и оффсетов, а для данных использовать MS.
+
+
+```
+Benchmark                                           (blockTypeStr)   Mode  Cnt      Score      Error  Units
+GeoDriverBenchParams.checkNearestNSWE                       RANDOM  thrpt    5   2289.858 ±   10.013  ops/s
+GeoDriverBenchParams.checkNearestNSWE                   FLAT_BLOCK  thrpt    5  15706.646 ± 1012.001  ops/s
+GeoDriverBenchParams.checkNearestNSWE                COMPLEX_BLOCK  thrpt    5   3033.744 ±   11.591  ops/s
+GeoDriverBenchParams.checkNearestNSWE             MULTILAYER_BLOCK  thrpt    5    727.374 ±   10.290  ops/s
+GeoDriverBenchParams.checkNearestNSWEBytes                  RANDOM  thrpt    5   3347.495 ±    8.670  ops/s
+GeoDriverBenchParams.checkNearestNSWEBytes              FLAT_BLOCK  thrpt    5  22334.694 ±  696.887  ops/s
+GeoDriverBenchParams.checkNearestNSWEBytes           COMPLEX_BLOCK  thrpt    5   4355.901 ±   25.085  ops/s
+GeoDriverBenchParams.checkNearestNSWEBytes        MULTILAYER_BLOCK  thrpt    5    712.993 ±   13.492  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong                RANDOM  thrpt    5   3276.407 ±    6.122  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong            FLAT_BLOCK  thrpt    5  20724.476 ±  343.211  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong         COMPLEX_BLOCK  thrpt    5   4077.222 ±    3.110  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong      MULTILAYER_BLOCK  thrpt    5    714.512 ±    2.190  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMStruct              RANDOM  thrpt    5   2347.848 ±   14.640  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMStruct          FLAT_BLOCK  thrpt    5  18903.255 ±  471.758  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMStruct       COMPLEX_BLOCK  thrpt    5   4128.209 ±   27.536  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMStruct    MULTILAYER_BLOCK  thrpt    5    730.066 ±    2.769  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM_T                  RANDOM  thrpt    5   3183.753 ±   33.786  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM_T              FLAT_BLOCK  thrpt    5  22234.669 ±  547.582  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM_T           COMPLEX_BLOCK  thrpt    5   4466.260 ±  147.467  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM_T        MULTILAYER_BLOCK  thrpt    5    740.382 ±    5.189  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM_T_Slice            RANDOM  thrpt    5   4617.576 ±  420.232  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM_T_Slice        FLAT_BLOCK  thrpt    5  22323.436 ±  664.688  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM_T_Slice     COMPLEX_BLOCK  thrpt    5   4698.361 ±   73.367  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM_T_Slice  MULTILAYER_BLOCK  thrpt    5    759.708 ±    0.229  ops/s
+```
+
+Хоть на комплекс и мульти T лучше Bytes и тем более FFMLong/Struct, но на рендоме так же иногда провалы как и для слайса.
+```
+GeoDriverBenchParams.checkNearestNSWEFFM_T          RANDOM  thrpt    5  3385.472 ± 8.113  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM_T          RANDOM  thrpt    5  3119.125 ± 17.924  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM_T          RANDOM  thrpt    5  3122.241 ± 22.001  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM_T          RANDOM  thrpt    5  3356.869 ± 12.412  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFM_T          RANDOM  thrpt    5  3415.075 ± 8.381  ops/s
+```
+
+В плохих случаях хуже bytes, в лучших немного лучше. 
+
+Имеет потенциал и он использован в GeoDriverFFMT_Slice.
+
+
+
+
