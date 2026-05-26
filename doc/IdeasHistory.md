@@ -305,5 +305,47 @@ GeoDriverBenchParams.checkNearestNSWEFFM_T          RANDOM  thrpt    5  3415.075
 Имеет потенциал и он использован в GeoDriverFFMT_Slice.
 
 
+## GeoDriverFFMLongT
+
+Нжуен был для контры GeoDriverFFMLong для проверки, как влияет замена MemorySegment regionFirstBlockIndexes на обычный
+массив int[] regionFirstBlockIndexes.
+
+Ряд измерений:
+```
+Benchmark                                        (blockTypeStr)   Mode  Cnt      Score     Error  Units
+GeoDriverBenchParams.checkNearestNSWEFFMLong             RANDOM  thrpt    5   2389.460 ±  16.487  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong         FLAT_BLOCK  thrpt    5  20744.205 ± 238.990  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong      COMPLEX_BLOCK  thrpt    5   4166.493 ±  18.238  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong   MULTILAYER_BLOCK  thrpt    5    734.176 ±   3.538  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT            RANDOM  thrpt    5   2748.318 ±   6.390  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT        FLAT_BLOCK  thrpt    5  20651.708 ± 461.068  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT     COMPLEX_BLOCK  thrpt    5   4275.446 ±  28.148  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT  MULTILAYER_BLOCK  thrpt    5    734.525 ±   4.398  ops/s
+
+Benchmark                                        (blockTypeStr)   Mode  Cnt      Score     Error  Units
+GeoDriverBenchParams.checkNearestNSWEFFMLong             RANDOM  thrpt    5   2563.286 ±  13.754  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong         FLAT_BLOCK  thrpt    5  20740.855 ± 544.997  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong      COMPLEX_BLOCK  thrpt    5   4088.465 ±  23.604  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong   MULTILAYER_BLOCK  thrpt    5    720.913 ±   2.577  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT            RANDOM  thrpt    5   3316.645 ±  10.641  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT        FLAT_BLOCK  thrpt    5  20741.122 ± 389.641  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT     COMPLEX_BLOCK  thrpt    5   4191.511 ±  17.595  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT  MULTILAYER_BLOCK  thrpt    5    733.976 ±   8.929  ops/s
+
+Benchmark                                        (blockTypeStr)   Mode  Cnt      Score     Error  Units
+GeoDriverBenchParams.checkNearestNSWEFFMLong             RANDOM  thrpt    5   2552.819 ±  10.484  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong         FLAT_BLOCK  thrpt    5  20758.533 ± 487.259  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong      COMPLEX_BLOCK  thrpt    5   4064.237 ±  26.692  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong   MULTILAYER_BLOCK  thrpt    5    727.690 ±   3.010  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT            RANDOM  thrpt    5   2714.601 ±  13.332  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT        FLAT_BLOCK  thrpt    5  20819.688 ± 457.990  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT     COMPLEX_BLOCK  thrpt    5   4158.061 ±  28.403  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT  MULTILAYER_BLOCK  thrpt    5    735.601 ±   2.738  ops/s
+```
+
+В среднем есть заметный, хоть и небольшой, стабильный буст за исключением флетов.
+
+Потенциал уже использован в Slice реалиазации с заменой на простой массив.
+
 
 
