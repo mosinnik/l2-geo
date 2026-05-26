@@ -84,7 +84,7 @@ import static ru.mosinnik.l2eve.geodriver.driver.GeoDriverBytesConstants.*;
  * GeoDriverBenchParams.checkNearestNSWEFFM_T_Slice  MULTILAYER_BLOCK  thrpt    5    759.708 ±    0.229  ops/s
  */
 @Slf4j
-public final class GeoDriverFFMT_Slice {
+public final class GeoDriverFFM {
 
     public static final int REGIONS_INDEXES_SIZE = GeoConstants.GEO_REGIONS_X * GeoConstants.GEO_REGIONS_Y;
     private final GeoConfig config;
@@ -122,7 +122,7 @@ public final class GeoDriverFFMT_Slice {
 //        this.config = config;
 //    }
 
-    public GeoDriverFFMT_Slice(GeoConfig config, Path geoDataDir) {
+    public GeoDriverFFM(GeoConfig config, Path geoDataDir) {
         this.config = config;
 
         loadL2J(geoDataDir);
@@ -135,7 +135,7 @@ public final class GeoDriverFFMT_Slice {
 
     }
 
-    public GeoDriverFFMT_Slice(GeoConfig config, List<Path> paths) {
+    public GeoDriverFFM(GeoConfig config, List<Path> paths) {
         this.config = config;
 
         loadFromL2J(paths);
