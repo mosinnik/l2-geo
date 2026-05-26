@@ -400,3 +400,11 @@ GeoDriverBenchParams.checkNearestNSWEFFMLongTT  MULTILAYER_BLOCK  thrpt    5    
 
 Простой массив блоков уже используется в Slice.
 
+
+## GeoDriverFFMLong
+
+Нужен был для отработки корректного использования FFM по сравнению с GeoDriverFFM.
+
+Сам по себе выигрывает у FFM по всем и у Bytes в мульти.
+
+Подход с long учтен в Slices
