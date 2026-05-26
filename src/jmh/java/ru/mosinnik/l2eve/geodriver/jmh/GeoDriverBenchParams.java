@@ -25,7 +25,6 @@ package ru.mosinnik.l2eve.geodriver.jmh;
 import lombok.SneakyThrows;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
-import org.openjdk.jmh.profile.LinuxPerfNormProfiler;
 import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.ChainedOptionsBuilder;
@@ -94,7 +93,7 @@ public class GeoDriverBenchParams {
 //                .addProfiler(LinuxPerfAsmProfiler.class)
 //                .addProfiler(LinuxPerfProfiler.class)
 //                .addProfiler(LinuxPerfNormProfiler.class)
-                .addProfiler(LinuxPerfNormProfiler.class, "event=instructions,cycles,branches,branch-misses")
+//                .addProfiler(LinuxPerfNormProfiler.class, "event=instructions,cycles,branches,branch-misses")
 //                .addProfiler(AsyncProfiler.class, "output=flamegraph")
 //                .resultFormat(ResultFormatType.JSON)
                 ;
@@ -123,6 +122,7 @@ public class GeoDriverBenchParams {
         GeoDriverFFMStruct driverFFMStruct;
         GeoDriverFFMLong driverFFMLong;
         GeoDriverFFMT driverFFMT;
+        GeoDriverFFMT_Slice driverFFMTSlice;
         Point[] checkPointsArr;
 
         @Param({
@@ -164,23 +164,21 @@ public class GeoDriverBenchParams {
 //            geoConfig.setIndexedMultilayerBlockEnabled(true);
 //            geoConfig.setIndexed32MultilayerBlockEnabled(true);
 
-//            driver = new GeoDriver(geoConfig);
+            driver = new GeoDriver(geoConfig);
 
             File resource = new File(GeoDriverBenchParams.class.getClassLoader().getResource(TST_REGION).getFile());
-//            try {
-//                driverOld.loadRegion(resource.toPath());
-//                driver.loadRegion(resource.toPath());
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
+
+//            driverOld.loadRegion(resource.toPath());
+            driver.loadRegion(resource.toPath());
             driverBytes = new GeoDriverBytes(geoConfig);
             driverBytes.loadFromL2J(List.of(resource.toPath()));
-            driverBytesGen = new GeoDriverBytesGen(geoConfig);
-            driverBytesGen.loadFromL2J(List.of(resource.toPath()));
+//            driverBytesGen = new GeoDriverBytesGen(geoConfig);
+//            driverBytesGen.loadFromL2J(List.of(resource.toPath()));
 
-//            driverFFMT = new GeoDriverFFMT(geoConfig, List.of(resource.toPath()));
-//            driverFFMStruct = new GeoDriverFFMStruct(geoConfig, List.of(resource.toPath()));
-//            driverFFMLong = new GeoDriverFFMLong(geoConfig, List.of(resource.toPath()));
+            driverFFMT = new GeoDriverFFMT(geoConfig, List.of(resource.toPath()));
+            driverFFMTSlice = new GeoDriverFFMT_Slice(geoConfig, List.of(resource.toPath()));
+            driverFFMStruct = new GeoDriverFFMStruct(geoConfig, List.of(resource.toPath()));
+            driverFFMLong = new GeoDriverFFMLong(geoConfig, List.of(resource.toPath()));
 
 //            Path binGeoData = Path.of(GEODATA_BIN_DIR);
 //            Files.createDirectories(binGeoData);
@@ -307,14 +305,14 @@ public class GeoDriverBenchParams {
 //    }
 //
 //
-//    @Benchmark
-//    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
-//    public void checkNearestNSWE(Blackhole blackhole, MyState state) {
-//        GeoDriver driver = state.driver;
-//        for (Point checkPoint : state.checkPointsArr) {
-//            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
-//        }
-//    }
+    @Benchmark
+    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
+    public void checkNearestNSWE(Blackhole blackhole, MyState state) {
+        GeoDriver driver = state.driver;
+        for (Point checkPoint : state.checkPointsArr) {
+            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
+        }
+    }
 
 
     //----  geo bytes
@@ -363,14 +361,14 @@ public class GeoDriverBenchParams {
     }
 
 
-    @Benchmark
-    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
-    public void checkNearestNSWEBytesGen(Blackhole blackhole, MyState state) {
-        GeoDriverBytesGen driver = state.driverBytesGen;
-        for (Point checkPoint : state.checkPointsArr) {
-            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
-        }
-    }
+//    @Benchmark
+//    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
+//    public void checkNearestNSWEBytesGen(Blackhole blackhole, MyState state) {
+//        GeoDriverBytesGen driver = state.driverBytesGen;
+//        for (Point checkPoint : state.checkPointsArr) {
+//            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
+//        }
+//    }
 
 
     //----  geo bytes mmap
@@ -451,34 +449,43 @@ public class GeoDriverBenchParams {
 //    }
 //
 //
-//    @Benchmark
-//    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
-//    public void checkNearestNSWEFFMStruct(Blackhole blackhole, MyState state) {
-//        GeoDriverFFMStruct driver = state.driverFFMStruct;
-//        for (Point checkPoint : state.checkPointsArr) {
-//            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
-//        }
-//    }
+    @Benchmark
+    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
+    public void checkNearestNSWEFFMStruct(Blackhole blackhole, MyState state) {
+        GeoDriverFFMStruct driver = state.driverFFMStruct;
+        for (Point checkPoint : state.checkPointsArr) {
+            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
+        }
+    }
 
 
-//    @Benchmark
-//    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
-//    public void checkNearestNSWEFFM_T(Blackhole blackhole, MyState state) {
-//        GeoDriverFFMT driver = state.driverFFMT;
-//        for (Point checkPoint : state.checkPointsArr) {
-//            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
-//        }
-//    }
+    @Benchmark
+    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
+    public void checkNearestNSWEFFM_T(Blackhole blackhole, MyState state) {
+        GeoDriverFFMT driver = state.driverFFMT;
+        for (Point checkPoint : state.checkPointsArr) {
+            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
+        }
+    }
+
+    @Benchmark
+    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
+    public void checkNearestNSWEFFM_T_Slice(Blackhole blackhole, MyState state) {
+        GeoDriverFFMT_Slice driver = state.driverFFMTSlice;
+        for (Point checkPoint : state.checkPointsArr) {
+            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
+        }
+    }
 
 
-//    @Benchmark
-//    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
-//    public void checkNearestNSWEFFMLong(Blackhole blackhole, MyState state) {
-//        GeoDriverFFMLong driver = state.driverFFMLong;
-//        for (Point checkPoint : state.checkPointsArr) {
-//            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
-//        }
-//    }
+    @Benchmark
+    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
+    public void checkNearestNSWEFFMLong(Blackhole blackhole, MyState state) {
+        GeoDriverFFMLong driver = state.driverFFMLong;
+        for (Point checkPoint : state.checkPointsArr) {
+            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
+        }
+    }
 
     //----  geo ffm t
 

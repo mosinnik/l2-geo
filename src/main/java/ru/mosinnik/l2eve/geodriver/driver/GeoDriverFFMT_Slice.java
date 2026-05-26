@@ -31,8 +31,9 @@ import ru.mosinnik.l2eve.geodriver.blocks.FlatBlock;
 import ru.mosinnik.l2eve.geodriver.bytes.FlatBlockFromOffsetBytes;
 import ru.mosinnik.l2eve.geodriver.bytes.NullRegionBytes;
 import ru.mosinnik.l2eve.geodriver.ffm.ComplexBlockFFM;
+import ru.mosinnik.l2eve.geodriver.ffm.ComplexBlockFFMSlice;
 import ru.mosinnik.l2eve.geodriver.ffm.FlatBlockFromOffsetFFM;
-import ru.mosinnik.l2eve.geodriver.ffm.MultilayerBlockFFM;
+import ru.mosinnik.l2eve.geodriver.ffm.MultilayerBlockFFMSlice;
 import ru.mosinnik.l2eve.geodriver.regions.Region;
 
 import java.io.RandomAccessFile;
@@ -53,10 +54,37 @@ import static ru.mosinnik.l2eve.geodriver.driver.GeoDriverBytes.RegionCoordinate
 import static ru.mosinnik.l2eve.geodriver.driver.GeoDriverBytesConstants.*;
 
 /**
- * FFM
+ * FFM для хранения данных самих блоков с использованием слайсов при вызове доп логики.
+ * Буст хороший, но на рендоме не стабильно, и бывают просадки до 3к, что меньше bytes реализации.
+ * <p>
+ * Benchmark                                           (blockTypeStr)   Mode  Cnt      Score      Error  Units
+ * GeoDriverBenchParams.checkNearestNSWE                       RANDOM  thrpt    5   2289.858 ±   10.013  ops/s
+ * GeoDriverBenchParams.checkNearestNSWE                   FLAT_BLOCK  thrpt    5  15706.646 ± 1012.001  ops/s
+ * GeoDriverBenchParams.checkNearestNSWE                COMPLEX_BLOCK  thrpt    5   3033.744 ±   11.591  ops/s
+ * GeoDriverBenchParams.checkNearestNSWE             MULTILAYER_BLOCK  thrpt    5    727.374 ±   10.290  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEBytes                  RANDOM  thrpt    5   3347.495 ±    8.670  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEBytes              FLAT_BLOCK  thrpt    5  22334.694 ±  696.887  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEBytes           COMPLEX_BLOCK  thrpt    5   4355.901 ±   25.085  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEBytes        MULTILAYER_BLOCK  thrpt    5    712.993 ±   13.492  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEFFMLong                RANDOM  thrpt    5   3276.407 ±    6.122  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEFFMLong            FLAT_BLOCK  thrpt    5  20724.476 ±  343.211  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEFFMLong         COMPLEX_BLOCK  thrpt    5   4077.222 ±    3.110  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEFFMLong      MULTILAYER_BLOCK  thrpt    5    714.512 ±    2.190  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEFFMStruct              RANDOM  thrpt    5   2347.848 ±   14.640  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEFFMStruct          FLAT_BLOCK  thrpt    5  18903.255 ±  471.758  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEFFMStruct       COMPLEX_BLOCK  thrpt    5   4128.209 ±   27.536  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEFFMStruct    MULTILAYER_BLOCK  thrpt    5    730.066 ±    2.769  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEFFM_T                  RANDOM  thrpt    5   3183.753 ±   33.786  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEFFM_T              FLAT_BLOCK  thrpt    5  22234.669 ±  547.582  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEFFM_T           COMPLEX_BLOCK  thrpt    5   4466.260 ±  147.467  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEFFM_T        MULTILAYER_BLOCK  thrpt    5    740.382 ±    5.189  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEFFM_T_Slice            RANDOM  thrpt    5   4617.576 ±  420.232  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEFFM_T_Slice        FLAT_BLOCK  thrpt    5  22323.436 ±  664.688  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEFFM_T_Slice     COMPLEX_BLOCK  thrpt    5   4698.361 ±   73.367  ops/s
+ * GeoDriverBenchParams.checkNearestNSWEFFM_T_Slice  MULTILAYER_BLOCK  thrpt    5    759.708 ±    0.229  ops/s
  */
 @Slf4j
-public final class GeoDriverFFMT {
+public final class GeoDriverFFMT_Slice {
 
     public static final int REGIONS_INDEXES_SIZE = GeoConstants.GEO_REGIONS_X * GeoConstants.GEO_REGIONS_Y;
     private final GeoConfig config;
@@ -76,15 +104,15 @@ public final class GeoDriverFFMT {
     //    MemorySegment regionFirstBlockIndexes;
 //    MemorySegment blockTypes;
 //    MemorySegment blockDataOffsets;
-    MemorySegment data;
-    MemorySegment dataShorts;
+    MemorySegment dataComplex;
+    MemorySegment dataMulti;
 
 
     //    private final MemorySegment regionFirstBlockIndexesRO;
 //    private final MemorySegment blockTypesRO;
 //    private final MemorySegment blockDataOffsetsRO;
-    private final MemorySegment dataRO;
-    private final MemorySegment dataShortsRO;
+    private final MemorySegment dataComplexRO;
+    private final MemorySegment dataMultiRO;
 
 //    public GeoDriverFFM() {
 //        config = new GeoConfig();
@@ -94,7 +122,7 @@ public final class GeoDriverFFMT {
 //        this.config = config;
 //    }
 
-    public GeoDriverFFMT(GeoConfig config, Path geoDataDir) {
+    public GeoDriverFFMT_Slice(GeoConfig config, Path geoDataDir) {
         this.config = config;
 
         loadL2J(geoDataDir);
@@ -102,12 +130,12 @@ public final class GeoDriverFFMT {
 //        regionFirstBlockIndexesRO = regionFirstBlockIndexes.asReadOnly();
 //        blockTypesRO = blockTypes.asReadOnly();
 //        blockDataOffsetsRO = blockDataOffsets.asReadOnly();
-        dataRO = data.asReadOnly();
-        dataShortsRO = dataShorts.asReadOnly();
+        dataMultiRO = dataMulti.asReadOnly();
+        dataComplexRO = dataComplex.asReadOnly();
 
     }
 
-    public GeoDriverFFMT(GeoConfig config, List<Path> paths) {
+    public GeoDriverFFMT_Slice(GeoConfig config, List<Path> paths) {
         this.config = config;
 
         loadFromL2J(paths);
@@ -115,8 +143,8 @@ public final class GeoDriverFFMT {
 //        regionFirstBlockIndexesRO = regionFirstBlockIndexes.asReadOnly();
 //        blockTypesRO = blockTypes.asReadOnly();
 //        blockDataOffsetsRO = blockDataOffsets.asReadOnly();
-        dataRO = data.asReadOnly();
-        dataShortsRO = dataShorts.asReadOnly();
+        dataMultiRO = dataMulti.asReadOnly();
+        dataComplexRO = dataComplex.asReadOnly();
 
     }
 
@@ -159,7 +187,8 @@ public final class GeoDriverFFMT {
         }
 
         int dataSize = 0;
-        int dataShortSize = 0;
+        int dataComplexSize = 0;
+        int dataMultiSize = 0;
         int totalBlockCount = 0;
         int shortBlockCount = 0;
         for (RegionCoordinated regionCoordinated : regions) {
@@ -171,7 +200,12 @@ public final class GeoDriverFFMT {
                 switch (type) {
                     case COMPLEX_BLOCK -> {
                         shortBlockCount++;
-                        dataShortSize += bytesCount;
+                        dataComplexSize += bytesCount;
+                    }
+                    case MULTILAYER_BLOCK -> {
+                        shortBlockCount++;
+//                        dataMultiSize += 4096;
+                        dataMultiSize += bytesCount;
                     }
                     default -> {
                         dataSize += bytesCount;
@@ -188,8 +222,8 @@ public final class GeoDriverFFMT {
         blockTypes = new byte[totalBlockCount];
         blockDataOffsets = new int[totalBlockCount];
 
-        data = global.allocate(JAVA_BYTE, dataSize);
-        dataShorts = global.allocate(ComplexBlockFFM.SHORT_LAYOUT, dataShortSize / 2);
+        dataMulti = global.allocate(JAVA_BYTE, dataMultiSize);
+        dataComplex = global.allocate(ComplexBlockFFM.SHORT_LAYOUT, dataComplexSize / 2);
 
 //        blockTypes = global.allocate(JAVA_BYTE, totalBlockCount);
 //        blockDataOffsets = global.allocate(JAVA_INT, totalBlockCount);
@@ -202,6 +236,7 @@ public final class GeoDriverFFMT {
         int blockIndex = 0;
         int blockDataOffset = 0;
         int blockDataShortOffset = 0;
+        int blockDataMultiOffset = 0;
         for (RegionCoordinated regionCoordinated : regions) {
             Region region = regionCoordinated.region();
             int regionFirstBlockIndex = blockIndex;
@@ -227,20 +262,29 @@ public final class GeoDriverFFMT {
 //                        blockDataOffsets.setAtIndex(JAVA_INT, blockIndex, blockDataShortOffset);
 
                         short[] shorts = ((ComplexBlock) block).getData();
-                        MemorySegment.copy(shorts, 0, dataShorts, ComplexBlockFFM.SHORT_LAYOUT, blockDataShortOffset, shorts.length);
+                        MemorySegment.copy(shorts, 0, dataComplex, ComplexBlockFFM.SHORT_LAYOUT, blockDataShortOffset, shorts.length);
 
                         // blockDataShortOffset - in bytes
                         blockDataShortOffset += 2 * shorts.length;
                     }
-                    default -> {
-                        //                    int blockDataOffset = data.position();
-                        blockDataOffsets[blockIndex] = blockDataOffset;
-//                        blockDataOffsets.setAtIndex(JAVA_INT, blockIndex, blockDataOffset);
+                    case MULTILAYER_BLOCK -> {
+//                        blockDataOffsets[blockIndex] = blockDataMultiOffset;
+//
+//                        byte[] bytes = ByteUtil.toBytes(block);
+//                        MemorySegment.copy(bytes, 0, dataMulti, JAVA_BYTE, blockDataMultiOffset, bytes.length);
+//
+//                        // blockDataMultiOffset - in bytes
+//                        blockDataMultiOffset += 4096;
+                        blockDataOffsets[blockIndex] = blockDataMultiOffset;
 
-                        //                    appendBytes(block, data);
                         byte[] bytes = ByteUtil.toBytes(block);
-                        MemorySegment.copy(bytes, 0, data, JAVA_BYTE, blockDataOffset, bytes.length);
-                        blockDataOffset += bytes.length;
+                        MemorySegment.copy(bytes, 0, dataMulti, JAVA_BYTE, blockDataMultiOffset, bytes.length);
+
+                        // blockDataMultiOffset - in bytes
+                        blockDataMultiOffset += bytes.length;
+                    }
+                    default -> {
+                        throw new RuntimeException("Unknown block type: " + blockType);
                     }
                 }
 
@@ -249,7 +293,7 @@ public final class GeoDriverFFMT {
         }
         assert totalBlockCount == blockIndex;
 
-        log.info("data size: {}", data.byteSize());
+        log.info("data size: {}", dataMulti.byteSize());
     }
 
 
@@ -298,52 +342,18 @@ public final class GeoDriverFFMT {
         byte blockType = blockTypes[blockIndex];
         int blockDataOffset = blockDataOffsets[blockIndex];
 
-//        int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
-//
-//        int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
-////        int regionFirstBlockIndex = regionFirstBlockIndexesRO.getAtIndex(JAVA_INT, regionIndex);
-//
-////        int regionFirstBlockIndex = regionFirstBlockIndexes.getAtIndex(JAVA_INT, regionIndex);
-////        int regionFirstBlockIndex = (int) INT_HANDLE.get(regionFirstBlockIndexes, regionIndex);
-//
-//
-////        int regionFirstBlockIndex = (int) INT_HANDLE.get(regionFirstBlockIndexes, regionIndex);
-////        int regionFirstBlockIndex = (int) INT_HANDLE.get(regionFirstBlockIndexesRO, 4*regionIndex);
-////        MemorySegment reinterpret = regionFirstBlockIndexesRO.reinterpret(4*REGIONS_INDEXES_SIZE);
-////        int regionFirstBlockIndex = (int) INT_HANDLE.get(reinterpret, 4*regionIndex);
-//        if (regionFirstBlockIndex == NO_INDEX) {
-////            System.out.println("NO_INDEX");
-//            return NullRegionBytes.checkNearestNSWE(geoX, geoY, worldZ, nswe);
-//        }
-//
-//        int blockIndexInRegion = ((geoX & 0x07F8) << 5) | ((geoY >> 3) & 0xFF);
-//
-//        byte blockType = blockTypes[regionFirstBlockIndex + blockIndexInRegion];
-////        byte blockType = blockTypesRO.getAtIndex(JAVA_BYTE, regionFirstBlockIndex + blockIndexInRegion);
-//
-////        byte blockType = blockTypes.getAtIndex(JAVA_BYTE, regionFirstBlockIndex + blockIndexInRegion);
-////        byte blockType = (byte) BYTE_HANDLE.get(blockTypesRO, regionFirstBlockIndex + blockIndexInRegion);
-//
-//        //        blockTypesCount.computeIfAbsent((int) blockType, k -> new AtomicInteger()).incrementAndGet();
-//
-//        int blockDataOffset = blockDataOffsets[regionFirstBlockIndex + blockIndexInRegion];
-////        int blockDataOffset = blockDataOffsetsRO.getAtIndex(JAVA_INT, regionFirstBlockIndex + blockIndexInRegion);
-//
-////        int blockDataOffset = blockDataOffsets.getAtIndex(JAVA_INT, regionFirstBlockIndex + blockIndexInRegion);
-////        int blockDataOffset = (int) INT_HANDLE.get(blockDataOffsetsRO, regionFirstBlockIndex + blockIndexInRegion);
-
-
         switch (blockType) {
             case FLAT_BLOCK -> {
                 return FlatBlockFromOffsetFFM.checkNearestNSWE(geoX, geoY, worldZ, nswe);
             }
             case COMPLEX_BLOCK -> {
-//                System.out.println("blockDataOffset T = " + blockDataOffset);
-                return ComplexBlockFFM.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, dataShortsRO);
+//                return ComplexBlockFFM.checkNearestNSWE_Slice(geoX, geoY, worldZ, nswe, dataShortsRO.asSlice(blockDataOffset));
+                return ComplexBlockFFMSlice.checkNearestNSWE(geoX, geoY, worldZ, nswe, dataComplexRO.asSlice(blockDataOffset, 128L));
 //                return ComplexBlockFFM.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, dataRO);
             }
             case MULTILAYER_BLOCK -> {
-                return MultilayerBlockFFM.checkNearestNSWE(geoX, geoY, worldZ, nswe, blockDataOffset, dataRO);
+                return MultilayerBlockFFMSlice.checkNearestNSWE(geoX, geoY, worldZ, nswe, dataMultiRO.asSlice(blockDataOffset));
+//                return MultilayerBlockFFMSlice.checkNearestNSWE(geoX, geoY, worldZ, nswe, dataMultiRO.asSlice(blockDataOffset, 4096L));
             }
             case ONE_HEIGHT_COMPLEX_BLOCK -> {
                 throw new UnsupportedOperationException("Not supported yet: ONE_HEIGHT_COMPLEX_BLOCK");
@@ -378,7 +388,6 @@ public final class GeoDriverFFMT {
     public int getNearestZ(int geoX, int geoY, int worldZ) {
         int regionIndex = ((geoX >> 6) & 0x03E0) | ((geoY >> 11));
         int regionFirstBlockIndex = this.regionFirstBlockIndexes[regionIndex];
-//        int regionFirstBlockIndex = regionFirstBlockIndexes.getAtIndex(JAVA_INT, regionIndex);
         if (regionFirstBlockIndex == NO_INDEX) {
             return NullRegionBytes.getNearestZ(geoX, geoY, worldZ);
         }
@@ -389,18 +398,16 @@ public final class GeoDriverFFMT {
         byte blockType = blockTypes[blockIndex];
         int blockDataOffset = blockDataOffsets[blockIndex];
 
-//        byte blockType = blockTypes.getAtIndex(JAVA_BYTE, regionFirstBlockIndex + blockIndexInRegion);
-//        int blockDataOffset = blockDataOffsets.getAtIndex(JAVA_INT, regionFirstBlockIndex + blockIndexInRegion);
         switch (blockType) {
             case FLAT_BLOCK -> {
-                return FlatBlockFromOffsetFFM.getNearestZ(geoX, geoY, worldZ, blockDataOffset, dataRO);
+                return FlatBlockFromOffsetFFM.getNearestZ(geoX, geoY, worldZ, blockDataOffset, dataMultiRO);
             }
             case COMPLEX_BLOCK -> {
-                return ComplexBlockFFM.getNearestZ(geoX, geoY, worldZ, blockDataOffset, dataShortsRO);
+                return ComplexBlockFFMSlice.getNearestZ(geoX, geoY, worldZ, dataComplexRO.asSlice(blockDataOffset, 128L));
 //                return ComplexBlockFFM.getNearestZ(geoX, geoY, worldZ, blockDataOffset, dataRO);
             }
             case MULTILAYER_BLOCK -> {
-                return MultilayerBlockFFM.getNearestZ(geoX, geoY, worldZ, blockDataOffset, dataRO);
+                return MultilayerBlockFFMSlice.getNearestZ(geoX, geoY, worldZ, dataMultiRO.asSlice(blockDataOffset));
             }
 //            case ONE_HEIGHT_COMPLEX_BLOCK -> {
 //                return OneHeightComplexBlockBytes.getNearestZ(geoX, geoY, worldZ, blockDataOffset, data);

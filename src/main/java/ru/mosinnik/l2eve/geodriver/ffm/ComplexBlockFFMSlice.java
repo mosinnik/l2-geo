@@ -27,7 +27,11 @@ import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 import java.nio.ByteOrder;
 
-public final class ComplexBlockFFM {
+
+/**
+ * Слайс вариация ComplexBlockFFM. MemorySegment data тут это слайс от общего объема.
+ */
+public final class ComplexBlockFFMSlice {
 
 
 //    public static final ValueLayout.OfShort SHORT_LAYOUT = ValueLayout.JAVA_SHORT_UNALIGNED
@@ -40,37 +44,35 @@ public final class ComplexBlockFFM {
      * readable:
      * int cellOffset = ((geoX % IBlock.BLOCK_CELLS_X) * IBlock.BLOCK_CELLS_Y) + (geoY % IBlock.BLOCK_CELLS_Y);
      */
-    private static int getCellNSWE(int geoX, int geoY, int blockDataOffset, MemorySegment data) {
+    private static int getCellNSWE(int geoX, int geoY, MemorySegment data) {
         int cellOffset = ((geoX & 0x07) << 3) + (geoY & 0x07);
-        return data.get(SHORT_LAYOUT, blockDataOffset + 2L * cellOffset);
-//        return data.getShort(blockDataOffset + 2 * cellOffset) & 0x0F;
+        return data.get(SHORT_LAYOUT, 2L * cellOffset);
     }
 
 
-    private static int getCellHeight(int geoX, int geoY, int blockDataOffset, MemorySegment data) {
+    private static int getCellHeight(int geoX, int geoY, MemorySegment data) {
         int cellOffset = ((geoX & 0x07) << 3) + (geoY & 0x07);
-//        int height = data.getShort(blockDataOffset + 2 * cellOffset) & 0xFFFFFFF0;
-        int height = data.get(SHORT_LAYOUT, blockDataOffset + 2L * cellOffset) & 0xFFFFFFF0;
+        int height = data.get(SHORT_LAYOUT, 2L * cellOffset) & 0xFFFFFFF0;
         return height >> 1;
     }
 
 
-    public static boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe, int blockDataOffset, MemorySegment data) {
+    public static boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe, MemorySegment data) {
         int cellOffset = ((geoX & 0x07) << 3) + (geoY & 0x07);
-        return (data.get(SHORT_LAYOUT, blockDataOffset + 2L * cellOffset) & nswe) == nswe;
+        return (data.get(SHORT_LAYOUT, 2L * cellOffset) & nswe) == nswe;
     }
 
-    public static int getNearestZ(int geoX, int geoY, int worldZ, int blockDataOffset, MemorySegment data) {
-        return getCellHeight(geoX, geoY, blockDataOffset, data);
+    public static int getNearestZ(int geoX, int geoY, int worldZ, MemorySegment data) {
+        return getCellHeight(geoX, geoY, data);
     }
 
-    public static int getNextLowerZ(int geoX, int geoY, int worldZ, int blockDataOffset, MemorySegment data) {
-        int cellHeight = getCellHeight(geoX, geoY, blockDataOffset, data);
+    public static int getNextLowerZ(int geoX, int geoY, int worldZ, MemorySegment data) {
+        int cellHeight = getCellHeight(geoX, geoY, data);
         return Math.min(cellHeight, worldZ);
     }
 
-    public static int getNextHigherZ(int geoX, int geoY, int worldZ, int blockDataOffset, MemorySegment data) {
-        int cellHeight = getCellHeight(geoX, geoY, blockDataOffset, data);
+    public static int getNextHigherZ(int geoX, int geoY, int worldZ, MemorySegment data) {
+        int cellHeight = getCellHeight(geoX, geoY, data);
         return Math.max(cellHeight, worldZ);
     }
 }

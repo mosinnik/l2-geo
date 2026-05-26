@@ -1,0 +1,6 @@
+"(checkNearestNSWE[a-zA-Z\-_]*)"
+"$1:rate"
+
+"(checkNearestNSWE.*):(.*)"
+"$1","$2"
+
