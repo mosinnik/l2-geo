@@ -121,7 +121,6 @@ public class GeoDriverBenchParams {
         GeoDriverBytesMmap driverBytesMmap;
         GeoDriverFFMStruct driverFFMStruct;
         GeoDriverFFMLong driverFFMLong;
-        GeoDriverFFMT driverFFMT;
         GeoDriverFFMT_Slice driverFFMTSlice;
         Point[] checkPointsArr;
 
@@ -175,7 +174,6 @@ public class GeoDriverBenchParams {
 //            driverBytesGen = new GeoDriverBytesGen(geoConfig);
 //            driverBytesGen.loadFromL2J(List.of(resource.toPath()));
 
-            driverFFMT = new GeoDriverFFMT(geoConfig, List.of(resource.toPath()));
             driverFFMTSlice = new GeoDriverFFMT_Slice(geoConfig, List.of(resource.toPath()));
             driverFFMStruct = new GeoDriverFFMStruct(geoConfig, List.of(resource.toPath()));
             driverFFMLong = new GeoDriverFFMLong(geoConfig, List.of(resource.toPath()));
@@ -458,15 +456,6 @@ public class GeoDriverBenchParams {
         }
     }
 
-
-    @Benchmark
-    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
-    public void checkNearestNSWEFFM_T(Blackhole blackhole, MyState state) {
-        GeoDriverFFMT driver = state.driverFFMT;
-        for (Point checkPoint : state.checkPointsArr) {
-            blackhole.consume(driver.checkNearestNSWE(checkPoint.geoX(), checkPoint.geoY(), -3000, checkPoint.nswe()));
-        }
-    }
 
     @Benchmark
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)

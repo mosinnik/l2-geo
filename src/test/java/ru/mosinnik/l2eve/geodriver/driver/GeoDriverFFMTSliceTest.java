@@ -42,7 +42,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.*;
+import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.GEODATA_DIR;
+import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.TST_BLOCK_RESOURCE_MOST_COMPLEX;
 
 public class GeoDriverFFMTSliceTest {
 
@@ -100,7 +101,6 @@ public class GeoDriverFFMTSliceTest {
         GeoDriver oldDriver = new GeoDriver(new GeoConfig());
         oldDriver.loadRegion(resource.toPath());
 
-        GeoDriverFFMT driver = new GeoDriverFFMT(geoConfig, List.of(resource.toPath()));
         GeoDriverFFMT_Slice driver2 = new GeoDriverFFMT_Slice(geoConfig, List.of(resource.toPath()));
 
         int cornerMinX = regionCoords.regionX() * 32768 + GeoConstants.WORLD_MIN_X;
@@ -130,9 +130,7 @@ public class GeoDriverFFMTSliceTest {
 
 
         Instant t1 = Instant.now();
-//        compareDriversHeavy(cornerMinX, cornerMaxX, driver, driver, cornerMinY, cornerMaxY, oldDriver);
-//        compareDriversHeavy(cornerMinX, cornerMaxX, driver, driver2, cornerMinY, cornerMaxY, oldDriver);
-        compareDriversHeavy(cornerMinX, cornerMaxX, driver2, driver2, cornerMinY, cornerMaxY, oldDriver);
+        compareDriversHeavy(cornerMinX, cornerMaxX, oldDriver, driver2, cornerMinY, cornerMaxY, oldDriver);
         Instant t2 = Instant.now();
         System.out.println("Comparison time: " + t1.until(t2, ChronoUnit.MILLIS) / 1000.0 + " seconds");
     }
@@ -141,9 +139,7 @@ public class GeoDriverFFMTSliceTest {
     /**
      * Compare each coords in each block
      */
-//    public static void compareDriversHeavy(int cornerMinX, int cornerMaxX, GeoDriverFFMT driver, GeoDriverFFMT driver2, int cornerMinY, int cornerMaxY, GeoDriver oldDriver) {
-//    public static void compareDriversHeavy(int cornerMinX, int cornerMaxX, GeoDriverFFMT driver, GeoDriverFFMT_Slice driver2, int cornerMinY, int cornerMaxY, GeoDriver oldDriver) {
-    public static void compareDriversHeavy(int cornerMinX, int cornerMaxX, GeoDriverFFMT_Slice driver, GeoDriverFFMT_Slice driver2, int cornerMinY, int cornerMaxY, GeoDriver oldDriver) {
+    public static void compareDriversHeavy(int cornerMinX, int cornerMaxX, GeoDriver driver, GeoDriverFFMT_Slice driver2, int cornerMinY, int cornerMaxY, GeoDriver oldDriver) {
 //        int stepX = 64;
 //        int stepY = 64;
 //        int stepZ = 100;
