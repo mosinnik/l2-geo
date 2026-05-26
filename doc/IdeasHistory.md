@@ -348,4 +348,55 @@ GeoDriverBenchParams.checkNearestNSWEFFMLongT  MULTILAYER_BLOCK  thrpt    5    7
 Потенциал уже использован в Slice реалиазации с заменой на простой массив.
 
 
+## GeoDriverFFMLongTT
+
+Такой же как и GeoDriverFFMLongT, но еще blockTypes как простой массив.
+
+```
+Benchmark                                         (blockTypeStr)   Mode  Cnt      Score     Error  Units
+GeoDriverBenchParams.checkNearestNSWEFFMLong              RANDOM  thrpt    5   2520.521 ±  11.080  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong          FLAT_BLOCK  thrpt    5  20630.493 ± 554.010  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong       COMPLEX_BLOCK  thrpt    5   4082.302 ±  15.152  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong    MULTILAYER_BLOCK  thrpt    5    717.738 ±   2.371  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT             RANDOM  thrpt    5   2542.050 ±  13.323  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT         FLAT_BLOCK  thrpt    5  20798.191 ± 777.978  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT      COMPLEX_BLOCK  thrpt    5   4233.226 ±  23.268  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT   MULTILAYER_BLOCK  thrpt    5    734.076 ±   2.867  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongTT            RANDOM  thrpt    5   2649.450 ±  14.961  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongTT        FLAT_BLOCK  thrpt    5  22287.696 ± 438.484  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongTT     COMPLEX_BLOCK  thrpt    5   4480.729 ± 162.195  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongTT  MULTILAYER_BLOCK  thrpt    5    748.575 ±   2.295  ops/s
+
+Benchmark                                         (blockTypeStr)   Mode  Cnt      Score     Error  Units
+GeoDriverBenchParams.checkNearestNSWEFFMLong              RANDOM  thrpt    5   2554.607 ±   8.649  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong          FLAT_BLOCK  thrpt    5  20756.446 ± 495.542  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong       COMPLEX_BLOCK  thrpt    5   4137.202 ±  23.006  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong    MULTILAYER_BLOCK  thrpt    5    718.937 ±   2.477  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT             RANDOM  thrpt    5   2513.552 ±  14.881  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT         FLAT_BLOCK  thrpt    5  20743.117 ± 587.065  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT      COMPLEX_BLOCK  thrpt    5   4204.621 ±  35.728  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT   MULTILAYER_BLOCK  thrpt    5    732.904 ±   1.872  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongTT            RANDOM  thrpt    5   2962.345 ±   5.835  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongTT        FLAT_BLOCK  thrpt    5  22280.044 ± 859.182  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongTT     COMPLEX_BLOCK  thrpt    5   4502.174 ± 114.481  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongTT  MULTILAYER_BLOCK  thrpt    5    739.799 ±   6.591  ops/s
+
+Benchmark                                         (blockTypeStr)   Mode  Cnt      Score     Error  Units
+GeoDriverBenchParams.checkNearestNSWEFFMLong              RANDOM  thrpt    5   2420.841 ±  13.382  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong          FLAT_BLOCK  thrpt    5  20648.962 ± 387.463  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong       COMPLEX_BLOCK  thrpt    5   4100.717 ±  46.698  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLong    MULTILAYER_BLOCK  thrpt    5    726.132 ±   7.728  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT             RANDOM  thrpt    5   3295.195 ±  13.379  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT         FLAT_BLOCK  thrpt    5  20903.947 ± 723.989  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT      COMPLEX_BLOCK  thrpt    5   4250.256 ±  97.231  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongT   MULTILAYER_BLOCK  thrpt    5    735.040 ±   3.784  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongTT            RANDOM  thrpt    5   2628.069 ±  18.802  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongTT        FLAT_BLOCK  thrpt    5  22186.383 ± 689.813  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongTT     COMPLEX_BLOCK  thrpt    5   4482.727 ± 152.801  ops/s
+GeoDriverBenchParams.checkNearestNSWEFFMLongTT  MULTILAYER_BLOCK  thrpt    5    741.253 ±   6.865  ops/s
+```
+
+На рендоме гуляет, на отдельных типах стабильно лучше.
+
+Простой массив блоков уже используется в Slice.
 
