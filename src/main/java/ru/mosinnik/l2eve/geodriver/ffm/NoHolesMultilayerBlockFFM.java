@@ -35,8 +35,9 @@ public class NoHolesMultilayerBlockFFM {
 
     private static final VarHandle BYTE_HANDLE = JAVA_BYTE.varHandle();
 
-    private static final int LAYER_COUNT_OFFSET = 0;
-    private static final int INNER_DATA_OFFSET = 1;
+    private static final long LAYER_COUNT_OFFSET = 0;
+    private static final long INNER_DATA_OFFSET = 1;
+
     public static final int LAYER_DATA_SIZE = IBlock.BLOCK_CELLS;
 
     //---------------------------------------------------------------
@@ -54,17 +55,17 @@ public class NoHolesMultilayerBlockFFM {
     /**
      * Don't need to optimized with layersCount == 1 or == 2 - no perf boost
      */
-    private static short getNearestLayer(int geoX, int geoY, int worldZ, int blockDataOffset, MemorySegment data) {
-        byte layersCount = (byte) BYTE_HANDLE.get(data, (long) (blockDataOffset + LAYER_COUNT_OFFSET));
-//        byte layersCount = data.get(blockDataOffset + LAYER_COUNT_OFFSET);
+    private static short getNearestLayer(int geoX, int geoY, int worldZ, MemorySegment data) {
+        byte layersCount = (byte) BYTE_HANDLE.get(data, (long) (LAYER_COUNT_OFFSET));
+//        byte layersCount = data.get(LAYER_COUNT_OFFSET);
 
         int startOffset = 2 * layersCount * (((geoX & 0x07) << 3) + (geoY & 0x07));
 
         int nearestDZ = 0;
         short nearestData = 0;
         for (int i = 0; i < layersCount; i++) {
-            short layerData = (short) SHORT_HANDLE.get(data, (long) (blockDataOffset + INNER_DATA_OFFSET + startOffset + 2 * i));
-//            short layerData = data.getShort(blockDataOffset + INNER_DATA_OFFSET + startOffset + 2 * i);
+            short layerData = (short) SHORT_HANDLE.get(data, (long) (INNER_DATA_OFFSET + startOffset + 2 * i));
+//            short layerData = data.getShort(INNER_DATA_OFFSET + startOffset + 2 * i);
             int layerZ = extractLayerHeight(layerData);
             if (layerZ == worldZ) {
                 return layerData; // exact z
@@ -82,24 +83,24 @@ public class NoHolesMultilayerBlockFFM {
         return nearestData;
     }
 
-    private static int getNearestNSWE(int geoX, int geoY, int worldZ, int blockDataOffset, MemorySegment data) {
-        return extractLayerNswe(getNearestLayer(geoX, geoY, worldZ, blockDataOffset, data));
+    private static int getNearestNSWE(int geoX, int geoY, int worldZ, MemorySegment data) {
+        return extractLayerNswe(getNearestLayer(geoX, geoY, worldZ, data));
     }
 
 
-    public static boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe, int blockDataOffset, MemorySegment data) {
-        return (getNearestNSWE(geoX, geoY, worldZ, blockDataOffset, data) & nswe) == nswe;
+    public static boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe, MemorySegment data) {
+        return (getNearestNSWE(geoX, geoY, worldZ, data) & nswe) == nswe;
     }
 
-    public static int getNearestZ(int geoX, int geoY, int worldZ, int blockDataOffset, MemorySegment data) {
-        return extractLayerHeight(getNearestLayer(geoX, geoY, worldZ, blockDataOffset, data));
+    public static int getNearestZ(int geoX, int geoY, int worldZ, MemorySegment data) {
+        return extractLayerHeight(getNearestLayer(geoX, geoY, worldZ, data));
     }
 
-    public static int getNextLowerZ(int geoX, int geoY, int worldZ, int blockDataOffset, MemorySegment data) {
-        byte layersCount = (byte) BYTE_HANDLE.get(data, (long) (blockDataOffset + LAYER_COUNT_OFFSET));
+    public static int getNextLowerZ(int geoX, int geoY, int worldZ, MemorySegment data) {
+        byte layersCount = (byte) BYTE_HANDLE.get(data, (long) (LAYER_COUNT_OFFSET));
         int startOffset = 2 * layersCount * (((geoX & 0x07) << 3) + (geoY & 0x07));
 
-        long baseOffset = blockDataOffset + INNER_DATA_OFFSET + startOffset;
+        long baseOffset = INNER_DATA_OFFSET + startOffset;
         for (int i = 0; i < layersCount; i++) {
             short layerData = (short) SHORT_HANDLE.get(data, (long) (baseOffset + 2 * i));
 //            short layerData = data.getShort(baseOffset + 2 * i);
@@ -111,11 +112,11 @@ public class NoHolesMultilayerBlockFFM {
         return worldZ;
     }
 
-    public static int getNextHigherZ(int geoX, int geoY, int worldZ, int blockDataOffset, MemorySegment data) {
-        byte layersCount = (byte) BYTE_HANDLE.get(data, (long) (blockDataOffset + LAYER_COUNT_OFFSET));
+    public static int getNextHigherZ(int geoX, int geoY, int worldZ, MemorySegment data) {
+        byte layersCount = (byte) BYTE_HANDLE.get(data, (long) (LAYER_COUNT_OFFSET));
         int startOffset = 2 * layersCount * (((geoX & 0x07) << 3) + (geoY & 0x07));
 
-        long baseOffset = blockDataOffset + INNER_DATA_OFFSET + startOffset;
+        long baseOffset = INNER_DATA_OFFSET + startOffset;
         int prevLayerZ = worldZ;
         for (int i = 0; i < layersCount; i++) {
             short layerData = (short) SHORT_HANDLE.get(data, (long) (baseOffset + 2 * i));

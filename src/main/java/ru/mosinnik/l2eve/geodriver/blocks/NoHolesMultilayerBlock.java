@@ -73,6 +73,32 @@ public class NoHolesMultilayerBlock implements IBlock {
         return layersCount;
     }
 
+
+    public int getMinHeight() {
+        int cellLayersIndex = 0;
+        int minHeight = Integer.MAX_VALUE;
+        for (int i = 0; i < IBlock.BLOCK_CELLS; i++) {
+            for (int k = 0; k < layersCount; k++, cellLayersIndex++) {
+                short layerData = data[cellLayersIndex];
+                minHeight = Math.min(minHeight, extractLayerHeight(layerData));
+            }
+        }
+        return minHeight;
+    }
+
+    public int getMaxHeight() {
+        int cellLayersIndex = 0;
+        int maxHeight = Integer.MIN_VALUE;
+        for (int i = 0; i < IBlock.BLOCK_CELLS; i++) {
+            for (int k = 0; k < layersCount; k++, cellLayersIndex++) {
+                short layerData = data[cellLayersIndex];
+                maxHeight = Math.max(maxHeight, extractLayerHeight(layerData));
+            }
+        }
+        return maxHeight;
+    }
+
+
     private short getNearestLayer(int geoX, int geoY, int worldZ) {
         int startOffset = layersCount * (((geoX & 0x07) << 3) + (geoY & 0x07));
 

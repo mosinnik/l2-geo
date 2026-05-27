@@ -29,6 +29,7 @@ import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.ComplexBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.FlatBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.MultilayerBlock;
+import ru.mosinnik.l2eve.geodriver.blocks.NoHolesMultilayerBlock;
 import ru.mosinnik.l2eve.geodriver.gen.Counter;
 import ru.mosinnik.l2eve.geodriver.util.RegionCoords;
 
@@ -42,8 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.GEODATA_DIR;
-import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.TST_BLOCK_RESOURCE_MOST_COMPLEX;
+import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.*;
 
 public class GeoDriverFFMTest {
 
@@ -91,11 +91,14 @@ public class GeoDriverFFMTest {
 //        geoConfig.setBaseHeightOneNsweComplexBlockEnabled(true);
 //        geoConfig.setFewHeightsComplexBlockEnabled(true);
 //        geoConfig.setFewHeightsOneNsweComplexBlockEnabled(true);
-//        geoConfig.setNoHolesMultilayerBlockEnabled(true);
+        geoConfig.setNoHolesMultilayerBlockEnabled(true);
 //        geoConfig.setIndexedMultilayerBlockEnabled(true);
 //        geoConfig.setIndexed32MultilayerBlockEnabled(true);
 
-        GeoDriver oldDriver = new GeoDriver(new GeoConfig());
+//        GeoDriver oldDriver = new GeoDriver(new GeoConfig());
+//        oldDriver.loadRegion(resource.toPath());
+
+        GeoDriver oldDriver = new GeoDriver(geoConfig);
         oldDriver.loadRegion(resource.toPath());
 
         GeoDriverFFM driver2 = new GeoDriverFFM(geoConfig, List.of(resource.toPath()));
@@ -140,8 +143,8 @@ public class GeoDriverFFMTest {
 //        int stepX = 64;
 //        int stepY = 64;
 //        int stepZ = 100;
-        int stepX = 32;
-        int stepY = 32;
+        int stepX = 16;
+        int stepY = 16;
         int stepZ = 100;
 
         Map<String, Counter> blockCounters = new HashMap<>();
@@ -155,21 +158,19 @@ public class GeoDriverFFMTest {
                 int minZ = -16000;
                 int maxZ = 16000;
                 IBlock block = oldDriver.getBlock(x, y);
-                if (block instanceof MultilayerBlock mb) {
-                    minZ = mb.getMinHeight() - 100;
-                    maxZ = mb.getMaxHeight() + 100;
-//                    blockCounters.computeIfAbsent("MULTI", (_) -> new Counter()).increment();
-//                    continue;
-                } else if (block instanceof FlatBlock fb) {
-                    minZ = fb.getHeight() - 100;
-                    maxZ = fb.getHeight() + 100;
-//                    blockCounters.computeIfAbsent("FLAT", (_) -> new Counter()).increment();
-//                    continue;
-                } else if (block instanceof ComplexBlock cb) {
-                    minZ = cb.getMinHeight() - 100;
-                    maxZ = cb.getMaxHeight() + 100;
-//                    blockCounters.computeIfAbsent("COMPLEX", (_) -> new Counter()).increment();
-//                    continue;
+                blockCounters.computeIfAbsent(block.getClass().getName(), (_) -> new Counter()).increment();
+                if (block instanceof FlatBlock b) {
+                    minZ = b.getHeight() - 100;
+                    maxZ = b.getHeight() + 100;
+                } else if (block instanceof ComplexBlock b) {
+                    minZ = b.getMinHeight() - 100;
+                    maxZ = b.getMaxHeight() + 100;
+                } else if (block instanceof MultilayerBlock b) {
+                    minZ = b.getMinHeight() - 100;
+                    maxZ = b.getMaxHeight() + 100;
+                } else if (block instanceof NoHolesMultilayerBlock b) {
+                    minZ = b.getMinHeight() - 100;
+                    maxZ = b.getMaxHeight() + 100;
                 }
                 for (int z = minZ; z < maxZ; z += stepZ) {
                     for (int l = 0; l < 16; l++) {
