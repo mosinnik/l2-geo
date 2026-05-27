@@ -29,9 +29,9 @@ import java.lang.invoke.VarHandle;
 import static java.lang.foreign.ValueLayout.JAVA_BYTE;
 
 /**
- * Слайс вариация. MemorySegment data тут это слайс от общего объема.
+ * MemorySegment data тут это слайс от общего объема, взятый в точке начала блока.
  */
-public class MultilayerBlockFFMSlice {
+public class MultilayerBlockFFM {
 
     //---------------------------------------------------------------
 

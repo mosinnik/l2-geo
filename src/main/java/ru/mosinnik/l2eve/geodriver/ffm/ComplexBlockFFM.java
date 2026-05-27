@@ -29,13 +29,9 @@ import java.nio.ByteOrder;
 
 
 /**
- * Слайс вариация ComplexBlockFFM. MemorySegment data тут это слайс от общего объема.
+ * MemorySegment data тут это слайс от общего объема, взятый в точке начала блока.
  */
-public final class ComplexBlockFFMSlice {
-
-
-//    public static final ValueLayout.OfShort SHORT_LAYOUT = ValueLayout.JAVA_SHORT_UNALIGNED
-//            .withOrder(ByteOrder.BIG_ENDIAN);
+public final class ComplexBlockFFM {
 
     public static final ValueLayout.OfShort SHORT_LAYOUT = ValueLayout.JAVA_SHORT
             .withOrder(ByteOrder.nativeOrder());
