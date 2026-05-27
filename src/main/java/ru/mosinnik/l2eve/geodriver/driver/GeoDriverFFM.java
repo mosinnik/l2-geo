@@ -30,7 +30,6 @@ import ru.mosinnik.l2eve.geodriver.blocks.ComplexBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.FlatBlock;
 import ru.mosinnik.l2eve.geodriver.bytes.FlatBlockFromOffsetBytes;
 import ru.mosinnik.l2eve.geodriver.bytes.NullRegionBytes;
-import ru.mosinnik.l2eve.geodriver.ffm.ComplexBlockFFM;
 import ru.mosinnik.l2eve.geodriver.ffm.ComplexBlockFFMSlice;
 import ru.mosinnik.l2eve.geodriver.ffm.FlatBlockFromOffsetFFM;
 import ru.mosinnik.l2eve.geodriver.ffm.MultilayerBlockFFMSlice;
@@ -223,7 +222,7 @@ public final class GeoDriverFFM {
         blockDataOffsets = new int[totalBlockCount];
 
         dataMulti = global.allocate(JAVA_BYTE, dataMultiSize);
-        dataComplex = global.allocate(ComplexBlockFFM.SHORT_LAYOUT, dataComplexSize / 2);
+        dataComplex = global.allocate(ComplexBlockFFMSlice.SHORT_LAYOUT, dataComplexSize / 2);
 
 //        blockTypes = global.allocate(JAVA_BYTE, totalBlockCount);
 //        blockDataOffsets = global.allocate(JAVA_INT, totalBlockCount);
@@ -262,7 +261,7 @@ public final class GeoDriverFFM {
 //                        blockDataOffsets.setAtIndex(JAVA_INT, blockIndex, blockDataShortOffset);
 
                         short[] shorts = ((ComplexBlock) block).getData();
-                        MemorySegment.copy(shorts, 0, dataComplex, ComplexBlockFFM.SHORT_LAYOUT, blockDataShortOffset, shorts.length);
+                        MemorySegment.copy(shorts, 0, dataComplex, ComplexBlockFFMSlice.SHORT_LAYOUT, blockDataShortOffset, shorts.length);
 
                         // blockDataShortOffset - in bytes
                         blockDataShortOffset += 2 * shorts.length;

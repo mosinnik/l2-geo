@@ -27,7 +27,6 @@ import java.lang.foreign.MemorySegment;
 import java.lang.invoke.VarHandle;
 
 import static java.lang.foreign.ValueLayout.JAVA_BYTE;
-import static java.lang.foreign.ValueLayout.JAVA_INT;
 
 /**
  * Слайс вариация. MemorySegment data тут это слайс от общего объема.
@@ -36,7 +35,6 @@ public class MultilayerBlockFFMSlice {
 
     //---------------------------------------------------------------
 
-    private static final VarHandle INT_HANDLE = JAVA_INT.varHandle();
     private static final VarHandle BYTE_HANDLE = JAVA_BYTE.varHandle();
 
     /**

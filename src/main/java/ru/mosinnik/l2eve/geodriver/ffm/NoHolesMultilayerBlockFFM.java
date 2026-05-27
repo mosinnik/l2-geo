@@ -26,11 +26,14 @@ package ru.mosinnik.l2eve.geodriver.ffm;
 import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
 
 import java.lang.foreign.MemorySegment;
+import java.lang.invoke.VarHandle;
 
+import static java.lang.foreign.ValueLayout.JAVA_BYTE;
 import static ru.mosinnik.l2eve.geodriver.ffm.Indexed32MultilayerBlockFFM.SHORT_HANDLE;
-import static ru.mosinnik.l2eve.geodriver.ffm.MultilayerBlockFFM.BYTE_HANDLE;
 
 public class NoHolesMultilayerBlockFFM {
+
+    private static final VarHandle BYTE_HANDLE = JAVA_BYTE.varHandle();
 
     private static final int LAYER_COUNT_OFFSET = 0;
     private static final int INNER_DATA_OFFSET = 1;

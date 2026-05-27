@@ -45,9 +45,9 @@ import static org.junit.Assert.assertEquals;
 import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.GEODATA_DIR;
 import static ru.mosinnik.l2eve.geodriver.GeoDriverTestConstants.TST_BLOCK_RESOURCE_MOST_COMPLEX;
 
-public class GeoDriverFFMTSliceTest {
+public class GeoDriverFFMTest {
 
-    @Ignore("Print memory layout and write bins")
+    @Ignore("Print memory layout")
     @Test
     public void loadAll() throws IOException {
         String geodataDir = GEODATA_DIR;
@@ -67,9 +67,6 @@ public class GeoDriverFFMTSliceTest {
 
 //        driver.loadL2J(Path.of(geodataDir));
 
-//        String binGeoDataDir = GEODATA_BIN_DIR;
-//        driver.writeToFiles(Path.of(binGeoDataDir));
-
         GraphLayout graphLayout = GraphLayout.parseInstance(driver);
         System.out.println("footprint = " + graphLayout.toFootprint());
         System.out.println("totalCount = " + graphLayout.totalCount());
@@ -85,7 +82,7 @@ public class GeoDriverFFMTSliceTest {
 //        String tstRegion = TST_BLOCK_RESOURCE_BIGGEST;
         String tstRegion = TST_BLOCK_RESOURCE_MOST_COMPLEX;
 
-        File resource = new File(GeoDriverFFMTSliceTest.class.getClassLoader().getResource(tstRegion).getFile());
+        File resource = new File(GeoDriverFFMTest.class.getClassLoader().getResource(tstRegion).getFile());
         RegionCoords regionCoords = RegionCoords.extract(resource.toPath());
 
         GeoConfig geoConfig = new GeoConfig();
