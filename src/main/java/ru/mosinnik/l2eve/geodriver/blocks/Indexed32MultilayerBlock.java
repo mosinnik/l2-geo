@@ -120,6 +120,36 @@ public class Indexed32MultilayerBlock implements IBlock {
         return index;
     }
 
+    public int getMinHeight() {
+        int minHeight = Integer.MAX_VALUE;
+        for (int i = 0; i < IBlock.BLOCK_CELLS; i++) {
+            int cellDataOffset = index[i];
+            int startOffset = cellDataOffset & 0x07FF;
+            int nLayers = (cellDataOffset >> 11) & 0x01F;
+            int endOffset = startOffset + nLayers;
+            for (int offset = startOffset; offset < endOffset; offset++) {
+                short layerData = data[offset];
+                minHeight = Math.min(minHeight, extractLayerHeight(layerData));
+            }
+        }
+        return minHeight;
+    }
+
+    public int getMaxHeight() {
+        int maxHeight = Integer.MIN_VALUE;
+        for (int i = 0; i < IBlock.BLOCK_CELLS; i++) {
+            int cellDataOffset = index[i];
+            int startOffset = cellDataOffset & 0x07FF;
+            int nLayers = (cellDataOffset >> 11) & 0x01F;
+            int endOffset = startOffset + nLayers;
+            for (int offset = startOffset; offset < endOffset; offset++) {
+                short layerData = data[offset];
+                maxHeight = Math.max(maxHeight, extractLayerHeight(layerData));
+            }
+        }
+        return maxHeight;
+    }
+
     /**
      * readable:
      * int cellLocalOffset = ((geoX % IBlock.BLOCK_CELLS_X) * IBlock.BLOCK_CELLS_Y) + (geoY % IBlock.BLOCK_CELLS_Y);

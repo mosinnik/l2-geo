@@ -47,10 +47,10 @@ public class Indexed32MultilayerBlockFFM {
      * readable:
      * int cellLocalOffset = ((geoX % IBlock.BLOCK_CELLS_X) * IBlock.BLOCK_CELLS_Y) + (geoY % IBlock.BLOCK_CELLS_Y);
      */
-    private static int getCellDataOffset(int geoX, int geoY, int blockDataOffset, MemorySegment data) {
+    private static int getCellDataOffset(int geoX, int geoY, MemorySegment data) {
         int cellLocalOffset = ((geoX & 0x07) << 3) + (geoY & 0x07);
-        return (short) SHORT_HANDLE.get(data, (long) (blockDataOffset + INDEX_OFFSET + 2 * cellLocalOffset));
-//        return data.getShort(blockDataOffset + INDEX_OFFSET + 2 * cellLocalOffset);
+        return (short) SHORT_HANDLE.get(data, (long) (INDEX_OFFSET + 2 * cellLocalOffset));
+//        return data.getShort( INDEX_OFFSET + 2 * cellLocalOffset);
     }
 
 
@@ -63,23 +63,23 @@ public class Indexed32MultilayerBlockFFM {
         return layer >> 1;
     }
 
-    private static short extractLayerData(int dataOffset, int blockDataOffset, MemorySegment data) {
-        return (short) SHORT_HANDLE.get(data, (long) (blockDataOffset + INNER_DATA_OFFSET + dataOffset));
-//        return data.getShort(blockDataOffset + INNER_DATA_OFFSET + dataOffset);
+    private static short extractLayerData(int dataOffset, MemorySegment data) {
+        return (short) SHORT_HANDLE.get(data, (long) (INNER_DATA_OFFSET + dataOffset));
+//        return data.getShort( INNER_DATA_OFFSET + dataOffset);
     }
 
 
-    private static short getNearestLayer(int geoX, int geoY, int worldZ, int blockDataOffset, MemorySegment data) {
-        int cellDataOffset = getCellDataOffset(geoX, geoY, blockDataOffset, data);
+    private static short getNearestLayer(int geoX, int geoY, int worldZ, MemorySegment data) {
+        int cellDataOffset = getCellDataOffset(geoX, geoY, data);
         int startOffset = (cellDataOffset & 0x07FF) << 1;
         int nLayers = (cellDataOffset >> 11) & 0x01F;
         if (nLayers == 1) {
-            return (short) SHORT_HANDLE.get(data, (long) (blockDataOffset + INNER_DATA_OFFSET + startOffset));
-//            return data.getShort(blockDataOffset + INNER_DATA_OFFSET + startOffset);
+            return (short) SHORT_HANDLE.get(data, (long) (INNER_DATA_OFFSET + startOffset));
+//            return data.getShort( INNER_DATA_OFFSET + startOffset);
         }
         if (nLayers == 2) {
-            short layerDataH = (short) SHORT_HANDLE.get(data, (long) (blockDataOffset + INNER_DATA_OFFSET + startOffset));
-//            short layerDataH = data.getShort(blockDataOffset + INNER_DATA_OFFSET + startOffset);
+            short layerDataH = (short) SHORT_HANDLE.get(data, (long) (INNER_DATA_OFFSET + startOffset));
+//            short layerDataH = data.getShort( INNER_DATA_OFFSET + startOffset);
             short layer1 = layerDataH;
             layer1 = (short) (layer1 & 0x0fff0);
             int layerZH = layer1 >> 1;
@@ -87,8 +87,8 @@ public class Indexed32MultilayerBlockFFM {
                 return layerDataH;
             }
 
-            short layerDataL = (short) SHORT_HANDLE.get(data, (long) (blockDataOffset + INNER_DATA_OFFSET + startOffset + 2));
-//            short layerDataL = data.getShort(blockDataOffset + INNER_DATA_OFFSET + startOffset + 2);
+            short layerDataL = (short) SHORT_HANDLE.get(data, (long) (INNER_DATA_OFFSET + startOffset + 2));
+//            short layerDataL = data.getShort( INNER_DATA_OFFSET + startOffset + 2);
             short layer = layerDataL;
             layer = (short) (layer & 0x0fff0);
             int layerZL = layer >> 1;
@@ -111,7 +111,7 @@ public class Indexed32MultilayerBlockFFM {
         short nearestData = 0;
         // offset - is bytes offset, so we need +=2 to iterate over shorts
         for (int offset = startOffset; offset < endOffset; offset += 2) {
-            short layerData = extractLayerData(offset, blockDataOffset, data);
+            short layerData = extractLayerData(offset, data);
             int layerZ = extractLayerHeight(layerData);
             if (layerZ == worldZ) {
                 return layerData; // exact z
@@ -128,30 +128,30 @@ public class Indexed32MultilayerBlockFFM {
         return nearestData;
     }
 
-    private static int getNearestNSWE(int geoX, int geoY, int worldZ, int blockDataOffset, MemorySegment data) {
-        short nearestLayer = getNearestLayer(geoX, geoY, worldZ, blockDataOffset, data);
+    private static int getNearestNSWE(int geoX, int geoY, int worldZ, MemorySegment data) {
+        short nearestLayer = getNearestLayer(geoX, geoY, worldZ, data);
         return extractLayerNswe(nearestLayer);
     }
 
 
-    public static boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe, int blockDataOffset, MemorySegment data) {
-        return (getNearestNSWE(geoX, geoY, worldZ, blockDataOffset, data) & nswe) == nswe;
+    public static boolean checkNearestNSWE(int geoX, int geoY, int worldZ, byte nswe, MemorySegment data) {
+        return (getNearestNSWE(geoX, geoY, worldZ, data) & nswe) == nswe;
     }
 
-    public static int getNearestZ(int geoX, int geoY, int worldZ, int blockDataOffset, MemorySegment data) {
-        short layer = getNearestLayer(geoX, geoY, worldZ, blockDataOffset, data);
+    public static int getNearestZ(int geoX, int geoY, int worldZ, MemorySegment data) {
+        short layer = getNearestLayer(geoX, geoY, worldZ, data);
         layer = (short) (layer & 0x0fff0);
         return layer >> 1;
     }
 
-    public static int getNextLowerZ(int geoX, int geoY, int worldZ, int blockDataOffset, MemorySegment data) {
-        int cellDataOffset = getCellDataOffset(geoX, geoY, blockDataOffset, data);
+    public static int getNextLowerZ(int geoX, int geoY, int worldZ, MemorySegment data) {
+        int cellDataOffset = getCellDataOffset(geoX, geoY, data);
         int startOffset = (cellDataOffset & 0x07FF) << 1;
         int nLayers = (cellDataOffset >> 11) & 0x01F;
         int endOffset = startOffset + 2 * nLayers;
         for (int offset = startOffset; offset < endOffset; offset += 2) {
-            short layerData = (short) SHORT_HANDLE.get(data, (long) (blockDataOffset + INNER_DATA_OFFSET + offset));
-//            short layerData = data.getShort(blockDataOffset + INNER_DATA_OFFSET + offset);
+            short layerData = (short) SHORT_HANDLE.get(data, (long) (INNER_DATA_OFFSET + offset));
+//            short layerData = data.getShort( INNER_DATA_OFFSET + offset);
             layerData = (short) (layerData & 0x0fff0);
             int layerZ = layerData >> 1;
             if (layerZ <= worldZ) {
@@ -161,16 +161,16 @@ public class Indexed32MultilayerBlockFFM {
         return worldZ;
     }
 
-    public static int getNextHigherZ(int geoX, int geoY, int worldZ, int blockDataOffset, MemorySegment data) {
-        int cellDataOffset = getCellDataOffset(geoX, geoY, blockDataOffset, data);
+    public static int getNextHigherZ(int geoX, int geoY, int worldZ, MemorySegment data) {
+        int cellDataOffset = getCellDataOffset(geoX, geoY, data);
         int startOffset = (cellDataOffset & 0x07FF) << 1;
         int nLayers = (cellDataOffset >> 11) & 0x01F;
         int prevLayerZ = worldZ;
         int endOffset = startOffset + 2 * nLayers;
         // offset - is bytes offset, so we need +=2 to iterate over shorts
         for (int offset = startOffset; offset < endOffset; offset += 2) {
-            short layerData = (short) SHORT_HANDLE.get(data, (long) (blockDataOffset + INNER_DATA_OFFSET + offset));
-//            short layerData = data.getShort(blockDataOffset + INNER_DATA_OFFSET + offset);
+            short layerData = (short) SHORT_HANDLE.get(data, (long) (INNER_DATA_OFFSET + offset));
+//            short layerData = data.getShort( INNER_DATA_OFFSET + offset);
             layerData = (short) (layerData & 0x0fff0);
             int layerZ = layerData >> 1;
             if (layerZ < worldZ) {

@@ -30,10 +30,7 @@ import ru.mosinnik.l2eve.geodriver.blocks.ComplexBlock;
 import ru.mosinnik.l2eve.geodriver.blocks.FlatBlock;
 import ru.mosinnik.l2eve.geodriver.bytes.FlatBlockFromOffsetBytes;
 import ru.mosinnik.l2eve.geodriver.bytes.NullRegionBytes;
-import ru.mosinnik.l2eve.geodriver.ffm.ComplexBlockFFM;
-import ru.mosinnik.l2eve.geodriver.ffm.FlatBlockFromOffsetFFM;
-import ru.mosinnik.l2eve.geodriver.ffm.MultilayerBlockFFM;
-import ru.mosinnik.l2eve.geodriver.ffm.NoHolesMultilayerBlockFFM;
+import ru.mosinnik.l2eve.geodriver.ffm.*;
 import ru.mosinnik.l2eve.geodriver.regions.Region;
 
 import java.io.RandomAccessFile;
@@ -317,7 +314,7 @@ public final class GeoDriverFFM {
                 throw new UnsupportedOperationException("Not supported yet: IndexedMultilayerBlockBytes");
             }
             case INDEXED_32_MULTILAYER_BLOCK -> {
-                throw new UnsupportedOperationException("Not supported yet: Indexed32MultilayerBlockBytes");
+                return Indexed32MultilayerBlockFFM.checkNearestNSWE(geoX, geoY, worldZ, nswe, dataRO.asSlice(blockDataOffset));
             }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }
@@ -369,9 +366,9 @@ public final class GeoDriverFFM {
 //            case INDEXED_MULTILAYER_BLOCK -> {
 //                return IndexedMultilayerBlockBytes.getNearestZ(geoX, geoY, worldZ, blockDataOffset, data);
 //            }
-//            case INDEXED_32_MULTILAYER_BLOCK -> {
-//                return Indexed32MultilayerBlockBytes.getNearestZ(geoX, geoY, worldZ, blockDataOffset, data);
-//            }
+            case INDEXED_32_MULTILAYER_BLOCK -> {
+                return Indexed32MultilayerBlockFFM.getNearestZ(geoX, geoY, worldZ, dataRO.asSlice(blockDataOffset));
+            }
             default -> throw new RuntimeException("Unknown block type: " + blockType);
         }
     }

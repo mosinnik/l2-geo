@@ -26,10 +26,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openjdk.jol.info.GraphLayout;
 import ru.mosinnik.l2eve.geodriver.abstraction.IBlock;
-import ru.mosinnik.l2eve.geodriver.blocks.ComplexBlock;
-import ru.mosinnik.l2eve.geodriver.blocks.FlatBlock;
-import ru.mosinnik.l2eve.geodriver.blocks.MultilayerBlock;
-import ru.mosinnik.l2eve.geodriver.blocks.NoHolesMultilayerBlock;
+import ru.mosinnik.l2eve.geodriver.blocks.*;
 import ru.mosinnik.l2eve.geodriver.gen.Counter;
 import ru.mosinnik.l2eve.geodriver.util.RegionCoords;
 
@@ -93,7 +90,7 @@ public class GeoDriverFFMTest {
 //        geoConfig.setFewHeightsOneNsweComplexBlockEnabled(true);
         geoConfig.setNoHolesMultilayerBlockEnabled(true);
 //        geoConfig.setIndexedMultilayerBlockEnabled(true);
-//        geoConfig.setIndexed32MultilayerBlockEnabled(true);
+        geoConfig.setIndexed32MultilayerBlockEnabled(true);
 
 //        GeoDriver oldDriver = new GeoDriver(new GeoConfig());
 //        oldDriver.loadRegion(resource.toPath());
@@ -169,6 +166,9 @@ public class GeoDriverFFMTest {
                     minZ = b.getMinHeight() - 100;
                     maxZ = b.getMaxHeight() + 100;
                 } else if (block instanceof NoHolesMultilayerBlock b) {
+                    minZ = b.getMinHeight() - 100;
+                    maxZ = b.getMaxHeight() + 100;
+                } else if (block instanceof Indexed32MultilayerBlock b) {
                     minZ = b.getMinHeight() - 100;
                     maxZ = b.getMaxHeight() + 100;
                 }
